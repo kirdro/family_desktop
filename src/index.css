@@ -1,0 +1,75 @@
+/* src/index.css */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #222831;
+  color: #EEEEEE;
+}
+
+/* Удаляем дефолтные отступы */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Стилизация скроллбара для темной темы */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #222831;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #31363F;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #76ABAE;
+}
+
+/* Общие классы-помощники */
+.text-primary {
+  color: #76ABAE;
+}
+
+.bg-primary {
+  background-color: #76ABAE;
+}
+
+.bg-dark {
+  background-color: #222831;
+}
+
+.bg-secondary {
+  background-color: #31363F;
+}
+
+/* Переопределение некоторых стилей Ant Design, которые не покрываются темой */
+.ant-picker-panel {
+  background-color: #31363F !important;
+}
+
+.ant-picker-dropdown .ant-picker-cell-in-view {
+  color: #EEEEEE !important;
+}
+
+.ant-dropdown-menu {
+  background-color: #31363F !important;
+}
+
+.ant-dropdown-menu-item:hover {
+  background-color: rgba(118, 171, 174, 0.2) !important;
+}
+
+.ant-form-item-label > label {
+  color: #EEEEEE !important;
+}
