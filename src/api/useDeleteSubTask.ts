@@ -1,11 +1,12 @@
 // hooks/tasks/useDeleteSubTask.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { IParamsDeleteSubTask, IDeleteSubTaskResponse } from '@/interfaces';
-import { deleteRequest } from '@/tools/request';
-import { GENERAL, SUB_TASKS, TASKS } from '@/constants';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { useNotificationStore } from '@/store/useNotificationStore';
-import { HOST } from '@/host';
+import {useGeneralStore} from "../store/useGeneralStore.ts";
+import {useNotificationStore} from "../store/useNotificationStore.ts";
+import {IParamsDeleteSubTask} from "../types";
+import {HOST} from "../../host.ts";
+import {deleteRequest} from "../tools/request.ts";
+import {GENERAL, TASKS} from "../constants";
+
 
 
 export const useDeleteSubTask = () => {
@@ -17,7 +18,7 @@ export const useDeleteSubTask = () => {
 	const getUrl = (): string => {
 		return `${HOST}/tasks/subtask/delete`;
 	};
-	const { data, isPending, mutate, status, mutateAsync } =  useMutation({
+	const result =  useMutation({
 		mutationFn: ({ subTaskId, email }:IParamsDeleteSubTask) => {
 
 			return  deleteRequest({
@@ -73,11 +74,5 @@ export const useDeleteSubTask = () => {
 	});
 
 
-	return {
-		data,
-		isPending,
-		mutate,
-		status,
-		mutateAsync,
-	};
+	return result;
 };

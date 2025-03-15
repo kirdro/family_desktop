@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { getRequest } from '../../tools/request';
+
 import { HOST } from '../../host';
-import { useNotificationStore } from '../../store/useNotificationStore';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { GENERAL, WALLET } from '@/constants';
+
 import { useEffect } from 'react';
-import { IWallet } from '@/interfaces';
+import {useNotificationStore} from "../store/useNotificationStore.ts";
+import {useGeneralStore} from "../store/useGeneralStore.ts";
+import {GENERAL, WALLET} from "../constants";
+import {IWallet} from "../types";
+import {getRequest} from "../tools/request.ts";
 
 export const useGetWallet = (email: string) => {
 	const { updateNotificationStore, getNotificationStore } =

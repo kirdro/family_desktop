@@ -34,6 +34,7 @@ import {
 	MoreOutlined,
 	ExclamationCircleOutlined,
 	HistoryOutlined,
+	PlusOutlined,
 } from '@ant-design/icons';
 import { useGeneralStore } from '../../store/useGeneralStore';
 import { useTasks } from '../../hooks/useTasks';
@@ -45,6 +46,7 @@ import TaskStatusDropdown from '../../components/tasks/TaskStatusDropdown';
 import TaskPrioritySelector from '../../components/tasks/TaskPrioritySelector';
 import styles from './TasksStyles.module.css';
 import dayjs from 'dayjs';
+import { TaskDescr } from '../../components/tasks/TaskDescr.tsx';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -53,33 +55,19 @@ const { confirm } = Modal;
 const TaskDetail: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
-	const { generalStore } = useGeneralStore();
+	const { getGeneralStore } = useGeneralStore();
+	const { tasks } = getGeneralStore();
 	const [activeTab, setActiveTab] = useState('details');
-	const [isLoading, setIsLoading] = useState(true);
-	const [task, setTask] = useState<any>(null);
+	const [isLoading, setIsLoading] = useState(false);
+	const [_task, setTask] = useState<any>(null);
 
+	const task = tasks.find((task) => task.id === id);
+
+	console.log('>>>>>>>>>>>>>>>>>>><<<><>', task);
 	// Используем хуки для задач и комментариев
 	const { getTask, updateTask, deleteTask } = useTasks();
-	const { getComments, addComment } = useTaskComments();
 
 	// Получение данных о задаче
-	useEffect(() => {
-		if (!id) return;
-
-		try {
-			setIsLoading(true);
-			const taskData = getTask(id);
-			console.log('><<<<<<<>>>>>>><<<<', taskData);
-			setTask(taskData);
-		} catch (error) {
-			console.error('Error fetching task:', error);
-			message.error('Не удалось загрузить задачу');
-		} finally {
-			setIsLoading(false);
-		}
-
-		// fetchTask();
-	}, [id, getTask]);
 
 	// Обработчик изменения статуса
 	const handleStatusChange = async (newStatus: string) => {
@@ -198,28 +186,12 @@ const TaskDetail: React.FC = () => {
 	};
 
 	// Форматирование даты
-	const formatDate = (date: string | null | undefined) => {
+	const formatDate = (date: string | null | undefined | Date) => {
 		if (!date) return '-';
 		return dayjs(date).format('DD.MM.YYYY HH:mm');
 	};
 
 	// Получение статуса в виде компонента Tag
-	const getStatusTag = (status: string) => {
-		const statusMap = {
-			TODO: { color: 'default', text: 'К выполнению' },
-			IN_PROGRESS: { color: 'processing', text: 'В процессе' },
-			REVIEW: { color: 'warning', text: 'На проверке' },
-			DONE: { color: 'success', text: 'Выполнено' },
-			ARCHIVED: { color: 'default', text: 'Архив' },
-		};
-
-		const { color, text } = statusMap[status] || {
-			color: 'default',
-			text: status,
-		};
-
-		return <Tag color={color}>{text}</Tag>;
-	};
 
 	// Если загрузка
 	if (isLoading) {
@@ -232,7 +204,6 @@ const TaskDetail: React.FC = () => {
 	}
 
 	// Если задача не найдена
-	console.log('><<<<<<<>>>>>>><<<<22', task);
 	if (!task) {
 		return (
 			<div className={styles.errorContainer}>
@@ -347,59 +318,7 @@ const TaskDetail: React.FC = () => {
 									}
 									key='details'
 								>
-									<div className={styles.taskDescription}>
-										{task.description ?
-											<Paragraph>
-												{task.description}
-											</Paragraph>
-										:	<Text type='secondary' italic>
-												Нет описания
-											</Text>
-										}
-									</div>
-
-									<Divider orientation='left'>
-										Подзадачи
-									</Divider>
-
-									<SubTaskList
-										taskId={id as string}
-										initialSubTasks={task.subTasks || []}
-										onSubTaskUpdate={(updatedSubTask) => {
-											// Обновляем список подзадач в состоянии
-											setTask((prev) => ({
-												...prev,
-												subTasks: prev.subTasks.map(
-													(st) =>
-														(
-															st.id ===
-															updatedSubTask.id
-														) ?
-															updatedSubTask
-														:	st,
-												),
-											}));
-										}}
-										onSubTaskCreate={(newSubTask) => {
-											// Добавляем новую подзадачу в состояние
-											setTask((prev) => ({
-												...prev,
-												subTasks: [
-													...prev.subTasks,
-													newSubTask,
-												],
-											}));
-										}}
-										onSubTaskDelete={(subTaskId) => {
-											// Удаляем подзадачу из состояния
-											setTask((prev) => ({
-												...prev,
-												subTasks: prev.subTasks.filter(
-													(st) => st.id !== subTaskId,
-												),
-											}));
-										}}
-									/>
+									<TaskDescr task={task} setTask={setTask} />
 								</TabPane>
 
 								<TabPane
@@ -520,9 +439,9 @@ const TaskDetail: React.FC = () => {
 											className={styles.assigneeItem}
 										>
 											<Avatar
-												src={user.avatar}
+												src={user.image}
 												icon={
-													!user.avatar && (
+													!user.image && (
 														<UserOutlined />
 													)
 												}
@@ -584,9 +503,9 @@ const TaskDetail: React.FC = () => {
 									<div className={styles.infoValue}>
 										<Avatar
 											size='small'
-											src={task.author.avatar}
+											src={task.author.image}
 											icon={
-												!task.author.avatar && (
+												!task.author.image && (
 													<UserOutlined />
 												)
 											}

@@ -1,11 +1,12 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { useNotificationStore } from '@/store/useNotificationStore';
-import { IParamsDeleteTask } from '@/interfaces';
-import { deleteRequest } from '@/tools/request';
-import { queryClient } from '@/lib/query';
-import { GENERAL, TASKS } from '@/constants';
-import { HOST } from '@/host';
+import { useMutation } from '@tanstack/react-query';
+import {useGeneralStore} from "../store/useGeneralStore.ts";
+import {useNotificationStore} from "../store/useNotificationStore.ts";
+import {HOST} from "../../host.ts";
+import {IParamsDeleteTask} from "../types";
+import {deleteRequest} from "../tools/request.ts";
+import {queryClient} from "../lib/queryClient.ts";
+import {GENERAL, TASKS} from "../constants";
+
 
 export const useDeleteTask = () => {
 	const { updateGeneralStore, getGeneralStore } = useGeneralStore();

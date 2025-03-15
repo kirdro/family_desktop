@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { IParamsUpdateSubTask } from '@/interfaces';
-import { patchRequest } from '@/tools/request';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { useNotificationStore } from '@/store/useNotificationStore';
-import { HOST } from '@/host';
-import { queryClient } from '@/lib/query';
-import { GENERAL, TASK_STATS, TASKS } from '@/constants';
+import {useGeneralStore} from "../store/useGeneralStore.ts";
+import {useNotificationStore} from "../store/useNotificationStore.ts";
+import {HOST} from "../../host.ts";
+import {IParamsUpdateSubTask} from "../types";
+import {patchRequest} from "../tools/request.ts";
+import {queryClient} from "../lib/queryClient.ts";
+import {GENERAL, TASK_STATS, TASKS} from "../constants";
+
 
 export const usePatchUpdateSubTask = () => {
 	const { updateGeneralStore, getGeneralStore } = useGeneralStore();

@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { getRequest } from '@/tools/request';
 import { useEffect } from 'react';
-import { useNotificationStore } from '@/store/useNotificationStore';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { HOST } from '@/host';
+import {useNotificationStore} from "../store/useNotificationStore.ts";
+import {useGeneralStore} from "../store/useGeneralStore.ts";
+import {HOST} from "../../host.ts";
+import {getRequest} from "../tools/request.ts";
+
 
 export const useGetTaskDetails = (taskId: string) => {
 	const { updateNotificationStore, getNotificationStore } =

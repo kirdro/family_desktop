@@ -1,11 +1,12 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { useNotificationStore } from '@/store/useNotificationStore';
-import { HOST } from '@/host';
-import { queryClient } from '@/lib/query';
-import { GENERAL, TAGS_TASK, TASKS } from '@/constants';
-import { IParamsCreateTag } from '@/interfaces';
-import { postRequest } from '@/tools/request';
+import { useMutation } from '@tanstack/react-query';
+import {useGeneralStore} from "../store/useGeneralStore.ts";
+import {useNotificationStore} from "../store/useNotificationStore.ts";
+import {HOST} from "../../host.ts";
+import {IParamsCreateTag} from "../types";
+import {postRequest} from "../tools/request.ts";
+import {queryClient} from "../lib/queryClient.ts";
+import {GENERAL, TAGS_TASK} from "../constants";
+
 
 export const useCreateTag = () => {
 	const { updateGeneralStore, getGeneralStore } = useGeneralStore();

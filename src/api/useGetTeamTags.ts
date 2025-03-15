@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { useNotificationStore } from '@/store/useNotificationStore';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { GENERAL, TAGS_TASK, TEAM } from '@/constants';
-import { HOST } from '@/host';
-import { getRequest } from '@/tools/request';
+
 import { useEffect } from 'react';
+import {useNotificationStore} from "../store/useNotificationStore.ts";
+import {useGeneralStore} from "../store/useGeneralStore.ts";
+import {GENERAL, TAGS_TASK} from "../constants";
+import {HOST} from "../../host.ts";
+import {getRequest} from "../tools/request.ts";
 
 export const useGetTeamTags = (email: string) => {
 	const { updateNotificationStore, getNotificationStore } =
@@ -20,7 +21,7 @@ export const useGetTeamTags = (email: string) => {
 
 	const enabled = Boolean(token) && Boolean(email);
 
-	const { data, isLoading, error, status, refetch } = useQuery({
+	const result = useQuery({
 		queryKey,
 		queryFn: async () => {
 			return await getRequest({
@@ -43,6 +44,11 @@ export const useGetTeamTags = (email: string) => {
 		enabled
 	});
 
+	const {
+		data,
+		error
+	} = result
+
 	useEffect(() => {
 		if (data) {
 			if ('error' in data) {
@@ -56,12 +62,6 @@ export const useGetTeamTags = (email: string) => {
 			}
 		}
 	}, [data, updateGeneralStore, error]);
-	return {
-		data,
-		isLoading,
-		error,
-		status,
-		refetch,
-	};
+	return result;
 
 };

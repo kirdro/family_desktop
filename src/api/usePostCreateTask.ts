@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { postRequest } from '@/tools/request';
-import { HOST } from '@/host';
-import { useNotificationStore } from '@/store/useNotificationStore';
-import { IParamsCreateTask } from '@/interfaces';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { GENERAL, TASKS } from '@/constants';
+import {useNotificationStore} from "../store/useNotificationStore.ts";
+import {useGeneralStore} from "../store/useGeneralStore.ts";
+import {HOST} from "../../host.ts";
+import {IParamsCreateTask} from "../types";
+import {postRequest} from "../tools/request.ts";
+import {GENERAL, TASKS} from "../constants";
+
 
 export const usePostCreateTask = () => {
 	const queryClient = useQueryClient();

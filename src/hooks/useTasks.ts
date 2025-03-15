@@ -9,6 +9,7 @@ import {
 	generateInitialData,
 } from '../store/tasksLocalStore';
 import { useGeneralStore } from '../store/useGeneralStore';
+import {ITask} from "../types";
 
 export const useTasks = () => {
 	const queryClient = useQueryClient();
@@ -16,7 +17,7 @@ export const useTasks = () => {
 
 	// Инициализация локального хранилища при первом вызове
 	const initializeStore = () => {
-		const existingTasks = queryClient.getQueryData<Task[]>(
+		const existingTasks = queryClient.getQueryData<ITask[]>(
 			STORE_KEYS.tasks,
 		);
 
@@ -39,7 +40,7 @@ export const useTasks = () => {
 		initializeStore();
 
 		// Возвращаем данные из кэша
-		const tasks = queryClient.getQueryData<Task[]>(STORE_KEYS.tasks) || [];
+		const tasks = queryClient.getQueryData<ITask[]>(STORE_KEYS.tasks) || [];
 		return { tasks };
 	};
 
@@ -49,7 +50,7 @@ export const useTasks = () => {
 		initializeStore();
 
 		// Находим задачу в кэше
-		const tasks = queryClient.getQueryData<Task[]>(STORE_KEYS.tasks) || [];
+		const tasks = queryClient.getQueryData<ITask[]>(STORE_KEYS.tasks) || [];
 		const task = tasks.find((task) => task.id === id);
 
 		if (!task) {
@@ -60,12 +61,12 @@ export const useTasks = () => {
 	};
 
 	// Создание новой задачи
-	const createNewTask = (taskData: Partial<Task>) => {
+	const createNewTask = (taskData: Partial<ITask>) => {
 		// Инициализируем хранилище при необходимости
 		initializeStore();
 
 		// Получаем текущие задачи
-		const tasks = queryClient.getQueryData<Task[]>(STORE_KEYS.tasks) || [];
+		const tasks = queryClient.getQueryData<ITask[]>(STORE_KEYS.tasks) || [];
 
 		// Создаем новую задачу
 		const newTask: Task = {
@@ -113,7 +114,7 @@ export const useTasks = () => {
 	const updateExistingTask = ({
 		id,
 		...data
-	}: { id: string } & Partial<Task>) => {
+	}: { id: string } & Partial<ITask>) => {
 		// Получаем текущие задачи
 		const tasks = queryClient.getQueryData<Task[]>(STORE_KEYS.tasks) || [];
 
@@ -162,7 +163,7 @@ export const useTasks = () => {
 	// Удаление задачи
 	const removeTask = (id: string) => {
 		// Получаем текущие задачи
-		const tasks = queryClient.getQueryData<Task[]>(STORE_KEYS.tasks) || [];
+		const tasks = queryClient.getQueryData<ITask[]>(STORE_KEYS.tasks) || [];
 
 		// Фильтруем задачи, исключая удаляемую
 		const updatedTasks = tasks.filter((task) => task.id !== id);
