@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
-import { postRequest } from '../../tools/request';
 import { HOST } from '../../host';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { useNotificationStore } from '../../store/useNotificationStore';
+import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { useNotificationStore } from '../store/useNotificationStore.ts';
+import { postRequest } from '../tools/request.ts';
 
 interface LoginData {
 	email: string;
@@ -22,11 +22,7 @@ export const usePostLogin = () => {
 		return `${HOST}/auth/login`;
 	};
 
-	const { data, isPending, mutate, status, mutateAsync } = useMutation<
-		LoginResponse,
-		Error,
-		LoginData
-	>({
+	const result = useMutation<LoginResponse, Error, LoginData>({
 		mutationFn: (data: LoginData) =>
 			postRequest({
 				url: getUrl(),
@@ -58,11 +54,5 @@ export const usePostLogin = () => {
 		},
 	});
 
-	return {
-		data,
-		isPending,
-		mutate,
-		status,
-		mutateAsync,
-	};
+	return result;
 };

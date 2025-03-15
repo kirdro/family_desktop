@@ -1,0 +1,48 @@
+/* src/pages/NotFound.module.css */
+.notFoundContainer {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.errorDetails {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.reasonsList {
+    margin: 16px 0;
+    padding-left: 24px;
+}
+
+.suggestionsList {
+    margin-top: 16px;
+}
+
+.technicalInfo {
+    background-color: rgba(0, 0, 0, 0.04);
+    padding: 12px;
+    border-radius: 4px;
+    margin: 8px 0;
+    overflow-x: auto;
+}
+
+@media (max-width: 576px) {
+    .actionButtons {
+        flex-direction: column;
+    }
+
+    .errorDetails {
+        padding: 0 8px;
+    }
+}

@@ -1,0 +1,622 @@
+/* src/pages/tasks/TasksStyles.module.css */
+/* Стили для страницы списка задач */
+.tasksListPage {
+    padding: 24px;
+}
+
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.tasksCard {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.toolbarContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.searchContainer {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.searchInput {
+    width: 300px;
+}
+
+.rightToolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.tasksTable {
+    margin-top: 16px;
+}
+
+.taskTitleCell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.taskTitle {
+    cursor: pointer;
+    max-width: 300px;
+}
+
+.subTaskBadge {
+    background-color: #76ABAE;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.loadingContainer,
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 0;
+    gap: 16px;
+}
+
+.filtersPopover {
+    width: 300px;
+    padding: 8px;
+}
+
+.filtersPopoverOverlay {
+    min-width: 320px;
+}
+
+.filterGroup {
+    margin-bottom: 16px;
+}
+
+.filterActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.datesContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Стили для Kanban-доски */
+.kanbanContainer {
+    margin-top: 16px;
+    overflow-x: auto;
+}
+
+.kanbanRow {
+    min-width: 900px;
+}
+
+.kanbanCol {
+    display: flex;
+    flex-direction: column;
+}
+
+.kanbanColumn {
+    background-color: #31363F;
+    border-radius: 6px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.kanbanHeader {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.kanbanTasks {
+    padding: 12px;
+    flex: 1;
+    overflow-y: auto;
+    max-height: 600px;
+}
+
+.taskCard {
+    margin-bottom: 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: transform 0.2s;
+}
+
+.taskCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.taskCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.taskCardDescription {
+    margin-bottom: 12px;
+}
+
+.taskCardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.taskCardTags {
+    display: flex;
+    gap: 4px;
+}
+
+.taskCardAssignees {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.emptyKanbanColumn {
+    text-align: center;
+    padding: 24px 0;
+}
+
+.addTaskButton {
+    width: 100%;
+    margin-top: 8px;
+}
+
+/* Стили для страницы деталей задачи */
+.taskDetailPage {
+    padding: 24px;
+}
+
+.mainTaskCard,
+.taskSidebar {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    margin-bottom: 16px;
+}
+
+.taskHeader {
+    margin-bottom: 16px;
+}
+
+.taskMeta {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.metaItem {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.taskContent {
+    margin-top: 16px;
+}
+
+.taskDescription {
+    margin-bottom: 24px;
+}
+
+.sidebarSection {
+    margin-bottom: 16px;
+}
+
+.assigneeList {
+    margin-top: 12px;
+}
+
+.assigneeItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: rgba(118, 171, 174, 0.1);
+}
+
+.tagsList {
+    margin-top: 12px;
+}
+
+.infoList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.infoList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.infoValue {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.addButton {
+    margin-top: 8px;
+    width: 100%;
+}
+
+/* Стили для подзадач */
+.subTasksContainer {
+    margin-top: 16px;
+}
+
+.subTasksList {
+    margin-bottom: 16px;
+}
+
+.subTaskItem {
+    padding: 12px;
+    border-radius: 6px;
+    background-color: rgba(0, 0, 0, 0.05);
+    margin-bottom: 8px;
+    transition: background-color 0.2s;
+}
+
+.subTaskItem:hover {
+    background-color: rgba(118, 171, 174, 0.1);
+}
+
+.completedSubTask {
+    opacity: 0.7;
+}
+
+.completedText {
+    text-decoration: line-through;
+}
+
+.subTaskContent {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+}
+
+.subTaskInfo {
+    flex: 1;
+}
+
+.subTaskMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+    align-items: center;
+}
+
+.subTaskTags {
+    display: flex;
+    align-items: center;
+}
+
+.tagDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 2px;
+}
+
+.tagMore {
+    font-size: 12px;
+}
+
+.subTaskAssignees {
+    margin-left: 4px;
+}
+
+.subTaskDates {
+    font-size: 12px;
+}
+
+.addSubTaskContainer {
+    margin-top: 16px;
+}
+
+.subTaskActionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+}
+
+/* Стили для комментариев */
+.commentsContainer {
+    margin-top: 16px;
+}
+
+.commentsList {
+    margin-bottom: 24px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.commentText {
+    white-space: pre-wrap;
+}
+
+.commentAction {
+    padding: 4px 8px;
+}
+
+.addCommentContainer {
+    margin-top: 16px;
+}
+
+.submitCommentButton {
+    margin-top: 12px;
+}
+
+.editCommentContainer {
+    margin-top: 8px;
+}
+
+.editCommentActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* Стили для формы создания/редактирования задачи */
+.taskForm {
+    width: 100%;
+}
+
+.formMainCard,
+.formSideCard {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.formSummary {
+    margin-top: 8px;
+}
+
+.summaryItem {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* Стили для селектора тегов */
+.tagSelector {
+    margin-top: 8px;
+}
+
+.tagSelectorHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.tagSelect {
+    margin-bottom: 12px;
+}
+
+.tagOption {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tagColor {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.selectedTagsList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.selectedTag {
+    margin-bottom: 0;
+}
+
+.currentTagsHeader {
+    margin-bottom: 12px;
+}
+
+.tagListItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Стили для селектора исполнителей */
+.assigneeSelector {
+    margin-top: 8px;
+}
+
+.assigneeSelectorHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.assigneeSelect {
+    margin-bottom: 12px;
+}
+
+.assigneeOption {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.selectedAssigneesList {
+    margin-top: 16px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+}
+
+/* Стили для компонентов статуса и приоритета */
+.statusDropdown,
+.prioritySelector {
+    border: none;
+    padding: 0;
+    min-width: 100px;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 768px) {
+    .tasksListPage,
+    .taskDetailPage {
+        padding: 16px;
+    }
+
+    .pageHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .toolbarContainer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .searchContainer {
+        width: 100%;
+    }
+
+    .searchInput {
+        width: 100%;
+    }
+
+    .rightToolbar {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .taskTitle {
+        max-width: 200px;
+    }
+
+    .formActions {
+        flex-direction: column;
+    }
+
+    .formActions button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .metaItem {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .subTaskContent {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .subTaskMeta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .commentAction {
+        padding: 2px 4px;
+        font-size: 12px;
+    }
+
+    .taskCardHeader {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+.tagsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+}
+
+.tagItem {
+    margin-right: 0;
+    transition: transform 0.2s;
+}
+
+.tagItem:hover {
+    transform: translateY(-2px);
+}
+
+.moreTagsTag {
+    cursor: pointer;
+    background-color: rgba(118, 171, 174, 0.1);
+    border: 1px dashed #76ABAE;
+}
+
+.moreTagsTag:hover {
+    background-color: rgba(118, 171, 174, 0.2);
+}
+
+.hiddenTagsContainer {
+    max-width: 300px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tagsPopover {
+    min-width: 150px;
+    max-width: 320px;
+}
+
+.tagCount {
+    margin-left: 4px;
+    font-size: 12px;
+}

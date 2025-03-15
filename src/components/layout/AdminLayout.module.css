@@ -1,0 +1,75 @@
+/* src/components/layout/AdminLayout.module.css */
+.adminLayout {
+    min-height: 100vh;
+}
+
+.logoContainer {
+    height: 64px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.logo {
+    height: 32px;
+    margin-right: 8px;
+}
+
+.mobileLogo {
+    height: 24px;
+    margin-right: 12px;
+}
+
+.drawerHeader {
+    display: flex;
+    align-items: center;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.userInfo:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.userName {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+    line-height: 1.2;
+}
+
+.notification {
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.notification:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.notification.unread {
+    background-color: rgba(118, 171, 174, 0.1);
+}
+
+.notificationHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+@media (max-width: 767px) {
+    .logoContainer {
+        justify-content: center;
+    }
+}

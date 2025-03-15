@@ -1,11 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
-import { postRequest } from '../../tools/request';
+
 import { HOST } from '../../host';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { useNotificationStore } from '../../store/useNotificationStore';
-import { IVerifyTokenRes } from '@/interfaces';
-import { secureStorage } from '@/utils/token-storage';
-import { EMAIL, TOKEN_STORAGE } from '@/constants';
+import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { useNotificationStore } from '../store/useNotificationStore.ts';
+import { IVerifyTokenRes } from '../types';
+import { postRequest } from '../tools/request.ts';
+import { secureStorage } from '../utils/token-storage.ts';
+import { EMAIL, TOKEN_STORAGE } from '../constants';
 
 // filepath: /home/kirill/projects/family_expo/hooks/api/usePostVerifyCode.ts
 
@@ -28,11 +29,7 @@ export const usePostVerifyCode = () => {
 		return `${HOST}/auth/verify`;
 	};
 
-	const { data, isPending, mutate, status, mutateAsync } = useMutation<
-		IVerifyTokenRes,
-		Error,
-		VerifyCodeData
-	>({
+	const result = useMutation<IVerifyTokenRes, Error, VerifyCodeData>({
 		mutationFn: (data: VerifyCodeData) =>
 			postRequest({
 				url: getUrl(),
@@ -72,11 +69,5 @@ export const usePostVerifyCode = () => {
 		},
 	});
 
-	return {
-		data,
-		isPending,
-		mutate,
-		status,
-		mutateAsync,
-	};
+	return result;
 };
