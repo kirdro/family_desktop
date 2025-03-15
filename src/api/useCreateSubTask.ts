@@ -1,10 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
-import {useGeneralStore} from "../store/useGeneralStore.ts";
-import {useNotificationStore} from "../store/useNotificationStore.ts";
-import {IParamsCreateSubTask} from "../types";
-import {postRequest} from "../tools/request.ts";
-import {queryClient} from "../lib/queryClient.ts";
-
+import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { useNotificationStore } from '../store/useNotificationStore.ts';
+import { IParamsCreateSubTask } from '../types';
+import { postRequest } from '../tools/request.ts';
+import { queryClient } from '../lib/queryClient.ts';
+import { GENERAL, TASKS } from '../constants';
+import { HOST } from '../../host.ts';
 
 export const usePostCreateSubTask = () => {
 	const { updateGeneralStore, getGeneralStore } = useGeneralStore();
@@ -16,12 +17,12 @@ export const usePostCreateSubTask = () => {
 	};
 
 	const { token } = getGeneralStore();
-	const { data, isPending, mutate, status, mutateAsync } =  useMutation({
+	const result = useMutation({
 		mutationFn: (data: IParamsCreateSubTask) => {
 			return postRequest({
 				url: getUrl(),
 				data,
-				token
+				token,
 			});
 		},
 		onSuccess: (response) => {
@@ -38,7 +39,6 @@ export const usePostCreateSubTask = () => {
 					},
 				],
 			});
-
 		},
 		onError: (error) => {
 			updateNotificationStore({
@@ -54,12 +54,5 @@ export const usePostCreateSubTask = () => {
 		},
 	});
 
-
-	return {
-		data,
-		isPending,
-		mutate,
-		status,
-		mutateAsync,
-	};
+	return result;
 };

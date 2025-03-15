@@ -54,6 +54,8 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ru'; // Для русской локализации
 import styles from './Dashboard.module.css';
+import UserAvatar from '../components/common/UserAvatar.tsx';
+import { ITask, IUser } from '../types';
 
 // Расширяем функциональность dayjs
 dayjs.extend(relativeTime);
@@ -124,10 +126,12 @@ const COLORS = [
 ];
 
 const Dashboard: React.FC = () => {
-	const { generalStore } = useGeneralStore();
+	const { generalStore, getGeneralStore } = useGeneralStore();
 	const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>(
 		'week',
 	);
+
+	const { team, tasks } = getGeneralStore();
 
 	// Загрузка данных дашборда через React Query
 	const { data, isLoading, error } = useQuery<DashboardData>({
@@ -345,7 +349,7 @@ const Dashboard: React.FC = () => {
 				<div>
 					<Title level={2}>
 						Добро пожаловать,{' '}
-						{generalStore.user?.name || 'Пользователь'}!
+						{generalStore.user?.name || generalStore.user?.email}!
 					</Title>
 					<Paragraph type='secondary'>
 						Обзор активности и статистика вашей команды
@@ -363,7 +367,7 @@ const Dashboard: React.FC = () => {
 					<Card bordered={false} className={styles.statCard}>
 						<Statistic
 							title='Всего задач'
-							value={data?.stats.totalTasks || 0}
+							value={tasks.length || 0}
 							prefix={<ProjectOutlined />}
 							valueStyle={{ color: '#76ABAE' }}
 						/>
@@ -392,12 +396,22 @@ const Dashboard: React.FC = () => {
 					<Card bordered={false} className={styles.statCard}>
 						<Statistic
 							title='Выполнено задач'
-							value={data?.stats.completedTasks || 0}
+							value={
+								tasks.filter((item) => item.completed).length ||
+								0
+							}
 							prefix={<CheckCircleOutlined />}
 							valueStyle={{ color: '#52c41a' }}
 						/>
 						<Progress
-							percent={data?.stats.taskCompletion || 0}
+							percent={
+								Math.round(
+									(tasks.filter((item) => item.completed)
+										.length /
+										tasks.length) *
+										100,
+								) || 0
+							}
 							size='small'
 							status='active'
 							showInfo={false}
@@ -421,12 +435,12 @@ const Dashboard: React.FC = () => {
 					<Card bordered={false} className={styles.statCard}>
 						<Statistic
 							title='Участников в команде'
-							value={data?.stats.totalTeamMembers || 0}
+							value={team?.members.length || 0}
 							prefix={<TeamOutlined />}
 							valueStyle={{ color: '#1890ff' }}
 						/>
 						<Text type='secondary'>
-							{generalStore.team?.name || 'Нет активной команды'}
+							{team?.name || 'Нет активной команды'}
 						</Text>
 					</Card>
 				</Col>
@@ -538,7 +552,7 @@ const Dashboard: React.FC = () => {
 				<Col xs={24} sm={12} lg={8}>
 					<Card title='Задачи по статусам' bordered={false}>
 						<div style={{ width: '100%', height: 300 }}>
-							{data?.tasksByStatus ?
+							{tasks ?
 								<ResponsiveContainer width='100%' height='100%'>
 									<PieChart>
 										<Pie
@@ -555,19 +569,17 @@ const Dashboard: React.FC = () => {
 												setActivePieIndex(index)
 											}
 										>
-											{data.tasksByStatus.map(
-												(entry, index) => (
-													<Cell
-														key={`cell-${index}`}
-														fill={
-															COLORS[
-																index %
-																	COLORS.length
-															]
-														}
-													/>
-												),
-											)}
+											{tasks.map((entry, index) => (
+												<Cell
+													key={`cell-${index}`}
+													fill={
+														COLORS[
+															index %
+																COLORS.length
+														]
+													}
+												/>
+											))}
 										</Pie>
 										<Tooltip
 											content={
@@ -662,7 +674,7 @@ const Dashboard: React.FC = () => {
 						{isTasksLoading ?
 							<Skeleton active paragraph={{ rows: 5 }} />
 						:	<Table
-								dataSource={data?.recentTasks || []}
+								dataSource={tasks || []}
 								rowKey='id'
 								pagination={false}
 								size='middle'
@@ -704,23 +716,45 @@ const Dashboard: React.FC = () => {
 										title: 'Исполнитель',
 										dataIndex: 'assignedTo',
 										key: 'assignedTo',
-										render: (assignedTo) => (
-											<div className={styles.userInfo}>
-												<Avatar
-													size='small'
-													src={assignedTo.avatar}
-													icon={
-														!assignedTo.avatar && (
-															<UserOutlined />
-														)
-													}
-												/>
-												<Text style={{ marginLeft: 8 }}>
-													{assignedTo.name}
-												</Text>
-											</div>
-										),
-										width: 160,
+										render: (_, record: ITask) => {
+											const node = record.assignees.map(
+												(user, i) => {
+													return (
+														<div
+															className={
+																styles.userInfo
+															}
+															key={`cell-${i}`}
+														>
+															<UserAvatar
+																size='small'
+																name={
+																	user.name ||
+																	''
+																}
+																email={
+																	user.email
+																}
+																avatar={
+																	user.image ||
+																	undefined
+																}
+															/>
+															<Text
+																style={{
+																	marginLeft: 8,
+																}}
+															>
+																{user.name ||
+																	user.email}
+															</Text>
+														</div>
+													);
+												},
+											);
+											return node;
+										},
+										width: 200,
 									},
 									{
 										title: '',

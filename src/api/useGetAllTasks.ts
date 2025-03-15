@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useEffect } from 'react';
-import {useNotificationStore} from "../store/useNotificationStore.ts";
-import {useGeneralStore} from "../store/useGeneralStore.ts";
-import {GENERAL, TASKS} from "../constants";
-import {HOST} from "../../host.ts";
-import {getRequest} from "../tools/request.ts";
+import { useNotificationStore } from '../store/useNotificationStore.ts';
+import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { GENERAL, TASKS } from '../constants';
+import { HOST } from '../../host.ts';
+import { getRequest } from '../tools/request.ts';
+import { useGlobalLoading } from '../hooks/useGlobalLoading.ts';
 
 export const useGetAllTasks = (email: string) => {
 	const { updateNotificationStore, getNotificationStore } =
@@ -19,7 +20,7 @@ export const useGetAllTasks = (email: string) => {
 	const getUrl = (): string => {
 		return `${HOST}/tasks/all/${email}`;
 	};
-	const result =  useQuery({
+	const result = useQuery({
 		queryKey,
 		queryFn: async () => {
 			return await getRequest({
@@ -39,13 +40,10 @@ export const useGetAllTasks = (email: string) => {
 				},
 			});
 		},
-		enabled
+		enabled,
 	});
 
-	const {
-		data,
-		error
-	} = result;
+	const { data, error, isLoading } = result;
 
 	useEffect(() => {
 		if (data) {
@@ -60,6 +58,6 @@ export const useGetAllTasks = (email: string) => {
 			}
 		}
 	}, [data, updateGeneralStore, error]);
-
+	useGlobalLoading(isLoading, 'Загрузка tasks данных...');
 	return result;
 };

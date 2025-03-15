@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import {useGeneralStore} from "../store/useGeneralStore.ts";
 import {useNotificationStore} from "../store/useNotificationStore.ts";
 import {HOST} from "../../host.ts";
@@ -19,7 +19,7 @@ export const usePatchUpdateSubTask = () => {
 
 	const { token } = getGeneralStore();
 
-	const { data, isPending, mutate, status, mutateAsync } =  useMutation({
+	const result =  useMutation({
 		mutationFn: (data: IParamsUpdateSubTask) => {
 			return patchRequest({
 				url: getUrl(),
@@ -59,11 +59,5 @@ export const usePatchUpdateSubTask = () => {
 	});
 
 
-	return {
-		data,
-		isPending,
-		mutate,
-		status,
-		mutateAsync,
-	};
+	return result;
 };

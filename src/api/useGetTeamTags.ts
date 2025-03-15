@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useEffect } from 'react';
-import {useNotificationStore} from "../store/useNotificationStore.ts";
-import {useGeneralStore} from "../store/useGeneralStore.ts";
-import {GENERAL, TAGS_TASK} from "../constants";
-import {HOST} from "../../host.ts";
-import {getRequest} from "../tools/request.ts";
+import { useNotificationStore } from '../store/useNotificationStore.ts';
+import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { GENERAL, TAGS_TASK } from '../constants';
+import { HOST } from '../../host.ts';
+import { getRequest } from '../tools/request.ts';
+import { useGlobalLoading } from '../hooks/useGlobalLoading.ts';
 
 export const useGetTeamTags = (email: string) => {
 	const { updateNotificationStore, getNotificationStore } =
@@ -41,13 +42,10 @@ export const useGetTeamTags = (email: string) => {
 				},
 			});
 		},
-		enabled
+		enabled,
 	});
 
-	const {
-		data,
-		error
-	} = result
+	const { data, error, isLoading } = result;
 
 	useEffect(() => {
 		if (data) {
@@ -62,6 +60,6 @@ export const useGetTeamTags = (email: string) => {
 			}
 		}
 	}, [data, updateGeneralStore, error]);
+	useGlobalLoading(isLoading, 'Загрузка tasks tags данных...');
 	return result;
-
 };

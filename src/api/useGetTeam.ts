@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useEffect } from 'react';
-import {useNotificationStore} from "../store/useNotificationStore.ts";
-import {useGeneralStore} from "../store/useGeneralStore.ts";
-import {GENERAL, TEAM} from "../constants";
-import {HOST} from "../../host.ts";
-import {ITeam} from "../types";
-import {getRequest} from "../tools/request.ts";
-
+import { useNotificationStore } from '../store/useNotificationStore.ts';
+import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { GENERAL, TEAM } from '../constants';
+import { HOST } from '../../host.ts';
+import { ITeam } from '../types';
+import { getRequest } from '../tools/request.ts';
+import { useGlobalLoading } from '../hooks/useGlobalLoading.ts';
 
 export const useGetTeam = (email: string) => {
 	const { updateNotificationStore, getNotificationStore } =
@@ -57,7 +57,7 @@ export const useGetTeam = (email: string) => {
 			}
 		}
 	}, [data, updateGeneralStore, error]);
-
+	useGlobalLoading(isLoading, 'Загрузка team данных...');
 	return {
 		data,
 		isLoading,

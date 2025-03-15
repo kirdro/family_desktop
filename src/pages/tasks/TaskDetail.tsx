@@ -1,5 +1,5 @@
 // src/pages/tasks/TaskDetail.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
 	Card,
@@ -7,9 +7,7 @@ import {
 	Button,
 	Tabs,
 	Space,
-	Tag,
 	Avatar,
-	Tooltip,
 	Spin,
 	Empty,
 	Divider,
@@ -38,8 +36,6 @@ import {
 } from '@ant-design/icons';
 import { useGeneralStore } from '../../store/useGeneralStore';
 import { useTasks } from '../../hooks/useTasks';
-import { useTaskComments } from '../../hooks/useTaskComments';
-import SubTaskList from '../../components/tasks/SubTaskList';
 import TaskComments from '../../components/tasks/TaskComments';
 import TaskTags from '../../components/tasks/TaskTags';
 import TaskStatusDropdown from '../../components/tasks/TaskStatusDropdown';
@@ -47,8 +43,10 @@ import TaskPrioritySelector from '../../components/tasks/TaskPrioritySelector';
 import styles from './TasksStyles.module.css';
 import dayjs from 'dayjs';
 import { TaskDescr } from '../../components/tasks/TaskDescr.tsx';
+import { usePatchUpdateTask } from '../../api';
+import { Status } from '../../types';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 const { confirm } = Modal;
 
@@ -59,23 +57,31 @@ const TaskDetail: React.FC = () => {
 	const { tasks } = getGeneralStore();
 	const [activeTab, setActiveTab] = useState('details');
 	const [isLoading, setIsLoading] = useState(false);
-	const [_task, setTask] = useState<any>(null);
+	const [_task, setTask] = useState<unknown>(null);
 
 	const task = tasks.find((task) => task.id === id);
+	const { mutateAsync } = usePatchUpdateTask();
 
-	console.log('>>>>>>>>>>>>>>>>>>><<<><>', task);
 	// Используем хуки для задач и комментариев
 	const { getTask, updateTask, deleteTask } = useTasks();
 
 	// Получение данных о задаче
 
 	// Обработчик изменения статуса
-	const handleStatusChange = async (newStatus: string) => {
+	const handleStatusChange = async (newStatus: Status) => {
 		if (!id || !task) return;
 
 		try {
-			await updateTask(id, { status: newStatus });
-			setTask((prev) => ({ ...prev, status: newStatus }));
+			const _data = {
+				taskId: task.id,
+				startDate: task.startDate,
+				// endDate: new Date(),
+				status: newStatus,
+				emailAssigns: task.assignees.map((t) => t.email),
+				tags: task.tags.map((t) => t.id),
+			};
+			await mutateAsync(_data);
+			// await updateTask(id, { status: newStatus });
 			message.success('Статус задачи обновлен');
 		} catch (error) {
 			console.error('Error updating task status:', error);
@@ -89,7 +95,6 @@ const TaskDetail: React.FC = () => {
 
 		try {
 			await updateTask(id, { priority: newPriority });
-			setTask((prev) => ({ ...prev, priority: newPriority }));
 			message.success('Приоритет задачи обновлен');
 		} catch (error) {
 			console.error('Error updating task priority:', error);
@@ -107,11 +112,7 @@ const TaskDetail: React.FC = () => {
 			try {
 				const startDate = dayjs().toISOString();
 				await updateTask(id, { startDate, status: 'IN_PROGRESS' });
-				setTask((prev) => ({
-					...prev,
-					startDate,
-					status: 'IN_PROGRESS',
-				}));
+
 				message.success('Задача начата');
 			} catch (error) {
 				console.error('Error starting task:', error);
@@ -128,12 +129,7 @@ const TaskDetail: React.FC = () => {
 					endDate,
 					status: 'DONE',
 				});
-				setTask((prev) => ({
-					...prev,
-					completedAt,
-					endDate,
-					status: 'DONE',
-				}));
+
 				message.success('Задача завершена');
 			} catch (error) {
 				console.error('Error completing task:', error);
@@ -147,11 +143,7 @@ const TaskDetail: React.FC = () => {
 					completedAt: null,
 					status: 'IN_PROGRESS',
 				});
-				setTask((prev) => ({
-					...prev,
-					completedAt: null,
-					status: 'IN_PROGRESS',
-				}));
+
 				message.success('Задача возобновлена');
 			} catch (error) {
 				console.error('Error reopening task:', error);

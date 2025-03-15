@@ -1,5 +1,5 @@
 // src/components/tasks/TaskDescr.tsx
-import { FileOutlined } from '@ant-design/icons';
+
 import styles from '../../pages/tasks/TasksStyles.module.css';
 import { Divider, Tabs, Typography } from 'antd';
 import SubTaskList from './SubTaskList.tsx';

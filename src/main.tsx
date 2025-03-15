@@ -8,6 +8,7 @@ import { ConfigProvider, theme, App as AntApp } from 'antd';
 import ruRU from 'antd/locale/ru_RU'; // (или другая локаль)
 import './index.css';
 import { queryClient } from './lib/queryClient.ts';
+import { LoadingProvider } from './context/LoadingContext.tsx';
 
 export const darkTheme = {
 	algorithm: theme.darkAlgorithm,
@@ -52,7 +53,9 @@ createRoot(document.getElementById('root')!).render(
 		<QueryClientProvider client={queryClient}>
 			<ConfigProvider locale={ruRU} theme={darkTheme}>
 				<AntApp>
-					<App />
+					<LoadingProvider>
+						<App />
+					</LoadingProvider>
 				</AntApp>
 			</ConfigProvider>
 
