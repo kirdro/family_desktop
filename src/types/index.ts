@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+// import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { AxiosError } from 'axios';
 
 export interface Todo {
@@ -10,7 +10,7 @@ export interface Todo {
 export interface IRequestArgs {
 	url: string;
 	token?: string | null;
-	data?: any;
+	data?: unknown;
 	responseType?:
 		| 'json'
 		| 'arraybuffer'
@@ -38,24 +38,10 @@ export interface IUser {
 	verified: true;
 }
 
-
-
 export interface IVerifyTokenRes {
 	success: boolean;
 	token: string;
 	user: IUser;
-}
-
-export interface IItemTabList {
-	name: string;
-	options: {
-		drawerLabel: string;
-		title: string;
-		icon: any;
-	};
-	nameIcon:
-		| keyof typeof MaterialIcons.glyphMap
-		| keyof typeof MaterialCommunityIcons.glyphMap;
 }
 
 export interface IWallet {
@@ -72,10 +58,6 @@ export interface ITeam {
 	updatedAt: Date;
 	members: IUser[];
 }
-
-
-
-
 
 // Task interfaces
 export interface IParamsCreateTask {
@@ -186,7 +168,7 @@ export interface IParamsDeleteTag {
 export interface ITaskResponse {
 	status: string;
 	message: string;
-	data: any;
+	data: unknown;
 }
 
 export interface ITask {
@@ -255,8 +237,6 @@ export interface ITag {
 	teamId: number;
 }
 
-
-
 export interface ITeam {
 	id: number;
 	name: string;
@@ -305,7 +285,7 @@ export enum Priority {
 	LOW = 'LOW',
 	MEDIUM = 'MEDIUM',
 	HIGH = 'HIGH',
-	URGENT = 'URGENT'
+	URGENT = 'URGENT',
 }
 
 export enum Status {
@@ -313,7 +293,7 @@ export enum Status {
 	IN_PROGRESS = 'IN_PROGRESS',
 	REVIEW = 'REVIEW',
 	DONE = 'DONE',
-	ARCHIVED = 'ARCHIVED'
+	ARCHIVED = 'ARCHIVED',
 }
 
 export enum TagType {
@@ -321,7 +301,7 @@ export enum TagType {
 	PRIORITY = 'PRIORITY',
 	STATUS = 'STATUS',
 	CATEGORY = 'CATEGORY',
-	CUSTOM = 'CUSTOM'
+	CUSTOM = 'CUSTOM',
 }
 
 // Pagination interfaces
@@ -369,4 +349,3 @@ export interface BuildingPlan {
 	updatedAt: Date;
 	createdBy: string;
 }
-

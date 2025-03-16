@@ -112,8 +112,8 @@ const TaskForm: React.FC<TaskFormProps> = ({
 						:	null,
 				});
 
-				setSelectedTags(initialData.tags || []);
-				setSelectedAssignees(initialData.assignees || []);
+				// setSelectedTags(initialData.tags || []);
+				// setSelectedAssignees(initialData.assignees || []);
 			}
 		};
 

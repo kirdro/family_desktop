@@ -45,6 +45,7 @@ import dayjs from 'dayjs';
 import { TaskDescr } from '../../components/tasks/TaskDescr.tsx';
 import { usePatchUpdateTask } from '../../api';
 import { Status } from '../../types';
+import { formatDate } from '../../tools/formatDate.ts';
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -178,10 +179,6 @@ const TaskDetail: React.FC = () => {
 	};
 
 	// Форматирование даты
-	const formatDate = (date: string | null | undefined | Date) => {
-		if (!date) return '-';
-		return dayjs(date).format('DD.MM.YYYY HH:mm');
-	};
 
 	// Получение статуса в виде компонента Tag
 
@@ -379,7 +376,10 @@ const TaskDetail: React.FC = () => {
 											создал(а) задачу
 											<Text type='secondary'>
 												{' '}
-												{formatDate(task.createdAt)}
+												{formatDate(
+													task.createdAt,
+													'DD.MM.YYYY HH:mm',
+												)}
 											</Text>
 										</Timeline.Item>
 
@@ -391,7 +391,10 @@ const TaskDetail: React.FC = () => {
 												начал(а) выполнение задачи
 												<Text type='secondary'>
 													{' '}
-													{formatDate(task.startDate)}
+													{formatDate(
+														task.startDate,
+														'DD.MM.YYYY HH:mm',
+													)}
 												</Text>
 											</Timeline.Item>
 										)}
@@ -406,6 +409,7 @@ const TaskDetail: React.FC = () => {
 													{' '}
 													{formatDate(
 														task.completedAt,
+														'DD.MM.YYYY HH:mm',
 													)}
 												</Text>
 											</Timeline.Item>
@@ -507,19 +511,39 @@ const TaskDetail: React.FC = () => {
 								</li>
 								<li>
 									<Text type='secondary'>Создана:</Text>
-									<Text>{formatDate(task.createdAt)}</Text>
+									<Text>
+										{formatDate(
+											task.createdAt,
+											'DD.MM.YYYY HH:mm',
+										)}
+									</Text>
 								</li>
 								<li>
 									<Text type='secondary'>Начало:</Text>
-									<Text>{formatDate(task.startDate)}</Text>
+									<Text>
+										{formatDate(
+											task.startDate,
+											'DD.MM.YYYY HH:mm',
+										)}
+									</Text>
 								</li>
 								<li>
 									<Text type='secondary'>Срок:</Text>
-									<Text>{formatDate(task.endDate)}</Text>
+									<Text>
+										{formatDate(
+											task.endDate,
+											'DD.MM.YYYY HH:mm',
+										)}
+									</Text>
 								</li>
 								<li>
 									<Text type='secondary'>Завершена:</Text>
-									<Text>{formatDate(task.completedAt)}</Text>
+									<Text>
+										{formatDate(
+											task.completedAt,
+											'DD.MM.YYYY HH:mm',
+										)}
+									</Text>
 								</li>
 								<li>
 									<Text type='secondary'>Подзадачи:</Text>
@@ -539,7 +563,12 @@ const TaskDetail: React.FC = () => {
 								</li>
 								<li>
 									<Text type='secondary'>Обновлена:</Text>
-									<Text>{formatDate(task.updatedAt)}</Text>
+									<Text>
+										{formatDate(
+											task.updatedAt,
+											'DD.MM.YYYY HH:mm',
+										)}
+									</Text>
 								</li>
 							</ul>
 						</div>

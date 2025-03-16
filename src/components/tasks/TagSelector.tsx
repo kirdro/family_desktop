@@ -18,6 +18,7 @@ import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useTaskTags } from '../../hooks/useTaskTags';
 import { useGeneralStore } from '../../store/useGeneralStore';
 import styles from '../../pages/tasks/TasksStyles.module.css';
+import { ITag } from '../../types';
 
 const { Text } = Typography;
 
@@ -30,33 +31,22 @@ const TagSelector: React.FC<TagSelectorProps> = ({
 	selectedTags,
 	onChange,
 }) => {
-	const [tags, setTags] = useState<any[]>([]);
+	const [tags, setTags] = useState<ITag[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [newTagName, setNewTagName] = useState('');
 	const [newTagColor, setNewTagColor] = useState('#76ABAE');
 	const [form] = Form.useForm();
 
-	const { generalStore } = useGeneralStore();
+	const { generalStore, getGeneralStore } = useGeneralStore();
+	const { taskTags } = getGeneralStore();
+
 	const { getTags, createTag, deleteTag } = useTaskTags();
 
 	// Загрузка тегов при монтировании
 	useEffect(() => {
-		const fetchTags = async () => {
-			try {
-				setLoading(true);
-				const data = await getTags();
-				setTags(data);
-			} catch (error) {
-				console.error('Error fetching tags:', error);
-				message.error('Не удалось загрузить теги');
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchTags();
-	}, [getTags]);
+		setTags(taskTags);
+	}, [taskTags]);
 
 	// Обработчик добавления нового тега
 	const handleAddTag = async () => {
@@ -71,7 +61,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
 				teamId: generalStore.team?.id,
 			});
 
-			setTags((prev) => [...prev, newTag]);
+			// setTags((prev) => [...prev, newTag]);
 
 			// Добавляем новый тег к выбранным
 			onChange([...selectedTags, newTag]);
