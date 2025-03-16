@@ -1,7 +1,7 @@
 // src/types/planning.ts
 import { ITask, ITeam, IUser } from './index.ts';
 
-export enum EPlanStatus {
+export enum PlanStatus {
 	NEW = 'NEW',
 	IN_PROGRESS = 'IN_PROGRESS',
 	ON_HOLD = 'ON_HOLD',
@@ -9,7 +9,7 @@ export enum EPlanStatus {
 	CANCELLED = 'CANCELLED',
 }
 
-export enum EPlanPriority {
+export enum PlanPriority {
 	LOW = 'LOW',
 	MEDIUM = 'MEDIUM',
 	HIGH = 'HIGH',
@@ -46,8 +46,8 @@ export interface Plan {
 	description?: string;
 	startDate: string;
 	endDate: string;
-	status: EPlanStatus;
-	priority: EPlanPriority;
+	status: PlanStatus;
+	priority: PlanPriority;
 	createdAt: string;
 	updatedAt: string;
 	author: IUser;

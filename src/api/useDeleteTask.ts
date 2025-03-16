@@ -1,15 +1,14 @@
 import { useMutation } from '@tanstack/react-query';
-import {useGeneralStore} from "../store/useGeneralStore.ts";
-import {useNotificationStore} from "../store/useNotificationStore.ts";
-import {HOST} from "../../host.ts";
-import {IParamsDeleteTask} from "../types";
-import {deleteRequest} from "../tools/request.ts";
-import {queryClient} from "../lib/queryClient.ts";
-import {GENERAL, TASKS} from "../constants";
-
+import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { useNotificationStore } from '../store/useNotificationStore.ts';
+import { HOST } from '../../host.ts';
+import { IParamsDeleteTask } from '../types';
+import { deleteRequest } from '../tools/request.ts';
+import { queryClient } from '../lib/queryClient.ts';
+import { GENERAL, TASKS } from '../constants';
 
 export const useDeleteTask = () => {
-	const { updateGeneralStore, getGeneralStore } = useGeneralStore();
+	const { getGeneralStore } = useGeneralStore();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
 	const { token } = getGeneralStore();
@@ -17,12 +16,12 @@ export const useDeleteTask = () => {
 	const getUrl = (): string => {
 		return `${HOST}/tasks/delete`;
 	};
-	const { data, isPending, mutate, status, mutateAsync } =  useMutation({
+	const { data, isPending, mutate, status, mutateAsync } = useMutation({
 		mutationFn: (data: IParamsDeleteTask) => {
 			return deleteRequest({
 				url: getUrl(),
 				data,
-				token
+				token,
 			});
 		},
 		onSuccess: (response) => {
@@ -39,7 +38,6 @@ export const useDeleteTask = () => {
 					},
 				],
 			});
-
 		},
 		onError: (error) => {
 			updateNotificationStore({

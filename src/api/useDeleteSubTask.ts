@@ -1,38 +1,33 @@
 // hooks/tasks/useDeleteSubTask.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import {useGeneralStore} from "../store/useGeneralStore.ts";
-import {useNotificationStore} from "../store/useNotificationStore.ts";
-import {IParamsDeleteSubTask} from "../types";
-import {HOST} from "../../host.ts";
-import {deleteRequest} from "../tools/request.ts";
-import {GENERAL, TASKS} from "../constants";
-
-
+import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { useNotificationStore } from '../store/useNotificationStore.ts';
+import { IParamsDeleteSubTask } from '../types';
+import { HOST } from '../../host.ts';
+import { deleteRequest } from '../tools/request.ts';
+import { GENERAL, TASKS } from '../constants';
 
 export const useDeleteSubTask = () => {
 	const queryClient = useQueryClient();
-	const { updateGeneralStore, getGeneralStore } = useGeneralStore();
+	const { getGeneralStore } = useGeneralStore();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
 	const { token } = getGeneralStore();
 	const getUrl = (): string => {
 		return `${HOST}/tasks/subtask/delete`;
 	};
-	const result =  useMutation({
-		mutationFn: ({ subTaskId, email }:IParamsDeleteSubTask) => {
-
-			return  deleteRequest({
+	const result = useMutation({
+		mutationFn: ({ subTaskId, email }: IParamsDeleteSubTask) => {
+			return deleteRequest({
 				url: getUrl(),
 				data: { subTaskId, email },
-				token
+				token,
 			});
 		},
 
-
-
-		onSuccess: (response, variables) => {
+		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: [GENERAL, TASKS]
+				queryKey: [GENERAL, TASKS],
 			});
 
 			updateNotificationStore({
@@ -45,10 +40,9 @@ export const useDeleteSubTask = () => {
 					},
 				],
 			});
-
 		},
 
-		onError: (error, variables, context) => {
+		onError: (error) => {
 			// Откатываем к предыдущему состоянию в случае ошибки
 
 			updateNotificationStore({
@@ -61,18 +55,15 @@ export const useDeleteSubTask = () => {
 					},
 				],
 			});
-
-
 		},
 
 		onSettled: () => {
 			// Всегда обновляем кеш после завершения мутации
 			queryClient.invalidateQueries({
-				queryKey: [GENERAL, TASKS]
+				queryKey: [GENERAL, TASKS],
 			});
-		}
+		},
 	});
-
 
 	return result;
 };

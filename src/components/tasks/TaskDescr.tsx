@@ -5,8 +5,6 @@ import { Divider, Tabs, Typography } from 'antd';
 import SubTaskList from './SubTaskList.tsx';
 import { FC, useState } from 'react';
 import { ITask } from '../../types';
-
-const { TabPane } = Tabs;
 const { Title, Text, Paragraph } = Typography;
 
 interface IProps {

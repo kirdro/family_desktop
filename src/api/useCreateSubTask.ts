@@ -8,7 +8,7 @@ import { GENERAL, TASKS } from '../constants';
 import { HOST } from '../../host.ts';
 
 export const usePostCreateSubTask = () => {
-	const { updateGeneralStore, getGeneralStore } = useGeneralStore();
+	const { getGeneralStore } = useGeneralStore();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
 

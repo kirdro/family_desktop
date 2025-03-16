@@ -1,6 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
 import { HOST } from '../../host';
-import { useGeneralStore } from '../store/useGeneralStore.ts';
 import { useNotificationStore } from '../store/useNotificationStore.ts';
 import { postRequest } from '../tools/request.ts';
 
@@ -14,7 +13,6 @@ interface LoginResponse {
 }
 
 export const usePostLogin = () => {
-	const { updateGeneralStore, getGeneralStore } = useGeneralStore();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
 

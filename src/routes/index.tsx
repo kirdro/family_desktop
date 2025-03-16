@@ -13,6 +13,9 @@ import AdminLayout from '../components/layout/AdminLayout.tsx';
 import TasksList from '../pages/tasks/TasksList.tsx';
 import TaskDetail from '../pages/tasks/TaskDetail.tsx';
 import TaskCreate from '../pages/tasks/TaskCreate.tsx';
+import PlansList from '../pages/plannings/PlansList.tsx';
+import PlanForm from '../components/planning/PlanForm.tsx';
+import PlanDetail from '../pages/plannings/PlanDetail.tsx';
 // import ProtectedRoute from './ProtectedRoute';
 
 // Страницы авторизации
@@ -152,6 +155,38 @@ const router = createBrowserRouter([
 				element: (
 					<SuspenseWrapper>
 						<TaskEdit />
+					</SuspenseWrapper>
+				),
+			},
+			{
+				path: 'plans',
+				element: (
+					<SuspenseWrapper>
+						<PlansList />
+					</SuspenseWrapper>
+				),
+			},
+			{
+				path: 'plans/create',
+				element: (
+					<SuspenseWrapper>
+						<PlanForm />
+					</SuspenseWrapper>
+				),
+			},
+			{
+				path: 'plans/:id',
+				element: (
+					<SuspenseWrapper>
+						<PlanDetail />
+					</SuspenseWrapper>
+				),
+			},
+			{
+				path: 'plans/:id/edit',
+				element: (
+					<SuspenseWrapper>
+						<PlanForm />
 					</SuspenseWrapper>
 				),
 			},

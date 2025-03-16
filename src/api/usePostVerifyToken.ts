@@ -13,7 +13,7 @@ interface VerifyTokenData {
 }
 
 export const usePostVerifyToken = () => {
-	const { updateGeneralStore, getGeneralStore } = useGeneralStore();
+	const { updateGeneralStore } = useGeneralStore();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
 

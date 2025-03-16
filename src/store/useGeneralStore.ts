@@ -1,7 +1,16 @@
 // import { camelToSnakeCase } from 'src/settings';
 
 import { useStore } from './useStore';
-import {BuildingPlan, ITag, ITask, ITaskStatistics, ITeam, IUser, IWallet} from "../types";
+import {
+	BuildingPlan,
+	ITag,
+	ITask,
+	ITaskStatistics,
+	ITeam,
+	IUser,
+	IWallet,
+} from '../types';
+import { Plan } from '../types/planning.ts';
 
 const STORE_KEY = `GENERAL_STORE_KEY`;
 
@@ -16,6 +25,7 @@ export const initialState = {
 	taskTags: [] as ITag[],
 	taskStats: [] as ITaskStatistics[],
 	buildingPlans: [] as BuildingPlan[],
+	plans: [] as Plan[],
 };
 
 export type StoreType = typeof initialState;

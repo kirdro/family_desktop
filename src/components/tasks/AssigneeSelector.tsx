@@ -64,8 +64,8 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
 								<div className={styles.assigneeOption}>
 									<Avatar
 										size='small'
-										src={user.avatar}
-										icon={!user.avatar && <UserOutlined />}
+										src={user.image}
+										icon={!user.image && <UserOutlined />}
 									/>
 									<span>{user.name}</span>
 								</div>

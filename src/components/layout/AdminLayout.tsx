@@ -5,7 +5,6 @@ import {
 	Layout,
 	Menu,
 	Button,
-	Avatar,
 	Dropdown,
 	Badge,
 	theme,
@@ -28,6 +27,7 @@ import {
 	TeamOutlined,
 	ProfileOutlined,
 	QuestionCircleOutlined,
+	LineChartOutlined,
 } from '@ant-design/icons';
 import { useGeneralStore } from '../../store/useGeneralStore';
 import { useNotificationStore } from '../../store/useNotificationStore';
@@ -124,6 +124,11 @@ const AdminLayout: React.FC = () => {
 			key: 'team',
 			icon: <TeamOutlined />,
 			label: <Link to='/admin/team'>Команда</Link>,
+		},
+		{
+			key: 'plans',
+			icon: <LineChartOutlined />,
+			label: <Link to='/admin/plans'>Планы</Link>,
 		},
 		{
 			key: 'settings',

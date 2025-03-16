@@ -1,17 +1,16 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import {useNotificationStore} from "../store/useNotificationStore.ts";
-import {useGeneralStore} from "../store/useGeneralStore.ts";
-import {HOST} from "../../host.ts";
-import {IParamsCreateTask} from "../types";
-import {postRequest} from "../tools/request.ts";
-import {GENERAL, TASKS} from "../constants";
-
+import { useNotificationStore } from '../store/useNotificationStore.ts';
+import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { HOST } from '../../host.ts';
+import { IParamsCreateTask } from '../types';
+import { postRequest } from '../tools/request.ts';
+import { GENERAL, TASKS } from '../constants';
 
 export const usePostCreateTask = () => {
 	const queryClient = useQueryClient();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
-	const { getGeneralStore, updateGeneralStore } = useGeneralStore();
+	const { getGeneralStore } = useGeneralStore();
 	const { token } = getGeneralStore();
 
 	const getUrl = (): string => {
@@ -23,7 +22,7 @@ export const usePostCreateTask = () => {
 			return postRequest({
 				url: getUrl(),
 				data,
-				token
+				token,
 			});
 		},
 		onSuccess: () => {

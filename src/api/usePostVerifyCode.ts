@@ -15,13 +15,8 @@ interface VerifyCodeData {
 	code: string;
 }
 
-interface VerifyCodeResponse {
-	success: boolean;
-	// Add other response fields if needed
-}
-
 export const usePostVerifyCode = () => {
-	const { updateGeneralStore, getGeneralStore } = useGeneralStore();
+	const { updateGeneralStore } = useGeneralStore();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
 

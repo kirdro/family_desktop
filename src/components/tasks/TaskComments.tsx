@@ -1,12 +1,21 @@
 // src/components/tasks/TaskComments.tsx
 import React, { useState, useEffect } from 'react';
 import {
-	Avatar, Input, Button, List, Typography,
-	Space, Popconfirm, Spin, Empty, message
+	Input,
+	Button,
+	List,
+	Typography,
+	Popconfirm,
+	Spin,
+	Empty,
+	message,
 } from 'antd';
 import {
-	DeleteOutlined, EditOutlined, UserOutlined,
-	SendOutlined, CloseOutlined, SaveOutlined
+	DeleteOutlined,
+	EditOutlined,
+	SendOutlined,
+	CloseOutlined,
+	SaveOutlined,
 } from '@ant-design/icons';
 import { useTaskComments } from '../../hooks/useTaskComments';
 import { useGeneralStore } from '../../store/useGeneralStore';
@@ -32,27 +41,25 @@ interface TaskCommentsProps {
 }
 
 const TaskComments: React.FC<TaskCommentsProps> = ({
-													   taskId,
-													   subTaskId,
-													   initialComments = [],
-													   onCommentCreate,
-													   onCommentUpdate,
-													   onCommentDelete,
-												   }) => {
+	taskId,
+	subTaskId,
+	initialComments = [],
+	onCommentCreate,
+	onCommentUpdate,
+	onCommentDelete,
+}) => {
 	const [comments, setComments] = useState<any[]>(initialComments);
 	const [loading, setLoading] = useState(false);
 	const [commentText, setCommentText] = useState('');
 	const [submitting, setSubmitting] = useState(false);
-	const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+	const [editingCommentId, setEditingCommentId] = useState<string | null>(
+		null,
+	);
 	const [editingText, setEditingText] = useState('');
 
 	const { generalStore } = useGeneralStore();
-	const {
-		getComments,
-		addComment,
-		updateComment,
-		deleteComment
-	} = useTaskComments();
+	const { getComments, addComment, updateComment, deleteComment } =
+		useTaskComments();
 
 	// Загрузка комментариев при монтировании
 	useEffect(() => {
@@ -89,7 +96,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 				text: commentText,
 			});
 
-			setComments(prev => [...prev, newComment]);
+			setComments((prev) => [...prev, newComment]);
 			setCommentText('');
 
 			// Вызываем callback для обновления родительского компонента
@@ -116,10 +123,10 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 			});
 
 			// Обновляем локальное состояние
-			setComments(prev =>
-				prev.map(comment =>
-					comment.id === commentId ? updatedComment : comment
-				)
+			setComments((prev) =>
+				prev.map((comment) =>
+					comment.id === commentId ? updatedComment : comment,
+				),
 			);
 
 			setEditingCommentId(null);
@@ -156,7 +163,9 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 			await deleteComment(commentId);
 
 			// Обновляем локальное состояние
-			setComments(prev => prev.filter(comment => comment.id !== commentId));
+			setComments((prev) =>
+				prev.filter((comment) => comment.id !== commentId),
+			);
 
 			// Вызываем callback для обновления родительского компонента
 			if (onCommentDelete) {
@@ -182,8 +191,8 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 		if (loading && comments.length === 0) {
 			return (
 				<div className={styles.loadingContainer}>
-					<Spin size="small" />
-					<Text type="secondary">Загрузка комментариев...</Text>
+					<Spin size='small' />
+					<Text type='secondary'>Загрузка комментариев...</Text>
 				</div>
 			);
 		}
@@ -191,7 +200,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 		if (comments.length === 0) {
 			return (
 				<Empty
-					description="Нет комментариев"
+					description='Нет комментариев'
 					image={Empty.PRESENTED_IMAGE_SIMPLE}
 				/>
 			);
@@ -200,11 +209,15 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 		return (
 			<List
 				className={styles.commentsList}
-				itemLayout="horizontal"
+				itemLayout='horizontal'
 				dataSource={comments}
 				renderItem={(comment) => (
 					<Comment
-						author={<Text strong>{comment.author?.name || 'Пользователь'}</Text>}
+						author={
+							<Text strong>
+								{comment.author?.name || 'Пользователь'}
+							</Text>
+						}
 						style={{
 							paddingLeft: 16,
 							paddingRight: 16,
@@ -218,17 +231,19 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 							/>
 						}
 						content={
-							editingCommentId === comment.id ? (
+							editingCommentId === comment.id ?
 								<div className={styles.editCommentContainer}>
 									<TextArea
 										rows={3}
 										value={editingText}
-										onChange={(e) => setEditingText(e.target.value)}
+										onChange={(e) =>
+											setEditingText(e.target.value)
+										}
 										disabled={submitting}
 									/>
 									<div className={styles.editCommentActions}>
 										<Button
-											size="small"
+											size='small'
 											icon={<CloseOutlined />}
 											onClick={cancelEditingComment}
 											disabled={submitting}
@@ -236,10 +251,12 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 											Отмена
 										</Button>
 										<Button
-											type="primary"
-											size="small"
+											type='primary'
+											size='small'
 											icon={<SaveOutlined />}
-											onClick={() => handleUpdateComment(comment.id)}
+											onClick={() =>
+												handleUpdateComment(comment.id)
+											}
 											loading={submitting}
 											disabled={!editingText.trim()}
 										>
@@ -247,36 +264,44 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 										</Button>
 									</div>
 								</div>
-							) : (
-								<div className={styles.commentText}>{comment.text}</div>
-							)
+							:	<div className={styles.commentText}>
+									{comment.text}
+								</div>
 						}
 						datetime={
-							<Text type="secondary">{formatDate(comment.createdAt)}</Text>
+							<Text type='secondary'>
+								{formatDate(comment.createdAt)}
+							</Text>
 						}
 						actions={
-							comment.author?.id === generalStore.user?.id
-								? [
+							comment.author?.id === generalStore.user?.id ?
+								[
 									<Button
-										type="text"
+										type='text'
 										icon={<EditOutlined />}
-										size="small"
-										onClick={() => startEditingComment(comment)}
-										disabled={editingCommentId === comment.id}
+										size='small'
+										onClick={() =>
+											startEditingComment(comment)
+										}
+										disabled={
+											editingCommentId === comment.id
+										}
 										className={styles.commentAction}
 									>
 										Редактировать
 									</Button>,
 									<Popconfirm
-										title="Вы уверены, что хотите удалить этот комментарий?"
-										onConfirm={() => handleDeleteComment(comment.id)}
-										okText="Да"
-										cancelText="Нет"
+										title='Вы уверены, что хотите удалить этот комментарий?'
+										onConfirm={() =>
+											handleDeleteComment(comment.id)
+										}
+										okText='Да'
+										cancelText='Нет'
 									>
 										<Button
-											type="text"
+											type='text'
 											icon={<DeleteOutlined />}
-											size="small"
+											size='small'
 											danger
 											className={styles.commentAction}
 										>
@@ -284,7 +309,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 										</Button>
 									</Popconfirm>,
 								]
-								: []
+							:	[]
 						}
 					/>
 				)}
@@ -316,12 +341,12 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 								rows={3}
 								value={commentText}
 								onChange={(e) => setCommentText(e.target.value)}
-								placeholder="Добавьте комментарий..."
+								placeholder='Добавьте комментарий...'
 								disabled={submitting}
 								className={styles.commentTextArea}
 							/>
 							<Button
-								type="primary"
+								type='primary'
 								icon={<SendOutlined />}
 								onClick={handleSubmitComment}
 								loading={submitting}

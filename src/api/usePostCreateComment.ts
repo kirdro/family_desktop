@@ -1,15 +1,14 @@
 import { useMutation } from '@tanstack/react-query';
-import {useGeneralStore} from "../store/useGeneralStore.ts";
-import {useNotificationStore} from "../store/useNotificationStore.ts";
-import {HOST} from "../../host.ts";
-import {IParamsCreateComment} from "../types";
-import {postRequest} from "../tools/request.ts";
-import {queryClient} from "../lib/queryClient.ts";
-import {GENERAL, TASKS} from "../constants";
-
+import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { useNotificationStore } from '../store/useNotificationStore.ts';
+import { HOST } from '../../host.ts';
+import { IParamsCreateComment } from '../types';
+import { postRequest } from '../tools/request.ts';
+import { queryClient } from '../lib/queryClient.ts';
+import { GENERAL, TASKS } from '../constants';
 
 export const usePostCreateComment = () => {
-	const { updateGeneralStore, getGeneralStore } = useGeneralStore();
+	const { getGeneralStore } = useGeneralStore();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
 
@@ -19,12 +18,12 @@ export const usePostCreateComment = () => {
 
 	const { token } = getGeneralStore();
 
-	const { data, isPending, mutate, status, mutateAsync } =  useMutation({
+	const { data, isPending, mutate, status, mutateAsync } = useMutation({
 		mutationFn: async (data: IParamsCreateComment) => {
 			return await postRequest({
 				url: getUrl(),
 				data,
-				token
+				token,
 			});
 		},
 		onSuccess: (response) => {
@@ -41,7 +40,6 @@ export const usePostCreateComment = () => {
 					},
 				],
 			});
-
 		},
 		onError: (error) => {
 			updateNotificationStore({
@@ -56,7 +54,6 @@ export const usePostCreateComment = () => {
 			});
 		},
 	});
-
 
 	return {
 		data,

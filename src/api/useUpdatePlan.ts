@@ -1,34 +1,32 @@
-import { useMutation } from '@tanstack/react-query';
 import { useGeneralStore } from '../store/useGeneralStore.ts';
 import { useNotificationStore } from '../store/useNotificationStore.ts';
 import { HOST } from '../../host.ts';
-import { IParamsUpdateSubTask } from '../types';
-import { patchRequest } from '../tools/request.ts';
+import { useMutation } from '@tanstack/react-query';
+import { putRequest } from '../tools/request.ts';
 import { queryClient } from '../lib/queryClient.ts';
-import { GENERAL, TASK_STATS, TASKS } from '../constants';
+import { GENERAL, PLANS } from '../constants';
 
-export const usePatchUpdateSubTask = () => {
+export const useUpdatePlan = (planId: string) => {
 	const { getGeneralStore } = useGeneralStore();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
 
 	const getUrl = (): string => {
-		return `${HOST}/tasks/subtask/update`;
+		return `${HOST}/plans/${planId}`;
 	};
 
 	const { token } = getGeneralStore();
 
 	const result = useMutation({
-		mutationFn: (data: IParamsUpdateSubTask) => {
-			return patchRequest({
+		mutationFn: (data: unknown) => {
+			return putRequest({
 				url: getUrl(),
 				data,
 				token,
 			});
 		},
 		onSuccess: (response) => {
-			queryClient.invalidateQueries({ queryKey: [GENERAL, TASKS] });
-			queryClient.invalidateQueries({ queryKey: [GENERAL, TASK_STATS] });
+			queryClient.invalidateQueries({ queryKey: [GENERAL, PLANS] });
 			console.log('response', response);
 
 			updateNotificationStore({

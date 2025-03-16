@@ -1,15 +1,14 @@
 import { useMutation } from '@tanstack/react-query';
-import {useGeneralStore} from "../store/useGeneralStore.ts";
-import {useNotificationStore} from "../store/useNotificationStore.ts";
-import {HOST} from "../../host.ts";
-import {IParamsUpdateTask} from "../types";
-import {patchRequest} from "../tools/request.ts";
-import {queryClient} from "../lib/queryClient.ts";
-import {GENERAL, TASK_STATS, TASKS} from "../constants";
-
+import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { useNotificationStore } from '../store/useNotificationStore.ts';
+import { HOST } from '../../host.ts';
+import { IParamsUpdateTask } from '../types';
+import { patchRequest } from '../tools/request.ts';
+import { queryClient } from '../lib/queryClient.ts';
+import { GENERAL, TASK_STATS, TASKS } from '../constants';
 
 export const usePatchUpdateTask = () => {
-	const { updateGeneralStore, getGeneralStore } = useGeneralStore();
+	const { getGeneralStore } = useGeneralStore();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
 
@@ -19,12 +18,12 @@ export const usePatchUpdateTask = () => {
 
 	const { token } = getGeneralStore();
 
-	const { data, isPending, mutate, status, mutateAsync } =  useMutation({
+	const { data, isPending, mutate, status, mutateAsync } = useMutation({
 		mutationFn: (data: IParamsUpdateTask) => {
 			return patchRequest({
 				url: getUrl(),
 				data,
-				token
+				token,
 			});
 		},
 		onSuccess: (response) => {
@@ -42,7 +41,6 @@ export const usePatchUpdateTask = () => {
 					},
 				],
 			});
-
 		},
 		onError: (error) => {
 			updateNotificationStore({
@@ -57,7 +55,6 @@ export const usePatchUpdateTask = () => {
 			});
 		},
 	});
-
 
 	return {
 		data,
