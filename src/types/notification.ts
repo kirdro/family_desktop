@@ -5,6 +5,9 @@ export type Notification = {
 	message: string;
 	type: NotificationType;
 	duration?: number;
+	read: boolean;
+	timestamp: string;
+	title: string;
 };
 
 export type NotificationState = {

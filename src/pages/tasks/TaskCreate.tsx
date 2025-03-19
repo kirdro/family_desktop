@@ -1,15 +1,14 @@
 // src/pages/tasks/TaskCreate.tsx
 import React from 'react';
-import { Typography, Card } from 'antd';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Typography } from 'antd';
+import { useLocation } from 'react-router-dom';
 import styles from './TasksStyles.module.css';
-import TaskForm from './TaskForm.tsx';
+import TaskForm from './TaskForm';
 
 const { Title, Text } = Typography;
 
 const TaskCreate: React.FC = () => {
 	const location = useLocation();
-	const navigate = useNavigate();
 
 	// Получаем начальные данные из state, если они переданы
 	const initialData = location.state || {};

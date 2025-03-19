@@ -1,10 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import { HOST } from '../../host';
-import { useGeneralStore } from '../store/useGeneralStore.ts';
-import { useNotificationStore } from '../store/useNotificationStore.ts';
+import { useGeneralStore } from '../store/useGeneralStore';
+import { useNotificationStore } from '../store/useNotificationStore';
 import { IVerifyTokenRes } from '../types';
-import { postRequest } from '../tools/request.ts';
-import { secureStorage } from '../utils/token-storage.ts';
+import { postRequest } from '../tools/request';
+import { secureStorage } from '../utils/token-storage';
 import { EMAIL, TOKEN_STORAGE } from '../constants';
 
 interface VerifyTokenData {
@@ -13,7 +13,7 @@ interface VerifyTokenData {
 }
 
 export const usePostVerifyToken = () => {
-	const { updateGeneralStore, getGeneralStore } = useGeneralStore();
+	const { updateGeneralStore } = useGeneralStore();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
 
@@ -36,6 +36,9 @@ export const usePostVerifyToken = () => {
 							id: Math.random().toString(36).substr(2, 9),
 							message: 'Token verification successful',
 							type: 'success',
+							read: false,
+							timestamp: String(new Date()),
+							title: 'response.status',
 						},
 					],
 				});
@@ -53,6 +56,9 @@ export const usePostVerifyToken = () => {
 							id: Math.random().toString(36).substr(2, 9),
 							message: 'Token verification failed',
 							type: 'error',
+							read: false,
+							timestamp: String(new Date()),
+							title: 'response.status',
 						},
 					],
 				});
@@ -68,6 +74,9 @@ export const usePostVerifyToken = () => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: error.message,
 						type: 'error',
+						read: false,
+						timestamp: String(new Date()),
+						title: error.message,
 					},
 				],
 			});

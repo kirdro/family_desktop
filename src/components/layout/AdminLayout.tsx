@@ -5,7 +5,6 @@ import {
 	Layout,
 	Menu,
 	Button,
-	Avatar,
 	Dropdown,
 	Badge,
 	theme,
@@ -15,12 +14,12 @@ import {
 	Divider,
 	message,
 	Modal,
+	MenuProps,
 } from 'antd';
 import {
 	MenuFoldOutlined,
 	MenuUnfoldOutlined,
 	DashboardOutlined,
-	UserOutlined,
 	ProjectOutlined,
 	SettingOutlined,
 	LogoutOutlined,
@@ -28,11 +27,14 @@ import {
 	TeamOutlined,
 	ProfileOutlined,
 	QuestionCircleOutlined,
+	LineChartOutlined,
 } from '@ant-design/icons';
 import { useGeneralStore } from '../../store/useGeneralStore';
 import { useNotificationStore } from '../../store/useNotificationStore';
 import headerLogo from '../../assets/react.svg';
 import styles from './AdminLayout.module.css';
+import UserAvatar from '../common/UserAvatar';
+import { ItemType, MenuItemType } from 'antd/es/menu/interface';
 
 const { Header, Sider, Content, Footer } = Layout;
 
@@ -41,7 +43,9 @@ const AdminLayout: React.FC = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const { token } = theme.useToken();
-	const { generalStore, updateGeneralStore } = useGeneralStore();
+	const { generalStore, updateGeneralStore, getGeneralStore } =
+		useGeneralStore();
+	const { user } = getGeneralStore();
 	const { notificationStore } = useNotificationStore();
 	const [collapsed, setCollapsed] = useState(false);
 	const [mobileMode, setMobileMode] = useState(window.innerWidth < 768);
@@ -101,7 +105,7 @@ const AdminLayout: React.FC = () => {
 	};
 
 	// Пункты меню
-	const menuItems = [
+	const menuItems: ItemType<MenuItemType>[] = [
 		{
 			key: 'dashboard',
 			icon: <DashboardOutlined />,
@@ -112,15 +116,20 @@ const AdminLayout: React.FC = () => {
 			icon: <ProjectOutlined />,
 			label: <Link to='/admin/tasks'>Задачи</Link>,
 		},
-		generalStore.user?.role === 'admin' && {
-			key: 'users',
-			icon: <UserOutlined />,
-			label: <Link to='/admin/users'>Пользователи</Link>,
-		},
+		// generalStore.user?.role === 'admin' && {
+		// 	key: 'users',
+		// 	icon: <UserOutlined />,
+		// 	label: <Link to='/admin/users'>Пользователи</Link>,
+		// },
 		{
 			key: 'team',
 			icon: <TeamOutlined />,
 			label: <Link to='/admin/team'>Команда</Link>,
+		},
+		{
+			key: 'plans',
+			icon: <LineChartOutlined />,
+			label: <Link to='/admin/plans'>Планы</Link>,
 		},
 		{
 			key: 'settings',
@@ -139,10 +148,10 @@ const AdminLayout: React.FC = () => {
 				},
 			],
 		},
-	].filter(Boolean); // Фильтрация null-значений (для скрытия пунктов по условию)
+	]; // Фильтрация null-значений (для скрытия пунктов по условию)
 
 	// Контекстное меню пользователя
-	const userMenu = {
+	const userMenu: MenuProps = {
 		items: [
 			{
 				key: 'profile',
@@ -188,18 +197,6 @@ const AdminLayout: React.FC = () => {
 	};
 
 	// Компонент для отображения аватара пользователя
-	const UserAvatar = () => (
-		<Avatar
-			src={generalStore.user?.avatar}
-			icon={!generalStore.user?.avatar && <UserOutlined />}
-			size='default'
-			style={{
-				backgroundColor:
-					!generalStore.user?.avatar ? token.colorPrimary : undefined,
-				marginRight: 8,
-			}}
-		/>
-	);
 
 	return (
 		<Layout className={styles.adminLayout}>
@@ -274,7 +271,7 @@ const AdminLayout: React.FC = () => {
 					<Menu
 						mode='inline'
 						selectedKeys={getActiveMenuKey()}
-						defaultOpenKeys={['settings']}
+						// defaultOpenKeys={['settings']}
 						items={menuItems}
 						style={{
 							border: 'none',
@@ -362,13 +359,18 @@ const AdminLayout: React.FC = () => {
 
 						<Dropdown menu={userMenu} trigger={['click']}>
 							<div className={styles.userInfo}>
-								<UserAvatar />
+								<UserAvatar
+									size='default'
+									name={user ? user.name || '' : ''}
+									email={user ? user.email : ''}
+									avatar={user ? user.image || '' : ''}
+								/>
 								{!mobileMode && (
 									<>
 										<div className={styles.userName}>
 											<Typography.Text strong>
 												{generalStore.user?.name ||
-													'Пользователь'}
+													generalStore.user?.email}
 											</Typography.Text>
 											<Typography.Text
 												type='secondary'

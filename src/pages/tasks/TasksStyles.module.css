@@ -56,7 +56,7 @@
 }
 
 .subTaskBadge {
-    background-color: #76ABAE;
+    /*background-color: #76ABAE;*/
 }
 
 .actionButton {
@@ -101,6 +101,14 @@
 .datesContainer {
     display: flex;
     flex-direction: column;
+}
+
+.completedContainer {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    justify-content: center;
 }
 
 /* Стили для Kanban-доски */
@@ -281,11 +289,12 @@
 }
 
 .subTaskItem {
-    padding: 12px;
+    padding: 12px !important;
     border-radius: 6px;
     background-color: rgba(0, 0, 0, 0.05);
     margin-bottom: 8px;
     transition: background-color 0.2s;
+    box-sizing: border-box;
 }
 
 .subTaskItem:hover {
@@ -375,9 +384,7 @@
     padding: 4px 8px;
 }
 
-.addCommentContainer {
-    margin-top: 16px;
-}
+
 
 .submitCommentButton {
     margin-top: 12px;
@@ -619,4 +626,251 @@
 .tagCount {
     margin-left: 4px;
     font-size: 12px;
+}
+
+.expandedSubTask {
+    background-color: rgba(0, 0, 0, 0.02);
+    padding: 16px;
+    margin: -8px 0 16px 0;
+    border-radius: 0 0 6px 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.subTaskDetails {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.subTaskDetails > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.subTaskAction {
+    padding: 4px 8px;
+    margin-right: 8px;
+}
+
+.subTaskAction:hover {
+    background-color: rgba(118, 171, 174, 0.1);
+}
+
+/* Стили для списка подзадач */
+.subTasksContainer {
+    margin-top: 16px;
+}
+
+.subTasksList {
+    margin-bottom: 16px;
+}
+
+.subTaskItem {
+    padding: 12px;
+    border-radius: 6px;
+    background-color: rgba(0, 0, 0, 0.05);
+    margin-bottom: 8px;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.subTaskItem:hover {
+    background-color: rgba(118, 171, 174, 0.1);
+}
+
+.completedSubTask {
+    opacity: 0.7;
+}
+
+.completedText {
+    text-decoration: line-through;
+}
+
+.subTaskContent {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+}
+
+.subTaskInfo {
+    flex: 1;
+}
+
+.subTaskMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+    align-items: center;
+}
+
+.subTaskTags {
+    display: flex;
+    align-items: center;
+}
+
+.tagDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 2px;
+}
+
+.tagMore {
+    font-size: 12px;
+}
+
+.subTaskAssignees {
+    margin-left: 4px;
+}
+
+.subTaskDates {
+    font-size: 12px;
+}
+
+.addSubTaskContainer {
+    margin-top: 16px;
+}
+
+.subTaskActionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+}
+
+.subTaskAction {
+    padding: 4px 8px;
+    margin-right: 8px;
+}
+
+.subTaskAction:hover {
+    background-color: rgba(118, 171, 174, 0.1);
+}
+
+/* Стили для развернутой подзадачи */
+.expandedSubTask {
+    background-color: rgba(0, 0, 0, 0.02);
+    padding: 16px;
+    margin: -8px 0 16px 0;
+    border-radius: 0 0 6px 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.subTaskDetails {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.subTaskDetails > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.authorInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .subTaskMeta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .subTaskDetails {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .expandedSubTask {
+        padding: 12px;
+    }
+}
+
+/* src/pages/tasks/TasksStyles.module.css (дополнение) */
+.commentsContainer {
+    padding: 4px 0;
+}
+
+.commentsList {
+    margin-bottom: 24px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.commentText {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.commentAction {
+    padding: 4px 8px;
+    margin-right: 4px;
+}
+
+.commentAction:hover {
+    background-color: rgba(118, 171, 174, 0.1);
+}
+
+.addCommentContainer {
+    margin-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 16px;
+}
+
+.submitCommentButton {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.editCommentContainer {
+    margin-top: 8px;
+}
+
+.editCommentActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.commentTextArea {
+    resize: none;
+    border-radius: 6px;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 0;
+    gap: 16px;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .commentAction {
+        padding: 2px 4px;
+        font-size: 12px;
+    }
+
+    .editCommentActions {
+        flex-direction: column;
+        align-items: flex-end;
+    }
 }

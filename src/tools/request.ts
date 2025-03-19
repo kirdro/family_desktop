@@ -1,6 +1,6 @@
 import { getHeaders } from './getHeaders';
 import axios, { AxiosError } from 'axios';
-import {IRequestArgs} from "../types";
+import { IRequestArgs } from '../types';
 
 /**
  * Get запрос.
@@ -42,6 +42,25 @@ export const postRequest = async (args: IRequestArgs) => {
 	const headers = getHeaders(token || '', 'app/client');
 	const response = await axios({
 		method: 'POST',
+		url,
+		responseType,
+		data,
+		headers,
+		// headers: { ...headers, "Content-Type": "application/x-www-form-urlencoded" },
+	});
+
+	return response.data;
+	// } catch (error) {}
+};
+
+export const putRequest = async (args: IRequestArgs) => {
+	const { url, token, data, responseType = 'json' } = args;
+	if (!data) return;
+
+	// try {
+	const headers = getHeaders(token || '', 'app/client');
+	const response = await axios({
+		method: 'PUT',
 		url,
 		responseType,
 		data,

@@ -1,37 +1,33 @@
 // hooks/tasks/useDeleteSubTask.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { IParamsDeleteSubTask, IDeleteSubTaskResponse } from '@/interfaces';
-import { deleteRequest } from '@/tools/request';
-import { GENERAL, SUB_TASKS, TASKS } from '@/constants';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { useNotificationStore } from '@/store/useNotificationStore';
-import { HOST } from '@/host';
-
+import { useGeneralStore } from '../store/useGeneralStore';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { IParamsDeleteSubTask } from '../types';
+import { HOST } from '../../host';
+import { deleteRequest } from '../tools/request';
+import { GENERAL, TASKS } from '../constants';
 
 export const useDeleteSubTask = () => {
 	const queryClient = useQueryClient();
-	const { updateGeneralStore, getGeneralStore } = useGeneralStore();
+	const { getGeneralStore } = useGeneralStore();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
 	const { token } = getGeneralStore();
 	const getUrl = (): string => {
 		return `${HOST}/tasks/subtask/delete`;
 	};
-	const { data, isPending, mutate, status, mutateAsync } =  useMutation({
-		mutationFn: ({ subTaskId, email }:IParamsDeleteSubTask) => {
-
-			return  deleteRequest({
+	const result = useMutation({
+		mutationFn: ({ subTaskId, email }: IParamsDeleteSubTask) => {
+			return deleteRequest({
 				url: getUrl(),
 				data: { subTaskId, email },
-				token
+				token,
 			});
 		},
 
-
-
-		onSuccess: (response, variables) => {
+		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: [GENERAL, TASKS]
+				queryKey: [GENERAL, TASKS],
 			});
 
 			updateNotificationStore({
@@ -41,13 +37,15 @@ export const useDeleteSubTask = () => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: 'delete success',
 						type: 'success',
+						read: false,
+						timestamp: String(new Date()),
+						title: '',
 					},
 				],
 			});
-
 		},
 
-		onError: (error, variables, context) => {
+		onError: (error) => {
 			// Откатываем к предыдущему состоянию в случае ошибки
 
 			updateNotificationStore({
@@ -57,27 +55,21 @@ export const useDeleteSubTask = () => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: error.message,
 						type: 'error',
+						read: false,
+						timestamp: String(new Date()),
+						title: error.message,
 					},
 				],
 			});
-
-
 		},
 
 		onSettled: () => {
 			// Всегда обновляем кеш после завершения мутации
 			queryClient.invalidateQueries({
-				queryKey: [GENERAL, TASKS]
+				queryKey: [GENERAL, TASKS],
 			});
-		}
+		},
 	});
 
-
-	return {
-		data,
-		isPending,
-		mutate,
-		status,
-		mutateAsync,
-	};
+	return result;
 };

@@ -1,14 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { useNotificationStore } from '@/store/useNotificationStore';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { GENERAL, TASK_STATS, TEAM } from '@/constants';
-import { HOST } from '@/host';
+
 import { useEffect } from 'react';
-import { getRequest } from '@/tools/request';
+import { useGeneralStore } from '../store/useGeneralStore';
+import { GENERAL, TASK_STATS } from '../constants';
+import { HOST } from '../../host';
+import { getRequest } from '../tools/request';
 
 export const useGetTaskStatistics = (email: string) => {
-	const { updateNotificationStore, getNotificationStore } =
-		useNotificationStore();
 	const { getGeneralStore, updateGeneralStore } = useGeneralStore();
 
 	const { token } = getGeneralStore();
@@ -19,7 +17,7 @@ export const useGetTaskStatistics = (email: string) => {
 	};
 
 	const enabled = Boolean(token) && Boolean(email);
-	const { data, isLoading, error, status, refetch } =  useQuery({
+	const { data, isLoading, error, status, refetch } = useQuery({
 		queryKey,
 		queryFn: () => {
 			return getRequest({
@@ -27,7 +25,7 @@ export const useGetTaskStatistics = (email: string) => {
 				token: token,
 			});
 		},
-		enabled
+		enabled,
 	});
 
 	useEffect(() => {

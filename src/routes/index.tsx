@@ -8,11 +8,14 @@ import { Suspense, lazy } from 'react';
 import { Spin } from 'antd';
 // import AdminLayout from '../components/layout/AdminLayout';
 import AuthLayout from '../components/layout/AuthLayout';
-import ProtectedRoute from './ProtectedRoute.tsx';
-import AdminLayout from '../components/layout/AdminLayout.tsx';
-import TasksList from '../pages/tasks/TasksList.tsx';
-import TaskDetail from '../pages/tasks/TaskDetail.tsx';
-import TaskCreate from '../pages/tasks/TaskCreate.tsx';
+import ProtectedRoute from './ProtectedRoute';
+import AdminLayout from '../components/layout/AdminLayout';
+import TasksList from '../pages/tasks/TasksList';
+import TaskDetail from '../pages/tasks/TaskDetail';
+import TaskCreate from '../pages/tasks/TaskCreate';
+import PlansList from '../pages/plannings/PlansList';
+import PlanForm from '../components/planning/PlanForm';
+import PlanDetail from '../pages/plannings/PlanDetail';
 // import ProtectedRoute from './ProtectedRoute';
 
 // Страницы авторизации
@@ -152,6 +155,38 @@ const router = createBrowserRouter([
 				element: (
 					<SuspenseWrapper>
 						<TaskEdit />
+					</SuspenseWrapper>
+				),
+			},
+			{
+				path: 'plans',
+				element: (
+					<SuspenseWrapper>
+						<PlansList />
+					</SuspenseWrapper>
+				),
+			},
+			{
+				path: 'plans/create',
+				element: (
+					<SuspenseWrapper>
+						<PlanForm />
+					</SuspenseWrapper>
+				),
+			},
+			{
+				path: 'plans/:id',
+				element: (
+					<SuspenseWrapper>
+						<PlanDetail />
+					</SuspenseWrapper>
+				),
+			},
+			{
+				path: 'plans/:id/edit',
+				element: (
+					<SuspenseWrapper>
+						<PlanForm />
 					</SuspenseWrapper>
 				),
 			},

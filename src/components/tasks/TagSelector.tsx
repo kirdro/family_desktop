@@ -15,48 +15,35 @@ import {
 	Divider,
 } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useTaskTags } from '../../hooks/useTaskTags';
 import { useGeneralStore } from '../../store/useGeneralStore';
 import styles from '../../pages/tasks/TasksStyles.module.css';
+import { ITag } from '../../types';
 
 const { Text } = Typography;
 
 interface TagSelectorProps {
-	selectedTags: any[];
-	onChange: (tags: any[]) => void;
+	selectedTags: ITag[];
+	onChange: (tags: ITag[]) => void;
 }
 
 const TagSelector: React.FC<TagSelectorProps> = ({
 	selectedTags,
 	onChange,
 }) => {
-	const [tags, setTags] = useState<any[]>([]);
+	const [tags, setTags] = useState<ITag[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [newTagName, setNewTagName] = useState('');
 	const [newTagColor, setNewTagColor] = useState('#76ABAE');
 	const [form] = Form.useForm();
 
-	const { generalStore } = useGeneralStore();
-	const { getTags, createTag, deleteTag } = useTaskTags();
+	const { getGeneralStore } = useGeneralStore();
+	const { taskTags } = getGeneralStore();
 
 	// Загрузка тегов при монтировании
 	useEffect(() => {
-		const fetchTags = async () => {
-			try {
-				setLoading(true);
-				const data = await getTags();
-				setTags(data);
-			} catch (error) {
-				console.error('Error fetching tags:', error);
-				message.error('Не удалось загрузить теги');
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchTags();
-	}, [getTags]);
+		setTags(taskTags);
+	}, [taskTags]);
 
 	// Обработчик добавления нового тега
 	const handleAddTag = async () => {
@@ -65,16 +52,16 @@ const TagSelector: React.FC<TagSelectorProps> = ({
 		try {
 			setLoading(true);
 
-			const newTag = await createTag({
-				name: newTagName,
-				color: newTagColor,
-				teamId: generalStore.team?.id,
-			});
-
-			setTags((prev) => [...prev, newTag]);
-
-			// Добавляем новый тег к выбранным
-			onChange([...selectedTags, newTag]);
+			// const newTag = await createTag({
+			// 	name: newTagName,
+			// 	color: newTagColor,
+			// 	teamId: generalStore.team?.id,
+			// });
+			//
+			// // setTags((prev) => [...prev, newTag]);
+			//
+			// // Добавляем новый тег к выбранным
+			// onChange([...selectedTags, newTag]);
 
 			// Сбрасываем форму
 			setNewTagName('');
@@ -93,7 +80,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
 	// Обработчик удаления тега
 	const handleDeleteTag = async (tagId: string) => {
 		try {
-			await deleteTag(tagId);
+			// await deleteTag(tagId);
 
 			// Удаляем тег из списка всех тегов
 			setTags((prev) => prev.filter((tag) => tag.id !== tagId));
@@ -114,7 +101,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
 			.map((tagId) => {
 				return tags.find((tag) => tag.id === tagId);
 			})
-			.filter(Boolean);
+			.filter((tag) => !!tag);
 
 		onChange(newSelectedTags);
 	};

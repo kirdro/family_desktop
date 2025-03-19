@@ -1,14 +1,14 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { useNotificationStore } from '@/store/useNotificationStore';
-import { IParamsDeleteTask } from '@/interfaces';
-import { deleteRequest } from '@/tools/request';
-import { queryClient } from '@/lib/query';
-import { GENERAL, TASKS } from '@/constants';
-import { HOST } from '@/host';
+import { useMutation } from '@tanstack/react-query';
+import { useGeneralStore } from '../store/useGeneralStore';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { HOST } from '../../host';
+import { IParamsDeleteTask } from '../types';
+import { deleteRequest } from '../tools/request';
+import { queryClient } from '../lib/queryClient';
+import { GENERAL, TASKS } from '../constants';
 
 export const useDeleteTask = () => {
-	const { updateGeneralStore, getGeneralStore } = useGeneralStore();
+	const { getGeneralStore } = useGeneralStore();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
 	const { token } = getGeneralStore();
@@ -16,12 +16,12 @@ export const useDeleteTask = () => {
 	const getUrl = (): string => {
 		return `${HOST}/tasks/delete`;
 	};
-	const { data, isPending, mutate, status, mutateAsync } =  useMutation({
+	const { data, isPending, mutate, status, mutateAsync } = useMutation({
 		mutationFn: (data: IParamsDeleteTask) => {
 			return deleteRequest({
 				url: getUrl(),
 				data,
-				token
+				token,
 			});
 		},
 		onSuccess: (response) => {
@@ -35,10 +35,12 @@ export const useDeleteTask = () => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: 'Delete task success',
 						type: 'success',
+						read: false,
+						timestamp: String(new Date()),
+						title: response.status,
 					},
 				],
 			});
-
 		},
 		onError: (error) => {
 			updateNotificationStore({
@@ -48,6 +50,9 @@ export const useDeleteTask = () => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: error.message,
 						type: 'error',
+						read: false,
+						timestamp: String(new Date()),
+						title: error.message,
 					},
 				],
 			});

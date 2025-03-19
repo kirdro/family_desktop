@@ -10,7 +10,6 @@ import {
 	Tag,
 	Progress,
 	Button,
-	Divider,
 	Spin,
 	Empty,
 	Skeleton,
@@ -49,11 +48,12 @@ import {
 } from 'recharts';
 import { useGeneralStore } from '../store/useGeneralStore';
 import { useQuery } from '@tanstack/react-query';
-import apiClient from '../api/client';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ru'; // Для русской локализации
 import styles from './Dashboard.module.css';
+import UserAvatar from '../components/common/UserAvatar';
+import { IKeyString, ITask } from '../types';
 
 // Расширяем функциональность dayjs
 dayjs.extend(relativeTime);
@@ -124,10 +124,12 @@ const COLORS = [
 ];
 
 const Dashboard: React.FC = () => {
-	const { generalStore } = useGeneralStore();
+	const { generalStore, getGeneralStore } = useGeneralStore();
 	const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>(
 		'week',
 	);
+
+	const { team, tasks } = getGeneralStore();
 
 	// Загрузка данных дашборда через React Query
 	const { data, isLoading, error } = useQuery<DashboardData>({
@@ -178,7 +180,21 @@ const Dashboard: React.FC = () => {
 	};
 
 	// Функция для рендеринга активного сегмента в круговой диаграмме
-	const renderActiveShape = (props) => {
+	const renderActiveShape = (props: {
+		cx: number;
+		cy: number;
+		midAngle: number;
+		innerRadius: number;
+		outerRadius: number;
+		startAngle: number;
+		endAngle: number;
+		fill: string;
+		payload: {
+			status: string;
+		};
+		percent: number;
+		value: number;
+	}) => {
 		const RADIAN = Math.PI / 180;
 		const {
 			cx,
@@ -255,7 +271,21 @@ const Dashboard: React.FC = () => {
 	};
 
 	// Кастомный тултип для графиков
-	const CustomTooltip = ({ active, payload, label, valuePrefix = '' }) => {
+	const CustomTooltip = ({
+		active,
+		payload,
+		label,
+		valuePrefix = '',
+	}: {
+		active?: boolean;
+		payload?: {
+			name: string;
+			color: string;
+			value: string;
+		}[];
+		label: string;
+		valuePrefix: string;
+	}) => {
 		if (active && payload && payload.length) {
 			return (
 				<div className={styles.customTooltip}>
@@ -275,7 +305,10 @@ const Dashboard: React.FC = () => {
 
 	// Получение статуса задачи для отображения
 	const getStatusTag = (status: string) => {
-		const statusMap = {
+		const statusMap: IKeyString<{
+			color: string;
+			text: string;
+		}> = {
 			pending: { color: 'gold', text: 'Ожидает' },
 			in_progress: { color: 'blue', text: 'В работе' },
 			completed: { color: 'green', text: 'Завершено' },
@@ -292,7 +325,10 @@ const Dashboard: React.FC = () => {
 
 	// Получение приоритета задачи для отображения
 	const getPriorityTag = (priority: string) => {
-		const priorityMap = {
+		const priorityMap: IKeyString<{
+			color: string;
+			text: string;
+		}> = {
 			low: { color: 'green', text: 'Низкий' },
 			medium: { color: 'orange', text: 'Средний' },
 			high: { color: 'red', text: 'Высокий' },
@@ -345,7 +381,7 @@ const Dashboard: React.FC = () => {
 				<div>
 					<Title level={2}>
 						Добро пожаловать,{' '}
-						{generalStore.user?.name || 'Пользователь'}!
+						{generalStore.user?.name || generalStore.user?.email}!
 					</Title>
 					<Paragraph type='secondary'>
 						Обзор активности и статистика вашей команды
@@ -363,7 +399,7 @@ const Dashboard: React.FC = () => {
 					<Card bordered={false} className={styles.statCard}>
 						<Statistic
 							title='Всего задач'
-							value={data?.stats.totalTasks || 0}
+							value={tasks.length || 0}
 							prefix={<ProjectOutlined />}
 							valueStyle={{ color: '#76ABAE' }}
 						/>
@@ -392,12 +428,22 @@ const Dashboard: React.FC = () => {
 					<Card bordered={false} className={styles.statCard}>
 						<Statistic
 							title='Выполнено задач'
-							value={data?.stats.completedTasks || 0}
+							value={
+								tasks.filter((item) => item.completed).length ||
+								0
+							}
 							prefix={<CheckCircleOutlined />}
 							valueStyle={{ color: '#52c41a' }}
 						/>
 						<Progress
-							percent={data?.stats.taskCompletion || 0}
+							percent={
+								Math.round(
+									(tasks.filter((item) => item.completed)
+										.length /
+										tasks.length) *
+										100,
+								) || 0
+							}
 							size='small'
 							status='active'
 							showInfo={false}
@@ -421,12 +467,12 @@ const Dashboard: React.FC = () => {
 					<Card bordered={false} className={styles.statCard}>
 						<Statistic
 							title='Участников в команде'
-							value={data?.stats.totalTeamMembers || 0}
+							value={team?.members.length || 0}
 							prefix={<TeamOutlined />}
 							valueStyle={{ color: '#1890ff' }}
 						/>
 						<Text type='secondary'>
-							{generalStore.team?.name || 'Нет активной команды'}
+							{team?.name || 'Нет активной команды'}
 						</Text>
 					</Card>
 				</Col>
@@ -503,7 +549,12 @@ const Dashboard: React.FC = () => {
 											tick={{ fill: '#EEEEEE' }}
 										/>
 										<Tooltip
-											content={<CustomTooltip />}
+											content={
+												<CustomTooltip
+													label={'dfgsdfg'}
+													valuePrefix={'dfgsdfg'}
+												/>
+											}
 											contentStyle={{
 												backgroundColor: '#31363F',
 												border: '1px solid #76ABAE',
@@ -538,12 +589,14 @@ const Dashboard: React.FC = () => {
 				<Col xs={24} sm={12} lg={8}>
 					<Card title='Задачи по статусам' bordered={false}>
 						<div style={{ width: '100%', height: 300 }}>
-							{data?.tasksByStatus ?
+							{tasks ?
 								<ResponsiveContainer width='100%' height='100%'>
 									<PieChart>
 										<Pie
 											activeIndex={activePieIndex}
+											// @ts-ignore
 											activeShape={renderActiveShape}
+											// @ts-ignore
 											data={data.tasksByStatus}
 											cx='50%'
 											cy='50%'
@@ -555,23 +608,24 @@ const Dashboard: React.FC = () => {
 												setActivePieIndex(index)
 											}
 										>
-											{data.tasksByStatus.map(
-												(entry, index) => (
-													<Cell
-														key={`cell-${index}`}
-														fill={
-															COLORS[
-																index %
-																	COLORS.length
-															]
-														}
-													/>
-												),
-											)}
+											{tasks.map((entry, index) => (
+												<Cell
+													key={`cell-${index}`}
+													fill={
+														COLORS[
+															index %
+																COLORS.length
+														]
+													}
+												/>
+											))}
 										</Pie>
 										<Tooltip
 											content={
-												<CustomTooltip valuePrefix='' />
+												<CustomTooltip
+													valuePrefix=''
+													label={''}
+												/>
 											}
 											contentStyle={{
 												backgroundColor: '#31363F',
@@ -615,7 +669,12 @@ const Dashboard: React.FC = () => {
 											tick={{ fill: '#EEEEEE' }}
 										/>
 										<Tooltip
-											content={<CustomTooltip />}
+											content={
+												<CustomTooltip
+													valuePrefix=''
+													label={''}
+												/>
+											}
 											contentStyle={{
 												backgroundColor: '#31363F',
 												border: '1px solid #76ABAE',
@@ -662,7 +721,7 @@ const Dashboard: React.FC = () => {
 						{isTasksLoading ?
 							<Skeleton active paragraph={{ rows: 5 }} />
 						:	<Table
-								dataSource={data?.recentTasks || []}
+								dataSource={tasks || []}
 								rowKey='id'
 								pagination={false}
 								size='middle'
@@ -671,7 +730,7 @@ const Dashboard: React.FC = () => {
 										title: 'Задача',
 										dataIndex: 'title',
 										key: 'title',
-										render: (text, record) => (
+										render: (text) => (
 											<div className={styles.taskTitle}>
 												<Text strong>{text}</Text>
 											</div>
@@ -704,28 +763,50 @@ const Dashboard: React.FC = () => {
 										title: 'Исполнитель',
 										dataIndex: 'assignedTo',
 										key: 'assignedTo',
-										render: (assignedTo) => (
-											<div className={styles.userInfo}>
-												<Avatar
-													size='small'
-													src={assignedTo.avatar}
-													icon={
-														!assignedTo.avatar && (
-															<UserOutlined />
-														)
-													}
-												/>
-												<Text style={{ marginLeft: 8 }}>
-													{assignedTo.name}
-												</Text>
-											</div>
-										),
-										width: 160,
+										render: (_, record: ITask) => {
+											const node = record.assignees.map(
+												(user, i) => {
+													return (
+														<div
+															className={
+																styles.userInfo
+															}
+															key={`cell-${i}`}
+														>
+															<UserAvatar
+																size='small'
+																name={
+																	user.name ||
+																	''
+																}
+																email={
+																	user.email
+																}
+																avatar={
+																	user.image ||
+																	undefined
+																}
+															/>
+															<Text
+																style={{
+																	marginLeft: 8,
+																}}
+															>
+																{user.name ||
+																	user.email}
+															</Text>
+														</div>
+													);
+												},
+											);
+											return node;
+										},
+										width: 200,
 									},
 									{
 										title: '',
 										key: 'actions',
-										render: (_, record) => (
+										render: () => (
 											<Dropdown
 												menu={{
 													items: [
@@ -1191,14 +1272,13 @@ function getMockDashboardData(
 			{ status: 'Отменено', value: canceledTasks },
 		],
 		tasksByPriority: [
-			{ priority: 'low', name: 'Низкий', value: 35, color: '#52c41a' },
+			{ priority: 'low', value: 35, color: '#52c41a' },
 			{
 				priority: 'medium',
-				name: 'Средний',
 				value: 55,
 				color: '#faad14',
 			},
-			{ priority: 'high', name: 'Высокий', value: 30, color: '#f5222d' },
+			{ priority: 'high', value: 30, color: '#f5222d' },
 		],
 		taskCompletionHistory,
 	};

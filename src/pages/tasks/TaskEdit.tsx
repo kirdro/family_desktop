@@ -1,18 +1,15 @@
 // src/pages/tasks/TaskEdit.tsx
 import React from 'react';
-import { Typography, Card } from 'antd';
-import TaskForm from '../../components/tasks/TaskForm';
+import { Typography } from 'antd';
 import { useParams, useLocation } from 'react-router-dom';
 import styles from './TasksStyles.module.css';
+import TaskForm from './TaskForm';
 
 const { Title, Text } = Typography;
 
 const TaskEdit: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
 	const location = useLocation();
-
-	// Получаем активную вкладку из state, если она передана
-	const activeTab = location.state?.activeTab;
 
 	return (
 		<div className={styles.tasksListPage}>
@@ -25,7 +22,7 @@ const TaskEdit: React.FC = () => {
 				</div>
 			</div>
 
-			<TaskForm isEditMode activeTab={activeTab} />
+			<TaskForm isEditMode />
 		</div>
 	);
 };

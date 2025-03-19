@@ -1,7 +1,7 @@
 // import { camelToSnakeCase } from 'src/settings';
 
 import { useStore } from './useStore';
-import {NotificationState} from "../types/notification.ts";
+import { NotificationState } from '../types/notification';
 
 const STORE_KEY = `NOTIFICATION_STORE_KEY`;
 

@@ -1,14 +1,14 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { useNotificationStore } from '@/store/useNotificationStore';
-import { HOST } from '@/host';
-import { IParamsCreateComment } from '@/interfaces';
-import { postRequest } from '@/tools/request';
-import { queryClient } from '@/lib/query';
-import { GENERAL, TASKS } from '@/constants';
+import { useMutation } from '@tanstack/react-query';
+import { useGeneralStore } from '../store/useGeneralStore';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { HOST } from '../../host';
+import { IParamsCreateComment } from '../types';
+import { postRequest } from '../tools/request';
+import { queryClient } from '../lib/queryClient';
+import { GENERAL, TASKS } from '../constants';
 
 export const usePostCreateComment = () => {
-	const { updateGeneralStore, getGeneralStore } = useGeneralStore();
+	const { getGeneralStore } = useGeneralStore();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
 
@@ -18,12 +18,12 @@ export const usePostCreateComment = () => {
 
 	const { token } = getGeneralStore();
 
-	const { data, isPending, mutate, status, mutateAsync } =  useMutation({
+	const { data, isPending, mutate, status, mutateAsync } = useMutation({
 		mutationFn: async (data: IParamsCreateComment) => {
 			return await postRequest({
 				url: getUrl(),
 				data,
-				token
+				token,
 			});
 		},
 		onSuccess: (response) => {
@@ -37,10 +37,12 @@ export const usePostCreateComment = () => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: 'Code verification successful',
 						type: 'success',
+						read: false,
+						timestamp: String(new Date()),
+						title: response.status,
 					},
 				],
 			});
-
 		},
 		onError: (error) => {
 			updateNotificationStore({
@@ -50,12 +52,14 @@ export const usePostCreateComment = () => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: error.message,
 						type: 'error',
+						read: false,
+						timestamp: String(new Date()),
+						title: error.message,
 					},
 				],
 			});
 		},
 	});
-
 
 	return {
 		data,

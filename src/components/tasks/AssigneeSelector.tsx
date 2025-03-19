@@ -1,7 +1,7 @@
 // src/components/tasks/AssigneeSelector.tsx
-import React, { useState } from 'react';
-import { Select, Avatar, Button, Typography, List, Space, Tag } from 'antd';
-import { UserOutlined, PlusOutlined } from '@ant-design/icons';
+import React from 'react';
+import { Select, Avatar, Button, Typography, List } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import { useGeneralStore } from '../../store/useGeneralStore';
 import styles from '../../pages/tasks/TasksStyles.module.css';
 
@@ -64,8 +64,8 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
 								<div className={styles.assigneeOption}>
 									<Avatar
 										size='small'
-										src={user.avatar}
-										icon={!user.avatar && <UserOutlined />}
+										src={user.image}
+										icon={!user.image && <UserOutlined />}
 									/>
 									<span>{user.name}</span>
 								</div>

@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { getRequest } from '@/tools/request';
 import { useEffect } from 'react';
-import { useNotificationStore } from '@/store/useNotificationStore';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { HOST } from '@/host';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { useGeneralStore } from '../store/useGeneralStore';
+import { HOST } from '../../host';
+import { getRequest } from '../tools/request';
 
 export const useGetTaskDetails = (taskId: string) => {
 	const { updateNotificationStore, getNotificationStore } =
@@ -30,13 +30,16 @@ export const useGetTaskDetails = (taskId: string) => {
 								id: Math.random().toString(36).substr(2, 9),
 								message: error.message,
 								type: 'error',
+								read: false,
+								timestamp: String(new Date()),
+								title: error.message,
 							},
 						],
 					});
 				},
 			});
 		},
-		enabled: enabled
+		enabled: enabled,
 	});
 
 	useEffect(() => {

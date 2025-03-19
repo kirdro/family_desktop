@@ -4,13 +4,12 @@ import { Layout, theme } from 'antd';
 
 const AuthLayout: React.FC = () => {
 	const { token } = theme.useToken();
-
 	return (
 		<Layout
 			style={{
 				minHeight: '100vh',
 				// Замена устаревшего токена colorBgBody на bodyBg
-				background: token.bodyBg, // было token.colorBgBody
+				background: token.colorFillAlter, // было token.colorBgBody
 				display: 'flex',
 				justifyContent: 'center',
 				alignItems: 'center',

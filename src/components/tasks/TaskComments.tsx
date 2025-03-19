@@ -1,23 +1,32 @@
 // src/components/tasks/TaskComments.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-	Avatar,
 	Input,
 	Button,
 	List,
 	Typography,
-	Space,
 	Popconfirm,
 	Spin,
 	Empty,
 	message,
 } from 'antd';
-import { Comment } from '@ant-design/compatible';
-import { UserOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { useTaskComments } from '../../hooks/useTaskComments';
+import {
+	DeleteOutlined,
+	EditOutlined,
+	SendOutlined,
+	CloseOutlined,
+	SaveOutlined,
+} from '@ant-design/icons';
 import { useGeneralStore } from '../../store/useGeneralStore';
+import UserAvatar from '../common/UserAvatar';
+import { Comment } from '@ant-design/compatible';
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import styles from '../../pages/tasks/TasksStyles.module.css';
+import { IComment } from '../../types';
+
+// Расширяем функциональность dayjs для относительного времени
+dayjs.extend(relativeTime);
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -25,9 +34,9 @@ const { Text } = Typography;
 interface TaskCommentsProps {
 	taskId: string;
 	subTaskId?: string;
-	initialComments?: any[];
-	onCommentCreate?: (comment: any) => void;
-	onCommentUpdate?: (comment: any) => void;
+	initialComments?: IComment[];
+	onCommentCreate?: (comment: IComment) => void;
+	onCommentUpdate?: (comment: IComment) => void;
 	onCommentDelete?: (commentId: string) => void;
 }
 
@@ -39,7 +48,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 	onCommentUpdate,
 	onCommentDelete,
 }) => {
-	const [comments, setComments] = useState<any[]>(initialComments);
+	const [comments, setComments] = useState<IComment[]>(initialComments);
 	const [loading, setLoading] = useState(false);
 	const [commentText, setCommentText] = useState('');
 	const [submitting, setSubmitting] = useState(false);
@@ -49,30 +58,8 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 	const [editingText, setEditingText] = useState('');
 
 	const { generalStore } = useGeneralStore();
-	const { getComments, addComment, updateComment, deleteComment } =
-		useTaskComments();
 
 	// Загрузка комментариев при монтировании
-	useEffect(() => {
-		const fetchComments = async () => {
-			if (initialComments.length === 0) {
-				try {
-					setLoading(true);
-					const data = await getComments(taskId, subTaskId);
-					setComments(data);
-				} catch (error) {
-					console.error('Error fetching comments:', error);
-					message.error('Не удалось загрузить комментарии');
-				} finally {
-					setLoading(false);
-				}
-			} else {
-				setComments(initialComments);
-			}
-		};
-
-		fetchComments();
-	}, [taskId, subTaskId, getComments, initialComments]);
 
 	// Обработчик отправки комментария
 	const handleSubmitComment = async () => {
@@ -81,19 +68,19 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 		try {
 			setSubmitting(true);
 
-			const newComment = await addComment({
-				taskId,
-				subTaskId,
-				text: commentText,
-			});
+			// const newComment = await addComment({
+			// 	taskId,
+			// 	subTaskId,
+			// 	text: commentText,
+			// });
 
-			setComments((prev) => [...prev, newComment]);
-			setCommentText('');
-
-			// Вызываем callback для обновления родительского компонента
-			if (onCommentCreate) {
-				onCommentCreate(newComment);
-			}
+			// setComments((prev) => [...prev, newComment]);
+			// setCommentText('');
+			//
+			// // Вызываем callback для обновления родительского компонента
+			// if (onCommentCreate) {
+			// 	onCommentCreate(newComment);
+			// }
 		} catch (error) {
 			console.error('Error adding comment:', error);
 			message.error('Не удалось добавить комментарий');
@@ -109,23 +96,24 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 		try {
 			setSubmitting(true);
 
-			const updatedComment = await updateComment(commentId, {
-				text: editingText,
-			});
+			// const updatedComment = await updateComment(commentId, {
+			// 	text: editingText,
+			// });
 
-			setComments((prev) =>
-				prev.map((comment) =>
-					comment.id === commentId ? updatedComment : comment,
-				),
-			);
-
-			setEditingCommentId(null);
-			setEditingText('');
-
-			// Вызываем callback для обновления родительского компонента
-			if (onCommentUpdate) {
-				onCommentUpdate(updatedComment);
-			}
+			// Обновляем локальное состояние
+			// setComments((prev) =>
+			// 	prev.map((comment) =>
+			// 		comment.id === commentId ? updatedComment : comment,
+			// 	),
+			// );
+			//
+			// setEditingCommentId(null);
+			// setEditingText('');
+			//
+			// // Вызываем callback для обновления родительского компонента
+			// if (onCommentUpdate) {
+			// 	onCommentUpdate(updatedComment);
+			// }
 		} catch (error) {
 			console.error('Error updating comment:', error);
 			message.error('Не удалось обновить комментарий');
@@ -135,7 +123,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 	};
 
 	// Начало редактирования комментария
-	const startEditingComment = (comment: any) => {
+	const startEditingComment = (comment: IComment) => {
 		setEditingCommentId(comment.id);
 		setEditingText(comment.text);
 	};
@@ -147,27 +135,33 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 	};
 
 	// Обработчик удаления комментария
-	const handleDeleteComment = async (commentId: string) => {
-		try {
-			await deleteComment(commentId);
-
-			setComments((prev) =>
-				prev.filter((comment) => comment.id !== commentId),
-			);
-
-			// Вызываем callback для обновления родительского компонента
-			if (onCommentDelete) {
-				onCommentDelete(commentId);
-			}
-		} catch (error) {
-			console.error('Error deleting comment:', error);
-			message.error('Не удалось удалить комментарий');
-		}
-	};
+	// const handleDeleteComment = async (commentId: string) => {
+	// 	try {
+	// 		setLoading(true);
+	// 		await deleteComment(commentId);
+	//
+	// 		// Обновляем локальное состояние
+	// 		setComments((prev) =>
+	// 			prev.filter((comment) => comment.id !== commentId),
+	// 		);
+	//
+	// 		// Вызываем callback для обновления родительского компонента
+	// 		if (onCommentDelete) {
+	// 			onCommentDelete(commentId);
+	// 		}
+	//
+	// 		message.success('Комментарий удален');
+	// 	} catch (error) {
+	// 		console.error('Error deleting comment:', error);
+	// 		message.error('Не удалось удалить комментарий');
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
 
 	// Форматирование даты
-	const formatDate = (date: string) => {
-		return dayjs(date).format('DD.MM.YYYY HH:mm');
+	const formatDate = (date: string | Date) => {
+		return dayjs(date).fromNow(); // Использует плагин relativeTime
 	};
 
 	// Рендеринг списка комментариев
@@ -197,13 +191,21 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 				dataSource={comments}
 				renderItem={(comment) => (
 					<Comment
-						author={<Text strong>{comment.author.name}</Text>}
+						author={
+							<Text strong>
+								{comment.author?.name || 'Пользователь'}
+							</Text>
+						}
+						style={{
+							paddingLeft: 16,
+							paddingRight: 16,
+							boxSizing: 'border-box',
+						}}
 						avatar={
-							<Avatar
-								src={comment.author.avatar}
-								icon={
-									!comment.author.avatar && <UserOutlined />
-								}
+							<UserAvatar
+								name={comment.author?.name || ''}
+								email={comment.author?.email}
+								avatar={comment.author?.image || ''}
 							/>
 						}
 						content={
@@ -220,6 +222,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 									<div className={styles.editCommentActions}>
 										<Button
 											size='small'
+											icon={<CloseOutlined />}
 											onClick={cancelEditingComment}
 											disabled={submitting}
 										>
@@ -228,6 +231,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 										<Button
 											type='primary'
 											size='small'
+											icon={<SaveOutlined />}
 											onClick={() =>
 												handleUpdateComment(comment.id)
 											}
@@ -238,9 +242,9 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 										</Button>
 									</div>
 								</div>
-							:	<p className={styles.commentText}>
+							:	<div className={styles.commentText}>
 									{comment.text}
-								</p>
+								</div>
 						}
 						datetime={
 							<Text type='secondary'>
@@ -248,7 +252,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 							</Text>
 						}
 						actions={
-							comment.author.id === generalStore.user?.id ?
+							comment.author?.id === generalStore.user?.id ?
 								[
 									<Button
 										type='text'
@@ -266,9 +270,9 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 									</Button>,
 									<Popconfirm
 										title='Вы уверены, что хотите удалить этот комментарий?'
-										onConfirm={() =>
-											handleDeleteComment(comment.id)
-										}
+										// onConfirm={() =>
+										// 	// handleDeleteComment(comment.id)
+										// }
 										okText='Да'
 										cancelText='Нет'
 									>
@@ -298,13 +302,17 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 			<div className={styles.addCommentContainer}>
 				<Comment
 					avatar={
-						<Avatar
-							src={generalStore.user?.avatar}
-							icon={
-								!generalStore.user?.avatar && <UserOutlined />
-							}
+						<UserAvatar
+							name={generalStore.user?.name || ''}
+							email={generalStore.user?.email}
+							avatar={generalStore.user?.image || ''}
 						/>
 					}
+					style={{
+						paddingLeft: 16,
+						paddingRight: 16,
+						boxSizing: 'border-box',
+					}}
 					content={
 						<>
 							<TextArea
@@ -313,15 +321,17 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 								onChange={(e) => setCommentText(e.target.value)}
 								placeholder='Добавьте комментарий...'
 								disabled={submitting}
+								className={styles.commentTextArea}
 							/>
 							<Button
 								type='primary'
+								icon={<SendOutlined />}
 								onClick={handleSubmitComment}
 								loading={submitting}
 								disabled={!commentText.trim()}
 								className={styles.submitCommentButton}
 							>
-								Отправить комментарий
+								Отправить
 							</Button>
 						</>
 					}

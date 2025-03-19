@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { useNotificationStore } from '@/store/useNotificationStore';
-import { useGeneralStore } from '@/store/useGeneralStore';
-import { GENERAL, TAGS_TASK, TEAM } from '@/constants';
-import { HOST } from '@/host';
-import { getRequest } from '@/tools/request';
+
 import { useEffect } from 'react';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { useGeneralStore } from '../store/useGeneralStore';
+import { GENERAL, TAGS_TASK } from '../constants';
+import { HOST } from '../../host';
+import { getRequest } from '../tools/request';
+import { useGlobalLoading } from '../hooks/useGlobalLoading';
 
 export const useGetTeamTags = (email: string) => {
 	const { updateNotificationStore, getNotificationStore } =
@@ -20,7 +22,7 @@ export const useGetTeamTags = (email: string) => {
 
 	const enabled = Boolean(token) && Boolean(email);
 
-	const { data, isLoading, error, status, refetch } = useQuery({
+	const result = useQuery({
 		queryKey,
 		queryFn: async () => {
 			return await getRequest({
@@ -34,14 +36,19 @@ export const useGetTeamTags = (email: string) => {
 								id: Math.random().toString(36).substr(2, 9),
 								message: error.message,
 								type: 'error',
+								read: false,
+								timestamp: String(new Date()),
+								title: error.message,
 							},
 						],
 					});
 				},
 			});
 		},
-		enabled
+		enabled,
 	});
+
+	const { data, error, isLoading } = result;
 
 	useEffect(() => {
 		if (data) {
@@ -56,12 +63,6 @@ export const useGetTeamTags = (email: string) => {
 			}
 		}
 	}, [data, updateGeneralStore, error]);
-	return {
-		data,
-		isLoading,
-		error,
-		status,
-		refetch,
-	};
-
+	useGlobalLoading(isLoading, 'Загрузка tasks tags данных...');
+	return result;
 };

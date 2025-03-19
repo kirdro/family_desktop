@@ -2,13 +2,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, Typography, Divider, message } from 'antd';
-import {
-	UserOutlined,
-	MailOutlined,
-	LockOutlined,
-	TeamOutlined,
-} from '@ant-design/icons';
-import apiClient from '../../api/client';
+import { UserOutlined, MailOutlined } from '@ant-design/icons';
 import { useGeneralStore } from '../../store/useGeneralStore';
 
 const { Title, Text } = Typography;
@@ -30,7 +24,6 @@ const SignUp: React.FC = () => {
 			setLoading(true);
 
 			// Отправка запроса на сервер
-			const { data } = await apiClient.post('/auth/signup', values);
 
 			// Сохранение email для верификации кода
 			await updateGeneralStore({

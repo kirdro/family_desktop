@@ -2,11 +2,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Typography, Button, Input, message, Space, Form } from 'antd';
-import { MailOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import apiClient from '../../api/client';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useGeneralStore } from '../../store/useGeneralStore';
-import { usePostLogin } from '../../api/usePostLogin.ts';
-import { usePostVerifyCode } from '../../api/usePostVerifyCode.ts';
+import { usePostLogin } from '../../api/usePostLogin';
+import { usePostVerifyCode } from '../../api/usePostVerifyCode';
 
 const { Title, Text, Paragraph } = Typography;
 

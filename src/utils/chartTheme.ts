@@ -1,6 +1,6 @@
 // src/utils/chartTheme.ts
 import { theme } from 'antd';
-import { darkTheme } from '../main.tsx';
+import { darkTheme } from '../main';
 
 // Получение токенов темы
 const { useToken } = theme;
@@ -94,7 +94,7 @@ export function useChartTheme() {
 	return {
 		getBaseTheme,
 		// Функция для создания темы для конкретного типа графика
-		getLineConfig: (config) => ({
+		getLineConfig: (config: { xAxis: any; yAxis: any }) => ({
 			...getBaseTheme(),
 			...config,
 			xAxis: {
@@ -108,7 +108,7 @@ export function useChartTheme() {
 			},
 		}),
 		// Аналогично для других типов графиков
-		getPieConfig: (config) => ({
+		getPieConfig: (config: any) => ({
 			...getBaseTheme(),
 			...config,
 			label: {
@@ -119,7 +119,7 @@ export function useChartTheme() {
 				...config.label,
 			},
 		}),
-		getColumnConfig: (config) => ({
+		getColumnConfig: (config: any) => ({
 			...getBaseTheme(),
 			...config,
 			xAxis: {
