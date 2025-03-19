@@ -1,12 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useEffect } from 'react';
-import { useNotificationStore } from '../store/useNotificationStore.ts';
-import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { useGeneralStore } from '../store/useGeneralStore';
 import { GENERAL, TASKS } from '../constants';
-import { HOST } from '../../host.ts';
-import { getRequest } from '../tools/request.ts';
-import { useGlobalLoading } from '../hooks/useGlobalLoading.ts';
+import { HOST } from '../../host';
+import { getRequest } from '../tools/request';
+import { useGlobalLoading } from '../hooks/useGlobalLoading';
 
 export const useGetAllTasks = (email: string) => {
 	const { updateNotificationStore, getNotificationStore } =
@@ -34,6 +34,9 @@ export const useGetAllTasks = (email: string) => {
 								id: Math.random().toString(36).substr(2, 9),
 								message: error.message,
 								type: 'error',
+								read: false,
+								timestamp: String(new Date()),
+								title: error.message,
 							},
 						],
 					});

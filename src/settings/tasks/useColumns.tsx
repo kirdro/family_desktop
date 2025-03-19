@@ -1,4 +1,4 @@
-import { IColumn } from '../../types/tasks.ts';
+import { IColumn } from '../../types/tasks';
 import styles from '../../pages/tasks/TasksStyles.module.css';
 import {
 	Avatar,
@@ -9,9 +9,9 @@ import {
 	Tooltip,
 	Typography,
 } from 'antd';
-import TaskStatusDropdown from '../../components/tasks/TaskStatusDropdown.tsx';
-import TaskPrioritySelector from '../../components/tasks/TaskPrioritySelector.tsx';
-import TaskTags from '../../components/tasks/TaskTags.tsx';
+import TaskStatusDropdown from '../../components/tasks/TaskStatusDropdown';
+import TaskPrioritySelector from '../../components/tasks/TaskPrioritySelector';
+import TaskTags from '../../components/tasks/TaskTags';
 import {
 	CheckOutlined,
 	ClockCircleOutlined,
@@ -19,9 +19,9 @@ import {
 	MoreOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { ITag, ITask, IUser } from '../../types';
-import UserAvatar from '../../components/common/UserAvatar.tsx';
-import { formatDate } from '../../tools/formatDate.ts';
+import { ITag, ITask, IUser, Status } from '../../types';
+import UserAvatar from '../../components/common/UserAvatar';
+import { formatDate } from '../../tools/formatDate';
 
 const { Text } = Typography;
 
@@ -74,7 +74,7 @@ export const useColumns = () => {
 			title: 'Статус',
 			dataIndex: 'status',
 			key: 'status',
-			render: (status: string, record: ITask) => (
+			render: (status: Status, record: ITask) => (
 				<TaskStatusDropdown
 					value={status}
 					onChange={(newStatus) =>

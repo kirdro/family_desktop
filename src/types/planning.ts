@@ -1,5 +1,5 @@
 // src/types/planning.ts
-import { ITask, ITeam, IUser } from './index.ts';
+import { ITask, ITeam, IUser } from './index';
 
 export enum PlanStatus {
 	NEW = 'NEW',

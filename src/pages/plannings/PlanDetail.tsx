@@ -30,10 +30,9 @@ import {
 
 import styled from 'styled-components';
 import dayjs from 'dayjs';
-import { PlanFile, PlanPriority, PlanStatus } from '../../types/building.ts';
-import { Plan } from '../../types/planning.ts';
-import { useGeneralStore } from '../../store/useGeneralStore.ts';
-import UserAvatar from '../../components/common/UserAvatar.tsx';
+import { useGeneralStore } from '../../store/useGeneralStore';
+import UserAvatar from '../../components/common/UserAvatar';
+import { PlanFile, PlanPriority, PlanStatus } from '../../types/planning';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -67,17 +66,6 @@ const TagContainer = styled.div`
 	flex-wrap: wrap;
 `;
 
-const TaskItem = styled.div`
-	display: flex;
-	align-items: center;
-	padding: 12px 0;
-	border-bottom: 1px solid #303030;
-
-	&:last-child {
-		border-bottom: none;
-	}
-`;
-
 const FileItem = styled.div`
 	display: flex;
 	align-items: center;
@@ -86,10 +74,6 @@ const FileItem = styled.div`
 	background: #2a2a2a;
 	border-radius: 4px;
 	margin-bottom: 8px;
-`;
-
-const CommentList = styled.div`
-	margin-top: 24px;
 `;
 
 const statusColors = {
@@ -147,15 +131,14 @@ const PlanDetail: React.FC = () => {
 	// }
 
 	const handleStatusChange = (newStatus: PlanStatus) => {
-		let updates: Partial<Plan> = { status: newStatus };
-
-		if (newStatus === PlanStatus.COMPLETED) {
-			updates.completedAt = new Date().toISOString();
-			updates.progress = 100;
-		} else if (newStatus === PlanStatus.CANCELLED) {
-			updates.cancelledAt = new Date().toISOString();
-		}
-
+		// let updates: Partial<Plan> = { status: newStatus };
+		//
+		// if (newStatus === PlanStatus.COMPLETED) {
+		// 	updates.completedAt = new Date().toISOString();
+		// 	updates.progress = 100;
+		// } else if (newStatus === PlanStatus.CANCELLED) {
+		// 	updates.cancelledAt = new Date().toISOString();
+		// }
 		// updatePlanMutation.mutate({ id: plan.id, ...updates });
 	};
 
@@ -164,7 +147,8 @@ const PlanDetail: React.FC = () => {
 			// await deletePlanMutation.mutateAsync(plan.id);
 			message.success('План успешно удален');
 			navigate('/admin/plans');
-		} catch (error) {
+		} catch (err) {
+			console.log(err);
 			message.error('Ошибка при удалении плана');
 		}
 	};
@@ -172,22 +156,6 @@ const PlanDetail: React.FC = () => {
 	const handleFileUpload = (file: File) => {
 		// uploadFileMutation.mutate(file);
 		return false; // предотвращаем стандартное поведение Upload
-	};
-
-	const handleSubmitComment = () => {
-		// if (!commentText.trim()) return;
-		// addCommentMutation.mutate(
-		// 	{
-		// 		planId: plan.id,
-		// 		text: commentText,
-		// 	},
-		// 	{
-		// 		onSuccess: () => {
-		// 			setCommentText('');
-		// 			message.success('Комментарий добавлен');
-		// 		},
-		// 	},
-		// );
 	};
 
 	const formatFileSize = (bytes: number) => {

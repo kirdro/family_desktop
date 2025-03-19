@@ -1,6 +1,6 @@
 // src/context/LoadingContext.tsx
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Spin, Modal } from 'antd';
+import { Spin } from 'antd';
 import styles from './LoadingContext.module.css';
 
 interface LoadingContextType {

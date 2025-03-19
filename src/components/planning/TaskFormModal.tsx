@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Button, Checkbox } from 'antd';
 import styled from 'styled-components';
-import { Task } from '../../store/tasksLocalStore.ts';
+import { Task } from '../../store/tasksLocalStore';
 
 const { TextArea } = Input;
 

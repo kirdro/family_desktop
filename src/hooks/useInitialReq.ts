@@ -1,7 +1,7 @@
-import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { useGeneralStore } from '../store/useGeneralStore';
 import { useGetAllTasks, useGetTeamTags } from '../api';
-import { useGetTeam } from '../api/useGetTeam.ts';
-import { useGetPlans } from '../api/useGetPlans.ts';
+import { useGetTeam } from '../api/useGetTeam';
+import { useGetPlans } from '../api/useGetPlans';
 
 export const useInitialReq = () => {
 	const { getGeneralStore } = useGeneralStore();

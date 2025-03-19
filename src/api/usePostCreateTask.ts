@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNotificationStore } from '../store/useNotificationStore.ts';
-import { useGeneralStore } from '../store/useGeneralStore.ts';
-import { HOST } from '../../host.ts';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { useGeneralStore } from '../store/useGeneralStore';
+import { HOST } from '../../host';
 import { IParamsCreateTask } from '../types';
-import { postRequest } from '../tools/request.ts';
+import { postRequest } from '../tools/request';
 import { GENERAL, TASKS } from '../constants';
 
 export const usePostCreateTask = () => {
@@ -25,7 +25,7 @@ export const usePostCreateTask = () => {
 				token,
 			});
 		},
-		onSuccess: () => {
+		onSuccess: (response) => {
 			queryClient.invalidateQueries({ queryKey: [GENERAL, TASKS] });
 			updateNotificationStore({
 				notifications: [
@@ -34,6 +34,9 @@ export const usePostCreateTask = () => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: 'Code verification successful',
 						type: 'success',
+						read: false,
+						timestamp: String(new Date()),
+						title: response.status,
 					},
 				],
 			});
@@ -46,6 +49,9 @@ export const usePostCreateTask = () => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: error.message,
 						type: 'error',
+						read: false,
+						timestamp: String(new Date()),
+						title: error.message,
 					},
 				],
 			});

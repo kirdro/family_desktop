@@ -1,11 +1,11 @@
 // src/components/tasks/TaskDescr.tsx
 
 import styles from '../../pages/tasks/TasksStyles.module.css';
-import { Divider, Tabs, Typography } from 'antd';
-import SubTaskList from './SubTaskList.tsx';
-import { FC, useState } from 'react';
+import { Divider, Typography } from 'antd';
+import SubTaskList from './SubTaskList';
+import { FC } from 'react';
 import { ITask } from '../../types';
-const { Title, Text, Paragraph } = Typography;
+const { Text, Paragraph } = Typography;
 
 interface IProps {
 	task: ITask;

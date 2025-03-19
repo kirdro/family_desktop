@@ -10,7 +10,6 @@ import {
 	Typography,
 	Tooltip,
 	Empty,
-	Spin,
 } from 'antd';
 import {
 	PlusOutlined,
@@ -20,15 +19,14 @@ import {
 
 import styles from './TasksStyles.module.css';
 import dayjs from 'dayjs';
-import {getFilteredTasks} from "../../settings/tasks/getFilteredTasks.ts";
-import {useColumns} from "../../settings/tasks/useColumns.tsx";
-import {IFilters, IStatusTitles} from "../../types/tasks.ts";
-import {Filters} from "../../components/tasks/Filters.tsx";
-import {ITask} from "../../types";
-import {KanbanBoard} from "../../components/tasks/KanbanBoard.tsx";
-import {SearchBox} from "../../components/tasks/SearchBox.tsx";
-import {useGetAllTasks, useGetTeamTags} from "../../api";
-import {useGeneralStore} from "../../store/useGeneralStore.ts";
+import { getFilteredTasks } from '../../settings/tasks/getFilteredTasks';
+import { useColumns } from '../../settings/tasks/useColumns';
+import { IFilters, IStatusTitles } from '../../types/tasks';
+import { Filters } from '../../components/tasks/Filters';
+import { ITask } from '../../types';
+import { KanbanBoard } from '../../components/tasks/KanbanBoard';
+import { SearchBox } from '../../components/tasks/SearchBox';
+import { useGeneralStore } from '../../store/useGeneralStore';
 
 const { Title, Text } = Typography;
 
@@ -44,26 +42,18 @@ const TasksList: FC = () => {
 		dateRange: null as [dayjs.Dayjs, dayjs.Dayjs] | null,
 	});
 
-	const {
-		getGeneralStore
-	} = useGeneralStore()
+	const { getGeneralStore } = useGeneralStore();
 
-	const {
-		user,
-		tasks,
-		taskTags
-	} = getGeneralStore()
+	const { user, tasks, taskTags } = getGeneralStore();
 
-	const columns = useColumns()
+	const columns = useColumns();
 
 	// Используем хук для получения задач
-
 
 	// Обработчик создания новой задачи
 	const handleCreateTask = () => {
 		navigate('/admin/tasks/create');
 	};
-
 
 	// Кнопка сброса фильтров
 	const handleResetFilters = () => {
@@ -89,13 +79,13 @@ const TasksList: FC = () => {
 
 	// Функция рендеринга представления Канбан
 	const renderKanbanBoard = () => {
-		const filteredTasks:ITask[] = getFilteredTasks({
+		const filteredTasks: ITask[] = getFilteredTasks({
 			tasks: tasks,
 			searchText,
-			filters
+			filters,
 		});
 		const statusColumns = ['TODO', 'IN_PROGRESS', 'REVIEW', 'DONE'];
-		const statusTitles:IStatusTitles = {
+		const statusTitles: IStatusTitles = {
 			TODO: 'К выполнению',
 			IN_PROGRESS: 'В процессе',
 			REVIEW: 'На проверке',
@@ -192,15 +182,14 @@ const TasksList: FC = () => {
 							dataSource={getFilteredTasks({
 								tasks: tasks,
 								searchText,
-								filters
+								filters,
 							})}
 							columns={columns}
 							rowKey='id'
 							pagination={{
 								pageSize: 10,
 								showSizeChanger: true,
-								showTotal: (total) =>
-									`Всего ${total} задач`,
+								showTotal: (total) => `Всего ${total} задач`,
 							}}
 							className={styles.tasksTable}
 							locale={{
@@ -212,7 +201,7 @@ const TasksList: FC = () => {
 								),
 							}}
 						/>
-						:	renderKanbanBoard()}
+					:	renderKanbanBoard()}
 				</>
 			</Card>
 		</div>

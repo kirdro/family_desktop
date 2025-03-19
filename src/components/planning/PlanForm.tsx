@@ -16,12 +16,12 @@ import {
 import { ArrowLeftOutlined, SaveOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import dayjs from 'dayjs';
-import { PlanPriority, PlanStatus } from '../../types/building.ts';
-import { useGeneralStore } from '../../store/useGeneralStore.ts';
+import { PlanPriority, PlanStatus } from '../../types/building';
+import { useGeneralStore } from '../../store/useGeneralStore';
 import styles from '../../pages/tasks/TasksStyles.module.css';
-import UserAvatar from '../common/UserAvatar.tsx';
-import { useCreatePlan } from '../../api/useCreatePlan.ts';
-import { useUpdatePlan } from '../../api/useUpdatePlan.ts';
+import UserAvatar from '../common/UserAvatar';
+import { useCreatePlan } from '../../api/useCreatePlan';
+import { useUpdatePlan } from '../../api/useUpdatePlan';
 
 const { Title } = Typography;
 const { TextArea } = Input;

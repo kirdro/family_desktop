@@ -1,10 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
-import { useGeneralStore } from '../store/useGeneralStore.ts';
-import { useNotificationStore } from '../store/useNotificationStore.ts';
-import { HOST } from '../../host.ts';
+import { useGeneralStore } from '../store/useGeneralStore';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { HOST } from '../../host';
 import { IParamsUpdateTask } from '../types';
-import { patchRequest } from '../tools/request.ts';
-import { queryClient } from '../lib/queryClient.ts';
+import { patchRequest } from '../tools/request';
+import { queryClient } from '../lib/queryClient';
 import { GENERAL, TASK_STATS, TASKS } from '../constants';
 
 export const usePatchUpdateTask = () => {
@@ -38,6 +38,9 @@ export const usePatchUpdateTask = () => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: 'Code verification successful',
 						type: 'success',
+						read: false,
+						timestamp: String(new Date()),
+						title: response.status,
 					},
 				],
 			});
@@ -50,6 +53,9 @@ export const usePatchUpdateTask = () => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: error.message,
 						type: 'error',
+						read: false,
+						timestamp: String(new Date()),
+						title: error.message,
 					},
 				],
 			});

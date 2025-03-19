@@ -1,9 +1,9 @@
-import { useGeneralStore } from '../store/useGeneralStore.ts';
-import { useNotificationStore } from '../store/useNotificationStore.ts';
-import { HOST } from '../../host.ts';
+import { useGeneralStore } from '../store/useGeneralStore';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { HOST } from '../../host';
 import { useMutation } from '@tanstack/react-query';
-import { putRequest } from '../tools/request.ts';
-import { queryClient } from '../lib/queryClient.ts';
+import { putRequest } from '../tools/request';
+import { queryClient } from '../lib/queryClient';
 import { GENERAL, PLANS } from '../constants';
 
 export const useUpdatePlan = (planId: string) => {
@@ -36,6 +36,9 @@ export const useUpdatePlan = (planId: string) => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: 'Code verification successful',
 						type: 'success',
+						read: false,
+						timestamp: String(new Date()),
+						title: response.status,
 					},
 				],
 			});
@@ -48,6 +51,9 @@ export const useUpdatePlan = (planId: string) => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: error.message,
 						type: 'error',
+						read: false,
+						timestamp: String(new Date()),
+						title: error.message,
 					},
 				],
 			});

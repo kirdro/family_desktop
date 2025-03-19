@@ -7,6 +7,10 @@ export interface Todo {
 	completed: boolean;
 }
 
+export interface IKeyString<T> {
+	[key: string]: T;
+}
+
 export interface IRequestArgs {
 	url: string;
 	token?: string | null;
@@ -210,6 +214,7 @@ export interface ISubTask {
 	assignees: IUser[];
 	comments: IComment[];
 	tags: ITag[];
+	description?: string;
 }
 
 export interface IComment {

@@ -1,11 +1,11 @@
-import { useNotificationStore } from '../store/useNotificationStore.ts';
-import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { useGeneralStore } from '../store/useGeneralStore';
 import { GENERAL, PLANS } from '../constants';
-import { HOST } from '../../host.ts';
+import { HOST } from '../../host';
 import { useQuery } from '@tanstack/react-query';
-import { getRequest } from '../tools/request.ts';
+import { getRequest } from '../tools/request';
 import { useEffect } from 'react';
-import { useGlobalLoading } from '../hooks/useGlobalLoading.ts';
+import { useGlobalLoading } from '../hooks/useGlobalLoading';
 
 export const useGetPlans = (email: string | null) => {
 	const { updateNotificationStore, getNotificationStore } =
@@ -33,6 +33,9 @@ export const useGetPlans = (email: string | null) => {
 								id: Math.random().toString(36).substr(2, 9),
 								message: error.message,
 								type: 'error',
+								read: false,
+								timestamp: String(new Date()),
+								title: error.message,
 							},
 						],
 					});

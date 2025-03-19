@@ -1,11 +1,10 @@
 // src/routes/ProtectedRoute.tsx
 import { useEffect } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { Spin, message } from 'antd';
 import { useGeneralStore } from '../store/useGeneralStore';
-import apiClient from '../api/client';
-import { secureStorage } from '../utils/token-storage.ts';
-import { usePostVerifyToken } from '../api/usePostVerifyToken.ts';
+import { secureStorage } from '../utils/token-storage';
+import { usePostVerifyToken } from '../api/usePostVerifyToken';
 import { EMAIL, TOKEN_STORAGE } from '../constants';
 
 interface ProtectedRouteProps {

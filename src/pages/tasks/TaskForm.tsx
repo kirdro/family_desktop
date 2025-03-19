@@ -7,7 +7,6 @@ import {
 	Select,
 	DatePicker,
 	Tabs,
-	Space,
 	Divider,
 	message,
 	Row,
@@ -22,23 +21,21 @@ import {
 	CalendarOutlined,
 	SaveOutlined,
 	CloseOutlined,
-	PlusOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGeneralStore } from '../../store/useGeneralStore';
-import { useTasks } from '../../hooks/useTasks';
-import { useTaskTags } from '../../hooks/useTaskTags';
 import dayjs from 'dayjs';
 import styles from '../../pages/tasks/TasksStyles.module.css';
-import TagSelector from '../../components/tasks/TagSelector.tsx';
-import AssigneeSelector from '../../components/tasks/AssigneeSelector.tsx';
+import TagSelector from '../../components/tasks/TagSelector';
+import AssigneeSelector from '../../components/tasks/AssigneeSelector';
+import { ITag, ITask, IUser } from '../../types';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
 
 interface TaskFormProps {
-	initialData?: any;
+	initialData?: ITask;
 	isEditMode?: boolean;
 }
 
@@ -52,43 +49,41 @@ const TaskForm: React.FC<TaskFormProps> = ({
 	const [form] = Form.useForm();
 	const [activeTab, setActiveTab] = useState('details');
 	const [loading, setLoading] = useState(false);
-	const [selectedTags, setSelectedTags] = useState<any[]>([]);
-	const [selectedAssignees, setSelectedAssignees] = useState<any[]>([]);
+	const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
+	const [selectedAssignees, setSelectedAssignees] = useState<IUser[]>([]);
 
 	// Используем хуки для работы с API
-	const { createTask, updateTask, getTask } = useTasks();
-	const { getTags } = useTaskTags();
 
 	// Загрузка данных задачи для редактирования
 	useEffect(() => {
 		const fetchTask = async () => {
 			if (isEditMode && id) {
 				try {
-					setLoading(true);
-					const taskData = await getTask(id);
-
-					// Заполняем форму данными
-					form.setFieldsValue({
-						title: taskData.title,
-						description: taskData.description,
-						status: taskData.status,
-						priority: taskData.priority,
-						dateRange:
-							taskData.startDate || taskData.endDate ?
-								[
-									taskData.startDate ?
-										dayjs(taskData.startDate)
-									:	null,
-									taskData.endDate ?
-										dayjs(taskData.endDate)
-									:	null,
-								]
-							:	null,
-					});
-
-					// Устанавливаем выбранные теги и исполнителей
-					setSelectedTags(taskData.tags || []);
-					setSelectedAssignees(taskData.assignees || []);
+					// setLoading(true);
+					// const taskData = await getTask(id);
+					//
+					// // Заполняем форму данными
+					// form.setFieldsValue({
+					// 	title: taskData.title,
+					// 	description: taskData.description,
+					// 	status: taskData.status,
+					// 	priority: taskData.priority,
+					// 	dateRange:
+					// 		taskData.startDate || taskData.endDate ?
+					// 			[
+					// 				taskData.startDate ?
+					// 					dayjs(taskData.startDate)
+					// 				:	null,
+					// 				taskData.endDate ?
+					// 					dayjs(taskData.endDate)
+					// 				:	null,
+					// 			]
+					// 		:	null,
+					// });
+					//
+					// // Устанавливаем выбранные теги и исполнителей
+					// setSelectedTags(taskData.tags || []);
+					// setSelectedAssignees(taskData.assignees || []);
 				} catch (error) {
 					console.error('Error fetching task:', error);
 					message.error('Не удалось загрузить данные задачи');
@@ -118,10 +113,10 @@ const TaskForm: React.FC<TaskFormProps> = ({
 		};
 
 		fetchTask();
-	}, [isEditMode, id, form, getTask, initialData]);
+	}, [isEditMode, id, form, initialData]);
 
 	// Обработчик отправки формы
-	const handleSubmit = async (values) => {
+	const handleSubmit = async (values: any) => {
 		try {
 			setLoading(true);
 
@@ -140,14 +135,14 @@ const TaskForm: React.FC<TaskFormProps> = ({
 
 			if (isEditMode && id) {
 				// Обновление существующей задачи
-				await updateTask(id, taskData);
+				// await updateTask(id, taskData);
 				message.success('Задача успешно обновлена');
 				navigate(`/admin/tasks/${id}`);
 			} else {
 				// Создание новой задачи
-				const newTask = await createTask(taskData);
-				message.success('Задача успешно создана');
-				navigate(`/admin/tasks/${newTask.id}`);
+				// const newTask = await createTask(taskData);
+				// message.success('Задача успешно создана');
+				// navigate(`/admin/tasks/${newTask.id}`);
 			}
 		} catch (error) {
 			console.error('Error saving task:', error);

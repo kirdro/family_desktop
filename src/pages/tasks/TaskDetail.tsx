@@ -8,7 +8,6 @@ import {
 	Tabs,
 	Space,
 	Avatar,
-	Spin,
 	Empty,
 	Divider,
 	Timeline,
@@ -35,17 +34,14 @@ import {
 	PlusOutlined,
 } from '@ant-design/icons';
 import { useGeneralStore } from '../../store/useGeneralStore';
-import { useTasks } from '../../hooks/useTasks';
 import TaskComments from '../../components/tasks/TaskComments';
 import TaskTags from '../../components/tasks/TaskTags';
 import TaskStatusDropdown from '../../components/tasks/TaskStatusDropdown';
 import TaskPrioritySelector from '../../components/tasks/TaskPrioritySelector';
 import styles from './TasksStyles.module.css';
-import dayjs from 'dayjs';
-import { TaskDescr } from '../../components/tasks/TaskDescr.tsx';
 import { usePatchUpdateTask } from '../../api';
 import { Status } from '../../types';
-import { formatDate } from '../../tools/formatDate.ts';
+import { formatDate } from '../../tools/formatDate';
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -57,14 +53,11 @@ const TaskDetail: React.FC = () => {
 	const { getGeneralStore } = useGeneralStore();
 	const { tasks } = getGeneralStore();
 	const [activeTab, setActiveTab] = useState('details');
-	const [isLoading, setIsLoading] = useState(false);
-	const [_task, setTask] = useState<unknown>(null);
 
 	const task = tasks.find((task) => task.id === id);
 	const { mutateAsync } = usePatchUpdateTask();
 
-	// Используем хуки для задач и комментариев
-	const { getTask, updateTask, deleteTask } = useTasks();
+	// Используем хуки для задач и
 
 	// Получение данных о задаче
 
@@ -95,7 +88,7 @@ const TaskDetail: React.FC = () => {
 		if (!id || !task) return;
 
 		try {
-			await updateTask(id, { priority: newPriority });
+			// await updateTask(id, { priority: newPriority });
 			message.success('Приоритет задачи обновлен');
 		} catch (error) {
 			console.error('Error updating task priority:', error);
@@ -111,8 +104,8 @@ const TaskDetail: React.FC = () => {
 		// Если задача еще не начата
 		if (!task.startDate) {
 			try {
-				const startDate = dayjs().toISOString();
-				await updateTask(id, { startDate, status: 'IN_PROGRESS' });
+				// const startDate = dayjs().toISOString();
+				// await updateTask(id, { startDate, status: 'IN_PROGRESS' });
 
 				message.success('Задача начата');
 			} catch (error) {
@@ -123,13 +116,13 @@ const TaskDetail: React.FC = () => {
 		// Если задача уже начата, но не завершена
 		else if (!task.completedAt) {
 			try {
-				const completedAt = dayjs().toISOString();
-				const endDate = dayjs().toISOString();
-				await updateTask(id, {
-					completedAt,
-					endDate,
-					status: 'DONE',
-				});
+				// const completedAt = dayjs().toISOString();
+				// const endDate = dayjs().toISOString();
+				// await updateTask(id, {
+				// 	completedAt,
+				// 	endDate,
+				// 	status: 'DONE',
+				// });
 
 				message.success('Задача завершена');
 			} catch (error) {
@@ -140,10 +133,10 @@ const TaskDetail: React.FC = () => {
 		// Если задача уже завершена, можно возобновить
 		else {
 			try {
-				await updateTask(id, {
-					completedAt: null,
-					status: 'IN_PROGRESS',
-				});
+				// await updateTask(id, {
+				// 	completedAt: null,
+				// 	status: 'IN_PROGRESS',
+				// });
 
 				message.success('Задача возобновлена');
 			} catch (error) {
@@ -167,7 +160,7 @@ const TaskDetail: React.FC = () => {
 			cancelText: 'Отмена',
 			async onOk() {
 				try {
-					await deleteTask(id);
+					// await deleteTask(id);
 					message.success('Задача успешно удалена');
 					navigate('/admin/tasks');
 				} catch (error) {
@@ -183,14 +176,6 @@ const TaskDetail: React.FC = () => {
 	// Получение статуса в виде компонента Tag
 
 	// Если загрузка
-	if (isLoading) {
-		return (
-			<div className={styles.loadingContainer}>
-				<Spin size='large' />
-				<Text style={{ marginTop: 16 }}>Загрузка задачи...</Text>
-			</div>
-		);
-	}
 
 	// Если задача не найдена
 	if (!task) {
@@ -307,7 +292,10 @@ const TaskDetail: React.FC = () => {
 									}
 									key='details'
 								>
-									<TaskDescr task={task} setTask={setTask} />
+									{/*<TaskDescr*/}
+									{/*	task={task} */}
+									{/*	setTask={setTask}*/}
+									{/*/>*/}
 								</TabPane>
 
 								<TabPane
@@ -323,37 +311,37 @@ const TaskDetail: React.FC = () => {
 										initialComments={task.comments || []}
 										onCommentCreate={(newComment) => {
 											// Добавляем новый комментарий в состояние
-											setTask((prev) => ({
-												...prev,
-												comments: [
-													...prev.comments,
-													newComment,
-												],
-											}));
+											// setTask((prev) => ({
+											// 	...prev,
+											// 	comments: [
+											// 		...prev.comments,
+											// 		newComment,
+											// 	],
+											// }));
 										}}
 										onCommentUpdate={(updatedComment) => {
 											// Обновляем комментарий в состоянии
-											setTask((prev) => ({
-												...prev,
-												comments: prev.comments.map(
-													(c) =>
-														(
-															c.id ===
-															updatedComment.id
-														) ?
-															updatedComment
-														:	c,
-												),
-											}));
+											// setTask((prev) => ({
+											// 	...prev,
+											// 	comments: prev.comments.map(
+											// 		(c) =>
+											// 			(
+											// 				c.id ===
+											// 				updatedComment.id
+											// 			) ?
+											// 				updatedComment
+											// 			:	c,
+											// 	),
+											// }));
 										}}
 										onCommentDelete={(commentId) => {
 											// Удаляем комментарий из состояния
-											setTask((prev) => ({
-												...prev,
-												comments: prev.comments.filter(
-													(c) => c.id !== commentId,
-												),
-											}));
+											// setTask((prev) => ({
+											// 	...prev,
+											// 	comments: prev.comments.filter(
+											// 		(c) => c.id !== commentId,
+											// 	),
+											// }));
 										}}
 									/>
 								</TabPane>

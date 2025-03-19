@@ -4,7 +4,7 @@ import { Avatar, Button, Form, Input, Tooltip } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import styled from 'styled-components';
-import { PlanComment } from '../../types/planning.ts';
+import { PlanComment } from '../../types/planning';
 import { Comment } from '@ant-design/compatible';
 
 const { TextArea } = Input;

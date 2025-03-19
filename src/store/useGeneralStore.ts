@@ -10,7 +10,7 @@ import {
 	IUser,
 	IWallet,
 } from '../types';
-import { Plan } from '../types/planning.ts';
+import { Plan } from '../types/planning';
 
 const STORE_KEY = `GENERAL_STORE_KEY`;
 

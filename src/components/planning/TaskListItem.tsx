@@ -3,7 +3,7 @@ import React from 'react';
 import { Checkbox, Typography, Space, Button, Tooltip } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import { Task } from '../../store/tasksLocalStore.ts';
+import { Task } from '../../store/tasksLocalStore';
 
 const { Text, Paragraph } = Typography;
 

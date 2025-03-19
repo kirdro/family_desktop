@@ -16,8 +16,8 @@ import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import styled from 'styled-components';
-import { PlanPriority, PlanStatus, Plan } from '../../types/planning.ts';
-import { useGeneralStore } from '../../store/useGeneralStore.ts';
+import { PlanPriority, PlanStatus, Plan } from '../../types/planning';
+import { useGeneralStore } from '../../store/useGeneralStore';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;

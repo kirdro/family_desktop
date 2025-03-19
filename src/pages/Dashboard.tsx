@@ -10,7 +10,6 @@ import {
 	Tag,
 	Progress,
 	Button,
-	Divider,
 	Spin,
 	Empty,
 	Skeleton,
@@ -49,13 +48,12 @@ import {
 } from 'recharts';
 import { useGeneralStore } from '../store/useGeneralStore';
 import { useQuery } from '@tanstack/react-query';
-import apiClient from '../api/client';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/ru'; // Для русской локализации
 import styles from './Dashboard.module.css';
-import UserAvatar from '../components/common/UserAvatar.tsx';
-import { ITask, IUser } from '../types';
+import UserAvatar from '../components/common/UserAvatar';
+import { IKeyString, ITask } from '../types';
 
 // Расширяем функциональность dayjs
 dayjs.extend(relativeTime);
@@ -182,7 +180,21 @@ const Dashboard: React.FC = () => {
 	};
 
 	// Функция для рендеринга активного сегмента в круговой диаграмме
-	const renderActiveShape = (props) => {
+	const renderActiveShape = (props: {
+		cx: number;
+		cy: number;
+		midAngle: number;
+		innerRadius: number;
+		outerRadius: number;
+		startAngle: number;
+		endAngle: number;
+		fill: string;
+		payload: {
+			status: string;
+		};
+		percent: number;
+		value: number;
+	}) => {
 		const RADIAN = Math.PI / 180;
 		const {
 			cx,
@@ -259,7 +271,21 @@ const Dashboard: React.FC = () => {
 	};
 
 	// Кастомный тултип для графиков
-	const CustomTooltip = ({ active, payload, label, valuePrefix = '' }) => {
+	const CustomTooltip = ({
+		active,
+		payload,
+		label,
+		valuePrefix = '',
+	}: {
+		active?: boolean;
+		payload?: {
+			name: string;
+			color: string;
+			value: string;
+		}[];
+		label: string;
+		valuePrefix: string;
+	}) => {
 		if (active && payload && payload.length) {
 			return (
 				<div className={styles.customTooltip}>
@@ -279,7 +305,10 @@ const Dashboard: React.FC = () => {
 
 	// Получение статуса задачи для отображения
 	const getStatusTag = (status: string) => {
-		const statusMap = {
+		const statusMap: IKeyString<{
+			color: string;
+			text: string;
+		}> = {
 			pending: { color: 'gold', text: 'Ожидает' },
 			in_progress: { color: 'blue', text: 'В работе' },
 			completed: { color: 'green', text: 'Завершено' },
@@ -296,7 +325,10 @@ const Dashboard: React.FC = () => {
 
 	// Получение приоритета задачи для отображения
 	const getPriorityTag = (priority: string) => {
-		const priorityMap = {
+		const priorityMap: IKeyString<{
+			color: string;
+			text: string;
+		}> = {
 			low: { color: 'green', text: 'Низкий' },
 			medium: { color: 'orange', text: 'Средний' },
 			high: { color: 'red', text: 'Высокий' },
@@ -517,7 +549,12 @@ const Dashboard: React.FC = () => {
 											tick={{ fill: '#EEEEEE' }}
 										/>
 										<Tooltip
-											content={<CustomTooltip />}
+											content={
+												<CustomTooltip
+													label={'dfgsdfg'}
+													valuePrefix={'dfgsdfg'}
+												/>
+											}
 											contentStyle={{
 												backgroundColor: '#31363F',
 												border: '1px solid #76ABAE',
@@ -557,7 +594,9 @@ const Dashboard: React.FC = () => {
 									<PieChart>
 										<Pie
 											activeIndex={activePieIndex}
+											// @ts-ignore
 											activeShape={renderActiveShape}
+											// @ts-ignore
 											data={data.tasksByStatus}
 											cx='50%'
 											cy='50%'
@@ -583,7 +622,10 @@ const Dashboard: React.FC = () => {
 										</Pie>
 										<Tooltip
 											content={
-												<CustomTooltip valuePrefix='' />
+												<CustomTooltip
+													valuePrefix=''
+													label={''}
+												/>
 											}
 											contentStyle={{
 												backgroundColor: '#31363F',
@@ -627,7 +669,12 @@ const Dashboard: React.FC = () => {
 											tick={{ fill: '#EEEEEE' }}
 										/>
 										<Tooltip
-											content={<CustomTooltip />}
+											content={
+												<CustomTooltip
+													valuePrefix=''
+													label={''}
+												/>
+											}
 											contentStyle={{
 												backgroundColor: '#31363F',
 												border: '1px solid #76ABAE',
@@ -683,7 +730,7 @@ const Dashboard: React.FC = () => {
 										title: 'Задача',
 										dataIndex: 'title',
 										key: 'title',
-										render: (text, record) => (
+										render: (text) => (
 											<div className={styles.taskTitle}>
 												<Text strong>{text}</Text>
 											</div>
@@ -759,7 +806,7 @@ const Dashboard: React.FC = () => {
 									{
 										title: '',
 										key: 'actions',
-										render: (_, record) => (
+										render: () => (
 											<Dropdown
 												menu={{
 													items: [
@@ -1225,14 +1272,13 @@ function getMockDashboardData(
 			{ status: 'Отменено', value: canceledTasks },
 		],
 		tasksByPriority: [
-			{ priority: 'low', name: 'Низкий', value: 35, color: '#52c41a' },
+			{ priority: 'low', value: 35, color: '#52c41a' },
 			{
 				priority: 'medium',
-				name: 'Средний',
 				value: 55,
 				color: '#faad14',
 			},
-			{ priority: 'high', name: 'Высокий', value: 30, color: '#f5222d' },
+			{ priority: 'high', value: 30, color: '#f5222d' },
 		],
 		taskCompletionHistory,
 	};

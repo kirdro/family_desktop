@@ -1,10 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
-import { useGeneralStore } from '../store/useGeneralStore.ts';
-import { useNotificationStore } from '../store/useNotificationStore.ts';
-import { HOST } from '../../host.ts';
+import { useGeneralStore } from '../store/useGeneralStore';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { HOST } from '../../host';
 import { IParamsDeleteTask } from '../types';
-import { deleteRequest } from '../tools/request.ts';
-import { queryClient } from '../lib/queryClient.ts';
+import { deleteRequest } from '../tools/request';
+import { queryClient } from '../lib/queryClient';
 import { GENERAL, TASKS } from '../constants';
 
 export const useDeleteTask = () => {
@@ -35,6 +35,9 @@ export const useDeleteTask = () => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: 'Delete task success',
 						type: 'success',
+						read: false,
+						timestamp: String(new Date()),
+						title: response.status,
 					},
 				],
 			});
@@ -47,6 +50,9 @@ export const useDeleteTask = () => {
 						id: Math.random().toString(36).substr(2, 9),
 						message: error.message,
 						type: 'error',
+						read: false,
+						timestamp: String(new Date()),
+						title: error.message,
 					},
 				],
 			});

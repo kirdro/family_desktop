@@ -14,12 +14,12 @@ import {
 	Divider,
 	message,
 	Modal,
+	MenuProps,
 } from 'antd';
 import {
 	MenuFoldOutlined,
 	MenuUnfoldOutlined,
 	DashboardOutlined,
-	UserOutlined,
 	ProjectOutlined,
 	SettingOutlined,
 	LogoutOutlined,
@@ -33,7 +33,8 @@ import { useGeneralStore } from '../../store/useGeneralStore';
 import { useNotificationStore } from '../../store/useNotificationStore';
 import headerLogo from '../../assets/react.svg';
 import styles from './AdminLayout.module.css';
-import UserAvatar from '../common/UserAvatar.tsx';
+import UserAvatar from '../common/UserAvatar';
+import { ItemType, MenuItemType } from 'antd/es/menu/hooks/useItems';
 
 const { Header, Sider, Content, Footer } = Layout;
 
@@ -104,7 +105,7 @@ const AdminLayout: React.FC = () => {
 	};
 
 	// Пункты меню
-	const menuItems = [
+	const menuItems: ItemType<MenuItemType>[] = [
 		{
 			key: 'dashboard',
 			icon: <DashboardOutlined />,
@@ -115,11 +116,11 @@ const AdminLayout: React.FC = () => {
 			icon: <ProjectOutlined />,
 			label: <Link to='/admin/tasks'>Задачи</Link>,
 		},
-		generalStore.user?.role === 'admin' && {
-			key: 'users',
-			icon: <UserOutlined />,
-			label: <Link to='/admin/users'>Пользователи</Link>,
-		},
+		// generalStore.user?.role === 'admin' && {
+		// 	key: 'users',
+		// 	icon: <UserOutlined />,
+		// 	label: <Link to='/admin/users'>Пользователи</Link>,
+		// },
 		{
 			key: 'team',
 			icon: <TeamOutlined />,
@@ -147,10 +148,10 @@ const AdminLayout: React.FC = () => {
 				},
 			],
 		},
-	].filter(Boolean); // Фильтрация null-значений (для скрытия пунктов по условию)
+	]; // Фильтрация null-значений (для скрытия пунктов по условию)
 
 	// Контекстное меню пользователя
-	const userMenu = {
+	const userMenu: MenuProps = {
 		items: [
 			{
 				key: 'profile',

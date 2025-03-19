@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import styled from 'styled-components';
-import { PlanFile } from '../../types/building.ts';
+import { PlanFile } from '../../types/building';
 
 const { Text } = Typography;
 

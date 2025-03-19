@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { useEffect } from 'react';
-import { useGeneralStore } from '../store/useGeneralStore.ts';
+import { useGeneralStore } from '../store/useGeneralStore';
 import { GENERAL, TASK_STATS } from '../constants';
-import { HOST } from '../../host.ts';
-import { getRequest } from '../tools/request.ts';
+import { HOST } from '../../host';
+import { getRequest } from '../tools/request';
 
 export const useGetTaskStatistics = (email: string) => {
 	const { getGeneralStore, updateGeneralStore } = useGeneralStore();

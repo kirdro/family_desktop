@@ -1,5 +1,5 @@
 // src/components/tasks/TaskComments.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
 	Input,
 	Button,
@@ -17,13 +17,13 @@ import {
 	CloseOutlined,
 	SaveOutlined,
 } from '@ant-design/icons';
-import { useTaskComments } from '../../hooks/useTaskComments';
 import { useGeneralStore } from '../../store/useGeneralStore';
 import UserAvatar from '../common/UserAvatar';
 import { Comment } from '@ant-design/compatible';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import styles from '../../pages/tasks/TasksStyles.module.css';
+import { IComment } from '../../types';
 
 // Расширяем функциональность dayjs для относительного времени
 dayjs.extend(relativeTime);
@@ -34,9 +34,9 @@ const { Text } = Typography;
 interface TaskCommentsProps {
 	taskId: string;
 	subTaskId?: string;
-	initialComments?: any[];
-	onCommentCreate?: (comment: any) => void;
-	onCommentUpdate?: (comment: any) => void;
+	initialComments?: IComment[];
+	onCommentCreate?: (comment: IComment) => void;
+	onCommentUpdate?: (comment: IComment) => void;
 	onCommentDelete?: (commentId: string) => void;
 }
 
@@ -48,7 +48,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 	onCommentUpdate,
 	onCommentDelete,
 }) => {
-	const [comments, setComments] = useState<any[]>(initialComments);
+	const [comments, setComments] = useState<IComment[]>(initialComments);
 	const [loading, setLoading] = useState(false);
 	const [commentText, setCommentText] = useState('');
 	const [submitting, setSubmitting] = useState(false);
@@ -58,30 +58,8 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 	const [editingText, setEditingText] = useState('');
 
 	const { generalStore } = useGeneralStore();
-	const { getComments, addComment, updateComment, deleteComment } =
-		useTaskComments();
 
 	// Загрузка комментариев при монтировании
-	useEffect(() => {
-		const fetchComments = async () => {
-			if (initialComments.length === 0) {
-				try {
-					setLoading(true);
-					const data = await getComments(taskId, subTaskId);
-					setComments(data || []);
-				} catch (error) {
-					console.error('Error fetching comments:', error);
-					message.error('Не удалось загрузить комментарии');
-				} finally {
-					setLoading(false);
-				}
-			} else {
-				setComments(initialComments);
-			}
-		};
-
-		fetchComments();
-	}, [taskId, subTaskId, getComments, initialComments]);
 
 	// Обработчик отправки комментария
 	const handleSubmitComment = async () => {
@@ -90,19 +68,19 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 		try {
 			setSubmitting(true);
 
-			const newComment = await addComment({
-				taskId,
-				subTaskId,
-				text: commentText,
-			});
+			// const newComment = await addComment({
+			// 	taskId,
+			// 	subTaskId,
+			// 	text: commentText,
+			// });
 
-			setComments((prev) => [...prev, newComment]);
-			setCommentText('');
-
-			// Вызываем callback для обновления родительского компонента
-			if (onCommentCreate) {
-				onCommentCreate(newComment);
-			}
+			// setComments((prev) => [...prev, newComment]);
+			// setCommentText('');
+			//
+			// // Вызываем callback для обновления родительского компонента
+			// if (onCommentCreate) {
+			// 	onCommentCreate(newComment);
+			// }
 		} catch (error) {
 			console.error('Error adding comment:', error);
 			message.error('Не удалось добавить комментарий');
@@ -118,24 +96,24 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 		try {
 			setSubmitting(true);
 
-			const updatedComment = await updateComment(commentId, {
-				text: editingText,
-			});
+			// const updatedComment = await updateComment(commentId, {
+			// 	text: editingText,
+			// });
 
 			// Обновляем локальное состояние
-			setComments((prev) =>
-				prev.map((comment) =>
-					comment.id === commentId ? updatedComment : comment,
-				),
-			);
-
-			setEditingCommentId(null);
-			setEditingText('');
-
-			// Вызываем callback для обновления родительского компонента
-			if (onCommentUpdate) {
-				onCommentUpdate(updatedComment);
-			}
+			// setComments((prev) =>
+			// 	prev.map((comment) =>
+			// 		comment.id === commentId ? updatedComment : comment,
+			// 	),
+			// );
+			//
+			// setEditingCommentId(null);
+			// setEditingText('');
+			//
+			// // Вызываем callback для обновления родительского компонента
+			// if (onCommentUpdate) {
+			// 	onCommentUpdate(updatedComment);
+			// }
 		} catch (error) {
 			console.error('Error updating comment:', error);
 			message.error('Не удалось обновить комментарий');
@@ -145,7 +123,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 	};
 
 	// Начало редактирования комментария
-	const startEditingComment = (comment: any) => {
+	const startEditingComment = (comment: IComment) => {
 		setEditingCommentId(comment.id);
 		setEditingText(comment.text);
 	};
@@ -157,32 +135,32 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 	};
 
 	// Обработчик удаления комментария
-	const handleDeleteComment = async (commentId: string) => {
-		try {
-			setLoading(true);
-			await deleteComment(commentId);
-
-			// Обновляем локальное состояние
-			setComments((prev) =>
-				prev.filter((comment) => comment.id !== commentId),
-			);
-
-			// Вызываем callback для обновления родительского компонента
-			if (onCommentDelete) {
-				onCommentDelete(commentId);
-			}
-
-			message.success('Комментарий удален');
-		} catch (error) {
-			console.error('Error deleting comment:', error);
-			message.error('Не удалось удалить комментарий');
-		} finally {
-			setLoading(false);
-		}
-	};
+	// const handleDeleteComment = async (commentId: string) => {
+	// 	try {
+	// 		setLoading(true);
+	// 		await deleteComment(commentId);
+	//
+	// 		// Обновляем локальное состояние
+	// 		setComments((prev) =>
+	// 			prev.filter((comment) => comment.id !== commentId),
+	// 		);
+	//
+	// 		// Вызываем callback для обновления родительского компонента
+	// 		if (onCommentDelete) {
+	// 			onCommentDelete(commentId);
+	// 		}
+	//
+	// 		message.success('Комментарий удален');
+	// 	} catch (error) {
+	// 		console.error('Error deleting comment:', error);
+	// 		message.error('Не удалось удалить комментарий');
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
 
 	// Форматирование даты
-	const formatDate = (date: string) => {
+	const formatDate = (date: string | Date) => {
 		return dayjs(date).fromNow(); // Использует плагин relativeTime
 	};
 
@@ -225,9 +203,9 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 						}}
 						avatar={
 							<UserAvatar
-								name={comment.author?.name}
+								name={comment.author?.name || ''}
 								email={comment.author?.email}
-								avatar={comment.author?.avatar}
+								avatar={comment.author?.image || ''}
 							/>
 						}
 						content={
@@ -292,9 +270,9 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 									</Button>,
 									<Popconfirm
 										title='Вы уверены, что хотите удалить этот комментарий?'
-										onConfirm={() =>
-											handleDeleteComment(comment.id)
-										}
+										// onConfirm={() =>
+										// 	// handleDeleteComment(comment.id)
+										// }
 										okText='Да'
 										cancelText='Нет'
 									>

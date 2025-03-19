@@ -1,10 +1,10 @@
 // src/pages/auth/SignIn.tsx
-import { useState } from 'react';
+
 import { Link, useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, Typography, Divider, message } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { useGeneralStore } from '../../store/useGeneralStore';
-import { usePostLogin } from '../../api/usePostLogin.ts';
+import { usePostLogin } from '../../api/usePostLogin';
 
 const { Title, Text } = Typography;
 

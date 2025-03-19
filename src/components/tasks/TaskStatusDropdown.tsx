@@ -2,10 +2,11 @@
 import React from 'react';
 import { Select, Tag } from 'antd';
 import styles from '../../pages/tasks/TasksStyles.module.css';
+import { Status } from '../../types';
 
 interface TaskStatusDropdownProps {
-	value: string;
-	onChange: (value: string) => void;
+	value: Status;
+	onChange: (value: Status) => void;
 	disabled?: boolean;
 }
 

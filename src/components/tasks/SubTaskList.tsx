@@ -15,7 +15,6 @@ import {
 	Modal,
 	Form,
 	Select,
-	DatePicker,
 	message,
 	Spin,
 	Empty,
@@ -36,24 +35,25 @@ import dayjs from 'dayjs';
 import styles from '../../pages/tasks/TasksStyles.module.css';
 import { usePatchUpdateSubTask, usePostCreateSubTask } from '../../api';
 import {
+	IKeyString,
 	IParamsUpdateSubTask,
+	ISubTask,
 	ITag,
 	IUser,
 	Priority,
 	Status,
 } from '../../types';
-import { useDeleteSubTask } from '../../api/useDeleteSubTask.ts';
+import { useDeleteSubTask } from '../../api/useDeleteSubTask';
 
 const { Text, Paragraph } = Typography;
 const { TextArea } = Input;
-const { RangePicker } = DatePicker;
 const { TabPane } = Tabs;
 
 interface SubTaskListProps {
 	taskId: string;
-	initialSubTasks?: any[];
-	onSubTaskUpdate?: (subTask: any) => void;
-	onSubTaskCreate?: (subTask: any) => void;
+	initialSubTasks?: ISubTask[];
+	onSubTaskUpdate?: (subTask: ISubTask) => void;
+	onSubTaskCreate?: (subTask: ISubTask) => void;
 	onSubTaskDelete?: (subTaskId: string) => void;
 	showComments?: boolean; // Новый проп для отображения комментариев
 }
@@ -62,29 +62,24 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 	taskId,
 	initialSubTasks = [],
 	onSubTaskUpdate,
-	// onSubTaskCreate,
-	// onSubTaskDelete,
 	showComments = true, // По умолчанию показываем комментарии
 }) => {
-	const [subTasks, setSubTasks] = useState<any[]>(initialSubTasks);
-	const [loading, setLoading] = useState(false);
+	const [subTasks, setSubTasks] = useState<ISubTask[]>(initialSubTasks);
 	const [newSubTaskTitle, setNewSubTaskTitle] = useState('');
-	const [editingSubTask, setEditingSubTask] = useState<any>(null);
+	const [editingSubTask, setEditingSubTask] = useState<ISubTask | null>(null);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
 	const [selectedAssignees, setSelectedAssignees] = useState<IUser[]>([]);
 	const [expandedSubTask, setExpandedSubTask] = useState<string | null>(null);
 	const [activeTab, setActiveTab] = useState<string>('details');
 	const [form] = Form.useForm();
-	const inputRef = useRef<any>(null);
 
-	const { generalStore, getGeneralStore } = useGeneralStore();
+	const { getGeneralStore } = useGeneralStore();
 	const { user, team, taskTags } = getGeneralStore();
 	const { isPending, mutateAsync: onSubTaskCreate } = usePostCreateSubTask();
 	const { isPending: isPendingSubTask, mutateAsync: updateSubTask } =
 		usePatchUpdateSubTask();
-	const { isPending: isPendingDelete, mutateAsync: onSubTaskDelete } =
-		useDeleteSubTask();
+	const { mutateAsync: onSubTaskDelete } = useDeleteSubTask();
 
 	// Загрузка подзадач при монтировании
 	useEffect(() => {
@@ -92,11 +87,6 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 	}, [taskId, initialSubTasks]);
 
 	// Фокус на поле ввода при монтировании
-	useEffect(() => {
-		if (inputRef.current) {
-			inputRef.current.focus();
-		}
-	}, []);
 
 	// Сортировка подзадач: невыполненные сверху, выполненные снизу
 	const sortedSubTasks = [...subTasks].sort((a, b) => {
@@ -139,9 +129,9 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 			await onSubTaskCreate(newSubTask);
 
 			// Фокус на поле ввода после добавления
-			if (inputRef.current) {
-				inputRef.current.focus();
-			}
+			// if (inputRef.current) {
+			// 	inputRef.current.focus();
+			// }
 		} catch (error) {
 			console.error('Error creating subtask:', error);
 			message.error('Не удалось создать подзадачу');
@@ -149,17 +139,14 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 	};
 
 	// Обработчик нажатия Enter при вводе
-	const handleKeyPress = (e) => {
+	const handleKeyPress = (e: { key: string }) => {
 		if (e.key === 'Enter') {
 			handleAddSubTask();
 		}
 	};
 
 	// Обработчик отметки выполнения подзадачи
-	const handleToggleComplete = async (
-		subTaskId: string,
-		completed: boolean,
-	) => {
+	const handleToggleComplete = async (subTaskId: string) => {
 		try {
 			// await toggleSubTaskCompletion(subTaskId, completed);
 
@@ -200,7 +187,7 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 	};
 
 	// Открытие модального окна для редактирования
-	const handleEditSubTask = (subTask: any) => {
+	const handleEditSubTask = (subTask: ISubTask) => {
 		setEditingSubTask(subTask);
 		setSelectedTags(subTask.tags || []);
 		setSelectedAssignees(subTask.assignees || []);
@@ -227,23 +214,25 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 		try {
 			const values = await form.validateFields();
 
+			if (editingSubTask) {
+				const subTaskData = {
+					subTaskId: editingSubTask.id,
+					title: values.title,
+					description: values.description,
+					priority: values.priority,
+					status: values.status,
+					// startDate: values.dateRange?.[0]?.toISOString() || null,
+					// endDate: values.dateRange?.[1]?.toISOString() || null,
+					tags: selectedTags.map((tag) => tag.id),
+					emailAssigns: selectedAssignees.map((user) => user.email),
+				};
+
+				await updateSubTask(subTaskData);
+
+				setModalVisible(false);
+				message.success('Подзадача обновлена');
+			}
 			// Подготовка данных для API
-			const subTaskData = {
-				subTaskId: editingSubTask.id,
-				title: values.title,
-				description: values.description,
-				priority: values.priority,
-				status: values.status,
-				// startDate: values.dateRange?.[0]?.toISOString() || null,
-				// endDate: values.dateRange?.[1]?.toISOString() || null,
-				tags: selectedTags.map((tag) => tag.id),
-				emailAssigns: selectedAssignees.map((user) => user.email),
-			};
-
-			await updateSubTask(subTaskData);
-
-			setModalVisible(false);
-			message.success('Подзадача обновлена');
 		} catch (error) {
 			console.error('Error updating subtask:', error);
 			message.error('Не удалось обновить подзадачу');
@@ -258,7 +247,7 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 
 	// Получение цвета приоритета
 	const getPriorityColor = (priority: string) => {
-		const priorityMap = {
+		const priorityMap: IKeyString<string> = {
 			LOW: 'green',
 			MEDIUM: 'blue',
 			HIGH: 'orange',
@@ -270,7 +259,7 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 
 	// Получение цвета статуса
 	const getStatusColor = (status: string) => {
-		const statusMap = {
+		const statusMap: IKeyString<string> = {
 			TODO: 'default',
 			IN_PROGRESS: 'processing',
 			REVIEW: 'warning',
@@ -283,7 +272,7 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 
 	// Получение текста статуса
 	const getStatusText = (status: string) => {
-		const statusMap = {
+		const statusMap: IKeyString<string> = {
 			TODO: 'К выполнению',
 			IN_PROGRESS: 'В процессе',
 			REVIEW: 'На проверке',
@@ -296,7 +285,7 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 
 	// Получение текста приоритета
 	const getPriorityText = (priority: string) => {
-		const priorityMap = {
+		const priorityMap: IKeyString<string> = {
 			LOW: 'Низкий',
 			MEDIUM: 'Средний',
 			HIGH: 'Высокий',
@@ -307,14 +296,14 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 	};
 
 	// Форматирование даты
-	const formatDate = (date: string | null | undefined) => {
+	const formatDate = (date: string | null | undefined | Date) => {
 		if (!date) return null;
 		return dayjs(date).format('DD.MM.YYYY');
 	};
 
 	return (
 		<div className={styles.subTasksContainer}>
-			{loading && sortedSubTasks.length === 0 ?
+			{sortedSubTasks.length === 0 ?
 				<div className={styles.loadingContainer}>
 					<Spin size='small' />
 					<Text type='secondary'>Загрузка подзадач...</Text>
@@ -340,7 +329,7 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 											<Button
 												type='text'
 												icon={<CommentOutlined />}
-												onClick={(e) => {
+												onClick={() => {
 													handleExpandSubTask(
 														subTask.id,
 													);
@@ -372,7 +361,7 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 															icon: (
 																<EditOutlined />
 															),
-															onClick: (e) => {
+															onClick: () => {
 																handleEditSubTask(
 																	subTask,
 																);
@@ -415,7 +404,6 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 												e.stopPropagation();
 												handleToggleComplete(
 													subTask.id,
-													e.target.checked,
 												);
 											}}
 											onClick={(e) => e.stopPropagation()}
@@ -521,13 +509,15 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 																		<UserAvatar
 																			size='small'
 																			name={
-																				user.name
+																				user.name ||
+																				''
 																			}
 																			email={
 																				user.email
 																			}
 																			avatar={
-																				user.image
+																				user.image ||
+																				''
 																			}
 																		/>
 																	</Tooltip>
@@ -660,7 +650,8 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 																	name={
 																		subTask
 																			.author
-																			.name
+																			.name ||
+																		''
 																	}
 																	email={
 																		subTask
@@ -670,7 +661,8 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 																	avatar={
 																		subTask
 																			.author
-																			.avatar
+																			.image ||
+																		''
 																	}
 																/>
 																<Text>
@@ -834,7 +826,6 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 
 					<div className={styles.addSubTaskContainer}>
 						<Input
-							ref={inputRef}
 							placeholder='Добавить новую подзадачу и нажать Enter'
 							value={newSubTaskTitle}
 							onChange={(e) => setNewSubTaskTitle(e.target.value)}
@@ -936,14 +927,18 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 							value={selectedTags.map((tag) => tag.id)}
 							onChange={(values) => {
 								// Преобразуем ID обратно в объекты тегов
-								const tags = values.map((id) => {
-									const existingTag =
-										editingSubTask.tags?.find(
-											(t) => t.id === id,
-										);
-									return existingTag || { id };
-								});
-								setSelectedTags(tags);
+								if (editingSubTask) {
+									const tags = values
+										.map((id) => {
+											const existingTag =
+												editingSubTask.tags?.find(
+													(t) => t.id === id,
+												);
+											return existingTag;
+										})
+										.filter((tag) => !!tag);
+									setSelectedTags(tags);
+								}
 							}}
 							optionLabelProp='label'
 						>
@@ -984,7 +979,7 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 							placeholder='Выберите исполнителей'
 							style={{ width: '100%' }}
 							value={selectedAssignees.map((user) => user.email)}
-							onChange={(values: string[], option) => {
+							onChange={(values: string[]) => {
 								// Преобразуем ID обратно в объекты пользователей
 
 								if (!team) {

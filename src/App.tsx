@@ -1,10 +1,9 @@
-
 import './App.css';
 import AppRouter from './routes';
-import {useInitialReq} from "./hooks/useInitialReq.ts";
+import { useInitialReq } from './hooks/useInitialReq';
 
 function App() {
-	useInitialReq()
+	useInitialReq();
 	return <AppRouter />;
 }
 
