@@ -34,7 +34,7 @@ import { useNotificationStore } from '../../store/useNotificationStore';
 import headerLogo from '../../assets/react.svg';
 import styles from './AdminLayout.module.css';
 import UserAvatar from '../common/UserAvatar';
-import { ItemType, MenuItemType } from 'antd/es/menu/hooks/useItems';
+import { ItemType, MenuItemType } from 'antd/es/menu/interface';
 
 const { Header, Sider, Content, Footer } = Layout;
 
