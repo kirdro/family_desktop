@@ -64,6 +64,8 @@ const PlanForm: React.FC = () => {
 	const { mutateAsync } = useCreatePlan();
 	const { mutateAsync: updatePlan } = useUpdatePlan(id || '');
 
+	console.log('>>>>>>>>><><>><><<>', id);
+
 	// Для режима редактирования загружаем данные плана
 	const plan = plans.find((p) => p.id === id);
 	// const { data: plan, isLoading: planLoading } = usePlan(id || '');

@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { postRequest } from '../tools/request';
 import { queryClient } from '../lib/queryClient';
 import { GENERAL, PLANS } from '../constants';
+import toast from 'react-hot-toast';
 
 export const useCreatePlan = () => {
 	const { getGeneralStore } = useGeneralStore();
@@ -41,6 +42,13 @@ export const useCreatePlan = () => {
 					},
 				],
 			});
+			toast.success('Code verification successful', {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 		},
 		onError: (error) => {
 			updateNotificationStore({
@@ -55,6 +63,13 @@ export const useCreatePlan = () => {
 						title: error.message,
 					},
 				],
+			});
+			toast.error(error.message, {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
 			});
 		},
 	});

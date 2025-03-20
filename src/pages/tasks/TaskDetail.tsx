@@ -40,8 +40,10 @@ import TaskStatusDropdown from '../../components/tasks/TaskStatusDropdown';
 import TaskPrioritySelector from '../../components/tasks/TaskPrioritySelector';
 import styles from './TasksStyles.module.css';
 import { usePatchUpdateTask } from '../../api';
-import { Status } from '../../types';
+import { Priority, Status } from '../../types';
 import { formatDate } from '../../tools/formatDate';
+import { TaskDescr } from '../../components/tasks/TaskDescr';
+import UserAvatar from '../../components/common/UserAvatar';
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -57,11 +59,6 @@ const TaskDetail: React.FC = () => {
 	const task = tasks.find((task) => task.id === id);
 	const { mutateAsync } = usePatchUpdateTask();
 
-	// Используем хуки для задач и
-
-	// Получение данных о задаче
-
-	// Обработчик изменения статуса
 	const handleStatusChange = async (newStatus: Status) => {
 		if (!id || !task) return;
 
@@ -84,11 +81,20 @@ const TaskDetail: React.FC = () => {
 	};
 
 	// Обработчик изменения приоритета
-	const handlePriorityChange = async (newPriority: string) => {
+	const handlePriorityChange = async (newPriority: Priority) => {
 		if (!id || !task) return;
 
 		try {
-			// await updateTask(id, { priority: newPriority });
+			const _data = {
+				taskId: task.id,
+				startDate: task.startDate,
+				// endDate: new Date(),
+				status: task.status,
+				priority: newPriority,
+				emailAssigns: task.assignees.map((t) => t.email),
+				tags: task.tags.map((t) => t.id),
+			};
+			await mutateAsync(_data);
 			message.success('Приоритет задачи обновлен');
 		} catch (error) {
 			console.error('Error updating task priority:', error);
@@ -292,10 +298,7 @@ const TaskDetail: React.FC = () => {
 									}
 									key='details'
 								>
-									{/*<TaskDescr*/}
-									{/*	task={task} */}
-									{/*	setTask={setTask}*/}
-									{/*/>*/}
+									<TaskDescr task={task} />
 								</TabPane>
 
 								<TabPane
@@ -422,15 +425,14 @@ const TaskDetail: React.FC = () => {
 											key={user.id}
 											className={styles.assigneeItem}
 										>
-											<Avatar
-												src={user.image}
-												icon={
-													!user.image && (
-														<UserOutlined />
-													)
-												}
+											<UserAvatar
+												name={user.name || ''}
+												email={user.email}
+												avatar={user.image || undefined}
 											/>
-											<Text>{user.name}</Text>
+											<Text>
+												{user.name || user.email}
+											</Text>
 										</div>
 									))
 								:	<Text type='secondary'>Нет исполнителей</Text>}

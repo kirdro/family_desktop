@@ -16,6 +16,7 @@ import TaskCreate from '../pages/tasks/TaskCreate';
 import PlansList from '../pages/plannings/PlansList';
 import PlanForm from '../components/planning/PlanForm';
 import PlanDetail from '../pages/plannings/PlanDetail';
+import TaskEdit from '../pages/tasks/TaskEdit';
 // import ProtectedRoute from './ProtectedRoute';
 
 // Страницы авторизации
@@ -56,10 +57,6 @@ const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
 		{children}
 	</Suspense>
 );
-
-function TaskEdit() {
-	return null;
-}
 
 // Создание роутера
 const router = createBrowserRouter([

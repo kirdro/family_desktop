@@ -504,6 +504,7 @@
     margin-top: 16px;
     background-color: rgba(0, 0, 0, 0.05);
     border-radius: 6px;
+    padding-left: 16px;
 }
 
 /* Стили для компонентов статуса и приоритета */
@@ -873,4 +874,10 @@
         flex-direction: column;
         align-items: flex-end;
     }
+}
+
+.itemList {
+    display: grid;
+    justify-content: center;
+    align-items: center;
 }

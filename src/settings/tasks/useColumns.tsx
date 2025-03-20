@@ -19,9 +19,11 @@ import {
 	MoreOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { ITag, ITask, IUser, Status } from '../../types';
+import { ITag, ITask, IUser, Priority, Status } from '../../types';
 import UserAvatar from '../../components/common/UserAvatar';
 import { formatDate } from '../../tools/formatDate';
+import { useDeleteTask } from '../../api';
+import { useGeneralStore } from '../../store/useGeneralStore';
 
 const { Text } = Typography;
 
@@ -39,6 +41,21 @@ const handlePriorityChange = async (taskId: string, newPriority: string) => {
 // Форматирование даты
 
 export const useColumns = () => {
+	const { getGeneralStore } = useGeneralStore();
+
+	const { user } = getGeneralStore();
+
+	const { mutateAsync } = useDeleteTask();
+
+	const deleteTask = (taskId: string) => async () => {
+		if (user) {
+			await mutateAsync({
+				email: user.email,
+				taskId: taskId,
+			});
+		}
+	};
+
 	const navigate = useNavigate();
 	const columns: IColumn[] = [
 		{
@@ -106,7 +123,7 @@ export const useColumns = () => {
 			title: 'Приоритет',
 			dataIndex: 'priority',
 			key: 'priority',
-			render: (priority: string, record: ITask) => (
+			render: (priority: Priority, record: ITask) => (
 				<TaskPrioritySelector
 					value={priority}
 					onChange={(newPriority) =>
@@ -201,7 +218,7 @@ export const useColumns = () => {
 									key: 'delete',
 									label: 'Удалить',
 									danger: true,
-									onClick: () => console.log('Delete task'),
+									onClick: deleteTask(record.id),
 								},
 							]}
 						/>

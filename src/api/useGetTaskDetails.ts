@@ -4,6 +4,7 @@ import { useNotificationStore } from '../store/useNotificationStore';
 import { useGeneralStore } from '../store/useGeneralStore';
 import { HOST } from '../../host';
 import { getRequest } from '../tools/request';
+import toast from 'react-hot-toast';
 
 export const useGetTaskDetails = (taskId: string) => {
 	const { updateNotificationStore, getNotificationStore } =
@@ -23,6 +24,13 @@ export const useGetTaskDetails = (taskId: string) => {
 				url: getUrl(),
 				token: token,
 				onError: (error) => {
+					toast.error(error.message, {
+						style: {
+							borderRadius: '10px',
+							background: '#333',
+							color: '#fff',
+						},
+					});
 					updateNotificationStore({
 						notifications: [
 							...getNotificationStore().notifications,

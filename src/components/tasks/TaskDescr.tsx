@@ -9,11 +9,10 @@ const { Text, Paragraph } = Typography;
 
 interface IProps {
 	task: ITask;
-	setTask: (updater: (prev: ITask) => ITask) => void; // Добавляем функцию setTask
 }
 
 export const TaskDescr: FC<IProps> = (props) => {
-	const { task, setTask } = props;
+	const { task } = props;
 
 	return (
 		<>
@@ -33,28 +32,28 @@ export const TaskDescr: FC<IProps> = (props) => {
 				initialSubTasks={task.subTasks || []}
 				onSubTaskUpdate={(updatedSubTask) => {
 					// Обновляем список подзадач в состоянии
-					setTask((prev) => ({
-						...prev,
-						subTasks: prev.subTasks.map((st) =>
-							st.id === updatedSubTask.id ? updatedSubTask : st,
-						),
-					}));
+					// setTask((prev) => ({
+					// 	...prev,
+					// 	subTasks: prev.subTasks.map((st) =>
+					// 		st.id === updatedSubTask.id ? updatedSubTask : st,
+					// 	),
+					// }));
 				}}
 				onSubTaskCreate={(newSubTask) => {
 					// Добавляем новую подзадачу в состояние
-					setTask((prev) => ({
-						...prev,
-						subTasks: [...prev.subTasks, newSubTask],
-					}));
+					// setTask((prev) => ({
+					// 	...prev,
+					// 	subTasks: [...prev.subTasks, newSubTask],
+					// }));
 				}}
 				onSubTaskDelete={(subTaskId) => {
 					// Удаляем подзадачу из состояния
-					setTask((prev) => ({
-						...prev,
-						subTasks: prev.subTasks.filter(
-							(st) => st.id !== subTaskId,
-						),
-					}));
+					// setTask((prev) => ({
+					// 	...prev,
+					// 	subTasks: prev.subTasks.filter(
+					// 		(st) => st.id !== subTaskId,
+					// 	),
+					// }));
 				}}
 			/>
 		</>

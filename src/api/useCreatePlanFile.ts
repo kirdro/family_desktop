@@ -1,25 +1,26 @@
-import { useMutation } from '@tanstack/react-query';
 import { useGeneralStore } from '../store/useGeneralStore';
 import { useNotificationStore } from '../store/useNotificationStore';
-import { IParamsCreateSubTask } from '../types';
+import { HOST } from '../../host';
+import { useMutation } from '@tanstack/react-query';
 import { postRequest } from '../tools/request';
 import { queryClient } from '../lib/queryClient';
-import { GENERAL, TASKS } from '../constants';
-import { HOST } from '../../host';
+import { GENERAL, PLANS, TAGS_TASK } from '../constants';
 import toast from 'react-hot-toast';
+import { IParamsPlanFile } from '../types/planning';
 
-export const usePostCreateSubTask = () => {
+export const useCreatePlanFile = () => {
 	const { getGeneralStore } = useGeneralStore();
 	const { updateNotificationStore, getNotificationStore } =
 		useNotificationStore();
 
 	const getUrl = (): string => {
-		return `${HOST}/tasks/subtask/create`;
+		return `${HOST}/plans/file`;
 	};
 
 	const { token } = getGeneralStore();
-	const result = useMutation({
-		mutationFn: (data: IParamsCreateSubTask) => {
+
+	const { data, isPending, mutate, status, mutateAsync } = useMutation({
+		mutationFn: (data: IParamsPlanFile) => {
 			return postRequest({
 				url: getUrl(),
 				data,
@@ -27,9 +28,15 @@ export const usePostCreateSubTask = () => {
 			});
 		},
 		onSuccess: (response) => {
-			queryClient.invalidateQueries({ queryKey: [GENERAL, TASKS] });
+			queryClient.invalidateQueries({ queryKey: [GENERAL, PLANS] });
 			console.log('response', response);
-
+			toast.success('Code verification successful', {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,
@@ -43,15 +50,15 @@ export const usePostCreateSubTask = () => {
 					},
 				],
 			});
-			toast.success('Code verification successful', {
+		},
+		onError: (error) => {
+			toast.error(error.message, {
 				style: {
 					borderRadius: '10px',
 					background: '#333',
 					color: '#fff',
 				},
 			});
-		},
-		onError: (error) => {
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,
@@ -65,15 +72,14 @@ export const usePostCreateSubTask = () => {
 					},
 				],
 			});
-			toast.error(error.message, {
-				style: {
-					borderRadius: '10px',
-					background: '#333',
-					color: '#fff',
-				},
-			});
 		},
 	});
 
-	return result;
+	return {
+		data,
+		isPending,
+		mutate,
+		status,
+		mutateAsync,
+	};
 };

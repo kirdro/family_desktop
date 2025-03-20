@@ -6,6 +6,7 @@ import { IParamsUpdateTask } from '../types';
 import { patchRequest } from '../tools/request';
 import { queryClient } from '../lib/queryClient';
 import { GENERAL, TASK_STATS, TASKS } from '../constants';
+import toast from 'react-hot-toast';
 
 export const usePatchUpdateTask = () => {
 	const { getGeneralStore } = useGeneralStore();
@@ -30,7 +31,13 @@ export const usePatchUpdateTask = () => {
 			queryClient.invalidateQueries({ queryKey: [GENERAL, TASKS] });
 			queryClient.invalidateQueries({ queryKey: [GENERAL, TASK_STATS] });
 			console.log('response', response);
-
+			toast.success('Code verification successful', {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,
@@ -46,6 +53,13 @@ export const usePatchUpdateTask = () => {
 			});
 		},
 		onError: (error) => {
+			toast.error(error.message, {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,

@@ -5,6 +5,7 @@ import { HOST } from '../../host';
 import { IParamsCreateTask } from '../types';
 import { postRequest } from '../tools/request';
 import { GENERAL, TASKS } from '../constants';
+import toast from 'react-hot-toast';
 
 export const usePostCreateTask = () => {
 	const queryClient = useQueryClient();
@@ -27,6 +28,13 @@ export const usePostCreateTask = () => {
 		},
 		onSuccess: (response) => {
 			queryClient.invalidateQueries({ queryKey: [GENERAL, TASKS] });
+			toast.success('Code verification successful', {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,
@@ -42,6 +50,13 @@ export const usePostCreateTask = () => {
 			});
 		},
 		onError: (error) => {
+			toast.error(error.message, {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,

@@ -4,17 +4,21 @@ import { Select, Avatar, Button, Typography, List } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { useGeneralStore } from '../../store/useGeneralStore';
 import styles from '../../pages/tasks/TasksStyles.module.css';
+import UserAvatar from '../common/UserAvatar';
+import { IUser } from '../../types';
 
 const { Text } = Typography;
 
 interface AssigneeSelectorProps {
-	selectedAssignees: any[];
-	onChange: (assignees: any[]) => void;
+	selectedAssignees: IUser[];
+	onChange: (assignees: IUser[]) => void;
+	type?: 'task' | 'plan';
 }
 
 const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
 	selectedAssignees,
 	onChange,
+	type = 'plan',
 }) => {
 	const { generalStore } = useGeneralStore();
 
@@ -25,10 +29,11 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
 		const newSelectedAssignees = selectedUserIds
 			.map((userId) => {
 				return generalStore.team?.members.find(
-					(user) => user.id === userId,
+					(user) =>
+						(type === 'task' ? user.email : user.id) === userId,
 				);
 			})
-			.filter(Boolean);
+			.filter((item) => !!item);
 
 		onChange(newSelectedAssignees);
 	};
@@ -48,7 +53,9 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
 					<Select
 						mode='multiple'
 						placeholder='Выберите исполнителей'
-						value={selectedAssignees.map((user) => user.id)}
+						value={selectedAssignees.map((user) =>
+							type === 'task' ? user.email : user.id,
+						)}
 						onChange={handleAssigneeSelect}
 						style={{ width: '100%' }}
 						optionLabelProp='label'
@@ -58,16 +65,16 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
 						{generalStore.team.members?.map((user) => (
 							<Select.Option
 								key={user.id}
-								value={user.id}
+								value={type === 'task' ? user.email : user.id}
 								label={user.name}
 							>
 								<div className={styles.assigneeOption}>
-									<Avatar
-										size='small'
-										src={user.image}
-										icon={!user.image && <UserOutlined />}
+									<UserAvatar
+										name={user.name || ''}
+										email={user.email}
+										avatar={user.image || undefined}
 									/>
-									<span>{user.name}</span>
+									<span>{user.name || user.email}</span>
 								</div>
 							</Select.Option>
 						))}
@@ -80,6 +87,7 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
 							dataSource={selectedAssignees}
 							renderItem={(user) => (
 								<List.Item
+									className={styles.itemList}
 									actions={[
 										<Button
 											type='text'
@@ -98,13 +106,10 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
 								>
 									<List.Item.Meta
 										avatar={
-											<Avatar
-												src={user.avatar}
-												icon={
-													!user.avatar && (
-														<UserOutlined />
-													)
-												}
+											<UserAvatar
+												name={user.name || ''}
+												email={user.email}
+												avatar={user.image || undefined}
 											/>
 										}
 										title={user.name}

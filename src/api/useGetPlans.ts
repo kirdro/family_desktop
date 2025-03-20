@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getRequest } from '../tools/request';
 import { useEffect } from 'react';
 import { useGlobalLoading } from '../hooks/useGlobalLoading';
+import toast from 'react-hot-toast';
 
 export const useGetPlans = (email: string | null) => {
 	const { updateNotificationStore, getNotificationStore } =
@@ -26,6 +27,13 @@ export const useGetPlans = (email: string | null) => {
 				url: getUrl(),
 				token,
 				onError: (error) => {
+					toast.error(error.message, {
+						style: {
+							borderRadius: '10px',
+							background: '#333',
+							color: '#fff',
+						},
+					});
 					updateNotificationStore({
 						notifications: [
 							...getNotificationStore().notifications,

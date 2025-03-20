@@ -29,6 +29,7 @@ import styles from '../../pages/tasks/TasksStyles.module.css';
 import TagSelector from '../../components/tasks/TagSelector';
 import AssigneeSelector from '../../components/tasks/AssigneeSelector';
 import { ITag, ITask, IUser } from '../../types';
+import { usePatchUpdateTask, usePostCreateTask } from '../../api';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
@@ -45,12 +46,15 @@ const TaskForm: React.FC<TaskFormProps> = ({
 }) => {
 	const navigate = useNavigate();
 	const { id } = useParams<{ id: string }>();
-	const { generalStore } = useGeneralStore();
+	const { generalStore, getGeneralStore } = useGeneralStore();
+	const { user } = getGeneralStore();
 	const [form] = Form.useForm();
 	const [activeTab, setActiveTab] = useState('details');
 	const [loading, setLoading] = useState(false);
 	const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
 	const [selectedAssignees, setSelectedAssignees] = useState<IUser[]>([]);
+	const { mutateAsync } = usePatchUpdateTask();
+	const { mutateAsync: createTaskMutation } = usePostCreateTask();
 
 	// Используем хуки для работы с API
 
@@ -80,8 +84,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
 					// 			]
 					// 		:	null,
 					// });
-					//
-					// // Устанавливаем выбранные теги и исполнителей
+					// Устанавливаем выбранные теги и исполнителей
 					// setSelectedTags(taskData.tags || []);
 					// setSelectedAssignees(taskData.assignees || []);
 				} catch (error) {
@@ -90,7 +93,8 @@ const TaskForm: React.FC<TaskFormProps> = ({
 				} finally {
 					setLoading(false);
 				}
-			} else if (initialData) {
+			}
+			if (initialData && isEditMode) {
 				// Если переданы начальные данные, заполняем форму
 				form.setFieldsValue({
 					...initialData,
@@ -107,8 +111,8 @@ const TaskForm: React.FC<TaskFormProps> = ({
 						:	null,
 				});
 
-				// setSelectedTags(initialData.tags || []);
-				// setSelectedAssignees(initialData.assignees || []);
+				setSelectedTags(initialData.tags || []);
+				setSelectedAssignees(initialData.assignees || []);
 			}
 		};
 
@@ -121,28 +125,47 @@ const TaskForm: React.FC<TaskFormProps> = ({
 			setLoading(true);
 
 			// Подготавливаем данные для отправки
-			const taskData = {
-				title: values.title,
-				description: values.description,
-				status: values.status,
-				priority: values.priority,
-				startDate: values.dateRange?.[0]?.toISOString() || null,
-				endDate: values.dateRange?.[1]?.toISOString() || null,
-				tagIds: selectedTags.map((tag) => tag.id),
-				assigneeIds: selectedAssignees.map((user) => user.id),
-				teamId: generalStore.team?.id, // ID команды из стора
-			};
+			if (initialData) {
+				const taskData = {
+					taskId: initialData.id,
+					title: values.title,
+					description: values.description,
+					status: values.status,
+					priority: values.priority,
+					// startDate: values.dateRange?.[0]?.toISOString() || null,
+					// endDate: values.dateRange?.[1]?.toISOString() || null,
+					tags: selectedTags.map((tag) => tag.id),
+					assigneeIds: selectedAssignees.map((user) => user.id),
+				};
 
-			if (isEditMode && id) {
-				// Обновление существующей задачи
-				// await updateTask(id, taskData);
-				message.success('Задача успешно обновлена');
-				navigate(`/admin/tasks/${id}`);
-			} else {
-				// Создание новой задачи
-				// const newTask = await createTask(taskData);
-				// message.success('Задача успешно создана');
-				// navigate(`/admin/tasks/${newTask.id}`);
+				if (isEditMode && id) {
+					// Обновление существующей задачи
+					// await updateTask(id, taskData);
+					await mutateAsync(taskData);
+					message.success('Задача успешно обновлена');
+					navigate(`/admin/tasks/${id}`);
+				} else {
+					if (user) {
+						const taskDataAdd = {
+							title: values.title,
+							description: values.description,
+							status: values.status,
+							priority: values.priority,
+							// startDate: values.dateRange?.[0]?.toISOString() || null,
+							// endDate: values.dateRange?.[1]?.toISOString() || null,
+							tags: selectedTags.map((tag) => tag.id),
+							emailAssigns: selectedAssignees.map(
+								(user) => user.email,
+							),
+							email: user.email,
+						};
+						// Создание новой задачи
+						// const newTask = await createTask(taskData);
+						await createTaskMutation(taskDataAdd);
+						message.success('Задача успешно создана');
+						navigate(`/admin/tasks/`);
+					}
+				}
 			}
 		} catch (error) {
 			console.error('Error saving task:', error);
@@ -233,6 +256,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
 								<AssigneeSelector
 									selectedAssignees={selectedAssignees}
 									onChange={setSelectedAssignees}
+									type={'task'}
 								/>
 							</TabPane>
 

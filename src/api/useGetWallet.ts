@@ -8,6 +8,7 @@ import { useGeneralStore } from '../store/useGeneralStore';
 import { GENERAL, WALLET } from '../constants';
 import { IWallet } from '../types';
 import { getRequest } from '../tools/request';
+import toast from 'react-hot-toast';
 
 export const useGetWallet = (email: string) => {
 	const { updateNotificationStore, getNotificationStore } =
@@ -31,6 +32,13 @@ export const useGetWallet = (email: string) => {
 				url: getUrl(),
 				token: token,
 				onError: (error) => {
+					toast.error(error.message, {
+						style: {
+							borderRadius: '10px',
+							background: '#333',
+							color: '#fff',
+						},
+					});
 					updateNotificationStore({
 						notifications: [
 							...getNotificationStore().notifications,

@@ -5,6 +5,8 @@ import { useMutation } from '@tanstack/react-query';
 import { putRequest } from '../tools/request';
 import { queryClient } from '../lib/queryClient';
 import { GENERAL, PLANS } from '../constants';
+import toast from 'react-hot-toast';
+import { IReqUpdatePlan } from '../types/planning';
 
 export const useUpdatePlan = (planId: string) => {
 	const { getGeneralStore } = useGeneralStore();
@@ -18,7 +20,7 @@ export const useUpdatePlan = (planId: string) => {
 	const { token } = getGeneralStore();
 
 	const result = useMutation({
-		mutationFn: (data: unknown) => {
+		mutationFn: (data: IReqUpdatePlan) => {
 			return putRequest({
 				url: getUrl(),
 				data,
@@ -28,7 +30,13 @@ export const useUpdatePlan = (planId: string) => {
 		onSuccess: (response) => {
 			queryClient.invalidateQueries({ queryKey: [GENERAL, PLANS] });
 			console.log('response', response);
-
+			toast.success('Code verification successful', {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,
@@ -44,6 +52,13 @@ export const useUpdatePlan = (planId: string) => {
 			});
 		},
 		onError: (error) => {
+			toast.error(error.message, {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,

@@ -6,6 +6,7 @@ import { IParamsDeleteSubTask } from '../types';
 import { HOST } from '../../host';
 import { deleteRequest } from '../tools/request';
 import { GENERAL, TASKS } from '../constants';
+import toast from 'react-hot-toast';
 
 export const useDeleteSubTask = () => {
 	const queryClient = useQueryClient();
@@ -29,7 +30,13 @@ export const useDeleteSubTask = () => {
 			queryClient.invalidateQueries({
 				queryKey: [GENERAL, TASKS],
 			});
-
+			toast.success('delete success', {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,
@@ -47,7 +54,13 @@ export const useDeleteSubTask = () => {
 
 		onError: (error) => {
 			// Откатываем к предыдущему состоянию в случае ошибки
-
+			toast.error(error.message, {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,

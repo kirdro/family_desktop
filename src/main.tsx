@@ -9,6 +9,7 @@ import ruRU from 'antd/locale/ru_RU'; // (или другая локаль)
 import './index.css';
 import { queryClient } from './lib/queryClient';
 import { LoadingProvider } from './context/LoadingContext';
+import { Toaster } from 'react-hot-toast';
 
 export const darkTheme = {
 	algorithm: theme.darkAlgorithm,
@@ -56,6 +57,7 @@ createRoot(document.getElementById('root')!).render(
 					<LoadingProvider>
 						<App />
 					</LoadingProvider>
+					<Toaster position='top-center' reverseOrder={false} />
 				</AntApp>
 			</ConfigProvider>
 

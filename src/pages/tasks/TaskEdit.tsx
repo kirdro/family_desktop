@@ -4,12 +4,18 @@ import { Typography } from 'antd';
 import { useParams, useLocation } from 'react-router-dom';
 import styles from './TasksStyles.module.css';
 import TaskForm from './TaskForm';
+import { useGeneralStore } from '../../store/useGeneralStore';
 
 const { Title, Text } = Typography;
 
 const TaskEdit: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
 	const location = useLocation();
+	const { getGeneralStore } = useGeneralStore();
+
+	const { tasks } = getGeneralStore();
+
+	const task = tasks.find((task) => task.id === id);
 
 	return (
 		<div className={styles.tasksListPage}>
@@ -22,7 +28,7 @@ const TaskEdit: React.FC = () => {
 				</div>
 			</div>
 
-			<TaskForm isEditMode />
+			<TaskForm isEditMode initialData={task} />
 		</div>
 	);
 };
