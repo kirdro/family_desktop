@@ -6,6 +6,7 @@ import { IParamsDeleteTask } from '../types';
 import { deleteRequest } from '../tools/request';
 import { queryClient } from '../lib/queryClient';
 import { GENERAL, TASKS } from '../constants';
+import toast from 'react-hot-toast';
 
 export const useDeleteTask = () => {
 	const { getGeneralStore } = useGeneralStore();
@@ -27,7 +28,13 @@ export const useDeleteTask = () => {
 		onSuccess: (response) => {
 			queryClient.invalidateQueries({ queryKey: [GENERAL, TASKS] });
 			console.log('response', response);
-
+			toast.success('Delete task success', {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,
@@ -43,6 +50,13 @@ export const useDeleteTask = () => {
 			});
 		},
 		onError: (error) => {
+			toast.error(error.message, {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,

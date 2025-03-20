@@ -8,6 +8,7 @@ import { HOST } from '../../host';
 import { ITeam } from '../types';
 import { getRequest } from '../tools/request';
 import { useGlobalLoading } from '../hooks/useGlobalLoading';
+import toast from 'react-hot-toast';
 
 export const useGetTeam = (email: string) => {
 	const { updateNotificationStore, getNotificationStore } =
@@ -29,6 +30,13 @@ export const useGetTeam = (email: string) => {
 				url: getUrl(),
 				token: token,
 				onError: (error) => {
+					toast.error(error.message, {
+						style: {
+							borderRadius: '10px',
+							background: '#333',
+							color: '#fff',
+						},
+					});
 					updateNotificationStore({
 						notifications: [
 							...getNotificationStore().notifications,

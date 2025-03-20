@@ -6,6 +6,7 @@ import { IVerifyTokenRes } from '../types';
 import { postRequest } from '../tools/request';
 import { secureStorage } from '../utils/token-storage';
 import { EMAIL, TOKEN_STORAGE } from '../constants';
+import toast from 'react-hot-toast';
 
 interface VerifyTokenData {
 	token: string;
@@ -29,6 +30,13 @@ export const usePostVerifyToken = () => {
 			}),
 		onSuccess: (response) => {
 			if (response.success) {
+				toast.success('Token verification successful', {
+					style: {
+						borderRadius: '10px',
+						background: '#333',
+						color: '#fff',
+					},
+				});
 				updateNotificationStore({
 					notifications: [
 						...getNotificationStore().notifications,
@@ -49,6 +57,13 @@ export const usePostVerifyToken = () => {
 				secureStorage.save(TOKEN_STORAGE, response.token);
 				secureStorage.save(EMAIL, response.user.email);
 			} else {
+				toast.error('Token verification failed', {
+					style: {
+						borderRadius: '10px',
+						background: '#333',
+						color: '#fff',
+					},
+				});
 				updateNotificationStore({
 					notifications: [
 						...getNotificationStore().notifications,
@@ -67,6 +82,13 @@ export const usePostVerifyToken = () => {
 			}
 		},
 		onError: (error) => {
+			toast.error(error.message, {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,

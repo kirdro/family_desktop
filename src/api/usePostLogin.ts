@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { HOST } from '../../host';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { postRequest } from '../tools/request';
+import toast from 'react-hot-toast';
 
 interface LoginData {
 	email: string;
@@ -27,6 +28,13 @@ export const usePostLogin = () => {
 				data,
 			}),
 		onSuccess: (response) => {
+			toast.success('Code verification successful', {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,
@@ -42,6 +50,13 @@ export const usePostLogin = () => {
 			});
 		},
 		onError: (error) => {
+			toast.error(error.message, {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,

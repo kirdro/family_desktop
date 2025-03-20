@@ -6,6 +6,7 @@ import { IParamsCreateTag } from '../types';
 import { postRequest } from '../tools/request';
 import { queryClient } from '../lib/queryClient';
 import { GENERAL, TAGS_TASK } from '../constants';
+import toast from 'react-hot-toast';
 
 export const useCreateTag = () => {
 	const { getGeneralStore } = useGeneralStore();
@@ -29,7 +30,13 @@ export const useCreateTag = () => {
 		onSuccess: (response) => {
 			queryClient.invalidateQueries({ queryKey: [GENERAL, TAGS_TASK] });
 			console.log('response', response);
-
+			toast.success('Code verification successful', {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,
@@ -45,6 +52,13 @@ export const useCreateTag = () => {
 			});
 		},
 		onError: (error) => {
+			toast.error(error.message, {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,

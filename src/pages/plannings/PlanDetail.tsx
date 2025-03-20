@@ -18,6 +18,8 @@ import {
 	Popconfirm,
 	message,
 	Empty,
+	Modal,
+	Image,
 } from 'antd';
 import {
 	EditOutlined,
@@ -26,16 +28,36 @@ import {
 	FileOutlined,
 	DownloadOutlined,
 	ArrowLeftOutlined,
+	FilePdfOutlined,
+	FileExcelOutlined,
+	FileWordOutlined,
+	FileImageOutlined,
+	FileZipOutlined,
+	FilePptOutlined,
+	FileTextOutlined,
+	EyeOutlined,
+	DeleteFilled,
+	PaperClipOutlined,
+	CloseCircleOutlined,
 } from '@ant-design/icons';
 
 import styled from 'styled-components';
 import dayjs from 'dayjs';
 import { useGeneralStore } from '../../store/useGeneralStore';
 import UserAvatar from '../../components/common/UserAvatar';
-import { PlanFile, PlanPriority, PlanStatus } from '../../types/planning';
+import {
+	IReqUpdatePlan,
+	PlanFile,
+	PlanPriority,
+	PlanStatus,
+} from '../../types/planning';
+import { useUpdatePlan } from '../../api/useUpdatePlan';
+import { usePostUploadFile } from '../../api/usePostUploadFile';
+import { useCreatePlanFile } from '../../api/useCreatePlanFile';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
+const { Dragger } = Upload;
 
 const Container = styled.div`
 	padding: 24px;
@@ -76,6 +98,48 @@ const FileItem = styled.div`
 	margin-bottom: 8px;
 `;
 
+const UploadContainer = styled.div`
+	margin-bottom: 24px;
+`;
+
+const PreviewFilesSection = styled.div`
+	margin-top: 16px;
+	margin-bottom: 24px;
+`;
+
+const PreviewFileItem = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px;
+	background: #2a2a2a;
+	border-radius: 4px;
+	margin-bottom: 8px;
+	border: 1px dashed #444;
+`;
+
+const UploadActionsSection = styled.div`
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 16px;
+	gap: 12px;
+`;
+
+const PreviewThumbnail = styled.div`
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 24px;
+	margin-right: 12px;
+`;
+
+const PreviewActions = styled.div`
+	display: flex;
+	gap: 8px;
+`;
+
 const statusColors = {
 	[PlanStatus.NEW]: 'blue',
 	[PlanStatus.IN_PROGRESS]: 'green',
@@ -104,42 +168,44 @@ const priorityLabels = {
 	[PlanPriority.HIGH]: 'Высокий',
 };
 
+// Интерфейс для временных файлов с предпросмотром
+interface PreviewFile {
+	uid: string;
+	name: string;
+	size: number;
+	type: string;
+	previewUrl?: string; // url для предпросмотра, если это изображение
+	file: File;
+}
+
 const PlanDetail: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
 	const [activeTab, setActiveTab] = useState('info');
 	const { getGeneralStore } = useGeneralStore();
 
-	const { plans } = getGeneralStore();
+	// Состояние для хранения предпросмотра файлов
+	const [previewFiles, setPreviewFiles] = useState<PreviewFile[]>([]);
+	const [uploadModalVisible, setUploadModalVisible] = useState(false);
+	const [previewModalVisible, setPreviewModalVisible] = useState(false);
+	const [previewImage, setPreviewImage] = useState('');
+	const [uploadLoading, setUploadLoading] = useState(false);
+
+	const { plans, user } = getGeneralStore();
+	const { mutateAsync: uploadFile } = usePostUploadFile();
+	const { mutateAsync: createFileMutation } = useCreatePlanFile();
 
 	const plan = plans.find((p) => p.id === id);
+	const { mutateAsync } = useUpdatePlan(plan ? plan.id : '');
 
-	// const { data: plan, isLoading } = usePlan(id!);
-	// const updatePlanMutation = useUpdatePlan();
-	// const deletePlanMutation = useDeletePlan();
-	// const uploadFileMutation = useUploadPlanFile(id!);
-	// const addCommentMutation = useAddComment();
+	const handleStatusChange = async (newStatus: PlanStatus) => {
+		const updates: IReqUpdatePlan = { status: newStatus };
 
-	// if (isLoading || !plan) {
-	// 	return (
-	// 		<Container>
-	// 			<StyledCard>
-	// 				<Skeleton active />
-	// 			</StyledCard>
-	// 		</Container>
-	// 	);
-	// }
-
-	const handleStatusChange = (newStatus: PlanStatus) => {
-		// let updates: Partial<Plan> = { status: newStatus };
-		//
-		// if (newStatus === PlanStatus.COMPLETED) {
-		// 	updates.completedAt = new Date().toISOString();
-		// 	updates.progress = 100;
-		// } else if (newStatus === PlanStatus.CANCELLED) {
-		// 	updates.cancelledAt = new Date().toISOString();
-		// }
-		// updatePlanMutation.mutate({ id: plan.id, ...updates });
+		if (newStatus === PlanStatus.COMPLETED) {
+			updates.progress = 100;
+		} else if (newStatus === PlanStatus.CANCELLED) {
+		}
+		await mutateAsync(updates);
 	};
 
 	const handleDelete = async () => {
@@ -153,9 +219,127 @@ const PlanDetail: React.FC = () => {
 		}
 	};
 
-	const handleFileUpload = (file: File) => {
-		// uploadFileMutation.mutate(file);
+	// Функция для добавления файла в предпросмотр
+	const handleFileAdd = (file: File) => {
+		// Создаем временный URL для предпросмотра (только для изображений)
+		let previewUrl: string | undefined = undefined;
+		if (file.type.startsWith('image/')) {
+			console.log('>>>>>>>><>>><<<>>', file);
+			previewUrl = URL.createObjectURL(file);
+		}
+
+		const newPreviewFile: PreviewFile = {
+			uid: `preview-${Date.now()}-${file.name}`,
+			name: file.name,
+			size: file.size,
+			type: file.type,
+			previewUrl,
+			file,
+		};
+
+		setPreviewFiles((prev) => [...prev, newPreviewFile]);
+
+		// Показываем модальное окно, если это первый файл
+		if (previewFiles.length === 0) {
+			setUploadModalVisible(true);
+		}
+
 		return false; // предотвращаем стандартное поведение Upload
+	};
+
+	// Удаление файла из предпросмотра
+	const handleRemoveFile = (uid: string) => {
+		setPreviewFiles((prev) => {
+			const fileToRemove = prev.find((f) => f.uid === uid);
+			if (fileToRemove?.previewUrl) {
+				URL.revokeObjectURL(fileToRemove.previewUrl);
+			}
+			return prev.filter((f) => f.uid !== uid);
+		});
+	};
+
+	// Предпросмотр изображения
+	const handlePreviewImage = (url: string) => {
+		setPreviewImage(url);
+		setPreviewModalVisible(true);
+	};
+
+	// Загрузка файлов на сервер
+	const handleUploadFiles = async () => {
+		if (previewFiles.length === 0) return;
+
+		setUploadLoading(true);
+		try {
+			// Здесь должен быть код для загрузки файлов на сервер
+			// Например, используя uploadFileMutation или axios
+			if (plan && user) {
+				for (const fileObj of previewFiles) {
+					console.log('Uploading file:', fileObj);
+					// await uploadFileMutation.mutateAsync(fileObj.file);
+					const res = await uploadFile(fileObj.file);
+					await createFileMutation({
+						name: fileObj.name,
+						size: fileObj.size,
+						type: fileObj.type,
+						url: res.url,
+						planId: plan.id,
+						userId: user.id,
+					});
+					// imageUrls.push(res.url);
+					// Имитация загрузки для примера
+				}
+			}
+
+			// Очищаем предпросмотр и закрываем модальное окно
+			clearPreviewFiles();
+			setUploadModalVisible(false);
+		} catch (error) {
+			console.error('Error uploading files:', error);
+			message.error('Ошибка при загрузке файлов');
+		} finally {
+			setUploadLoading(false);
+		}
+	};
+
+	// Очистка всех предпросмотров
+	const clearPreviewFiles = () => {
+		previewFiles.forEach((file) => {
+			if (file.previewUrl) {
+				URL.revokeObjectURL(file.previewUrl);
+			}
+		});
+		setPreviewFiles([]);
+	};
+
+	// Получение иконки файла по типу
+	const getFileIcon = (fileType: string) => {
+		if (fileType.startsWith('image/'))
+			return <FileImageOutlined style={{ color: '#52c41a' }} />;
+		if (fileType.includes('pdf'))
+			return <FilePdfOutlined style={{ color: '#ff4d4f' }} />;
+		if (
+			fileType.includes('excel') ||
+			fileType.includes('sheet') ||
+			fileType.includes('csv')
+		)
+			return <FileExcelOutlined style={{ color: '#52c41a' }} />;
+		if (fileType.includes('word') || fileType.includes('document'))
+			return <FileWordOutlined style={{ color: '#1890ff' }} />;
+		if (
+			fileType.includes('zip') ||
+			fileType.includes('rar') ||
+			fileType.includes('tar') ||
+			fileType.includes('gz')
+		)
+			return <FileZipOutlined style={{ color: '#faad14' }} />;
+		if (
+			fileType.includes('powerpoint') ||
+			fileType.includes('presentation')
+		)
+			return <FilePptOutlined style={{ color: '#fa541c' }} />;
+		if (fileType.includes('text'))
+			return <FileTextOutlined style={{ color: '#d9d9d9' }} />;
+		return <FileOutlined style={{ color: '#d9d9d9' }} />;
 	};
 
 	const formatFileSize = (bytes: number) => {
@@ -169,6 +353,7 @@ const PlanDetail: React.FC = () => {
 		const today = dayjs();
 		return endDate.diff(today, 'day');
 	};
+
 	if (!plan) {
 		return <div>... загрузка</div>;
 	}
@@ -202,11 +387,7 @@ const PlanDetail: React.FC = () => {
 						okText='Да'
 						cancelText='Нет'
 					>
-						<Button
-							danger
-							icon={<DeleteOutlined />}
-							// loading={deletePlanMutation.isLoading}
-						>
+						<Button danger icon={<DeleteOutlined />}>
 							Удалить
 						</Button>
 					</Popconfirm>
@@ -382,71 +563,116 @@ const PlanDetail: React.FC = () => {
 						</Space>
 					</TabPane>
 
-					{/*<TabPane tab={`Задачи (${plan.tasks.length})`} key='tasks'>*/}
-					{/*	<Button*/}
-					{/*		type='primary'*/}
-					{/*		icon={<PlusOutlined />}*/}
-					{/*		style={{ marginBottom: 16 }}*/}
-					{/*		onClick={() =>*/}
-					{/*			navigate(`/admin/plans/${plan.id}/tasks/create`)*/}
-					{/*		}*/}
-					{/*	>*/}
-					{/*		Добавить задачу*/}
-					{/*	</Button>*/}
-
-					{/*	{plan.tasks.length === 0 ?*/}
-					{/*		<Empty description='Нет задач' />*/}
-					{/*	:	<List*/}
-					{/*			dataSource={plan.tasks}*/}
-					{/*			renderItem={(task: Task) => (*/}
-					{/*				<TaskItem>*/}
-					{/*					<Checkbox*/}
-					{/*						checked={task.completed}*/}
-					{/*						style={{ marginRight: 8 }}*/}
-					{/*					/>*/}
-					{/*					<div>*/}
-					{/*						<Text strong>{task.title}</Text>*/}
-					{/*						{task.description && (*/}
-					{/*							<Paragraph*/}
-					{/*								ellipsis={{ rows: 2 }}*/}
-					{/*								type='secondary'*/}
-					{/*							>*/}
-					{/*								{task.description}*/}
-					{/*							</Paragraph>*/}
-					{/*						)}*/}
-					{/*					</div>*/}
-					{/*				</TaskItem>*/}
-					{/*			)}*/}
-					{/*		/>*/}
-					{/*	}*/}
-					{/*</TabPane>*/}
-
 					<TabPane tab={`Файлы (${plan.files.length})`} key='files'>
-						<Upload
-							customRequest={({ file }) => {
-								if (file instanceof File) {
-									handleFileUpload(file);
-								}
-							}}
-							showUploadList={false}
-							multiple
-						>
-							<Button
-								icon={<UploadOutlined />}
-								style={{ marginBottom: 16 }}
+						<UploadContainer>
+							{/* Компонент для загрузки файлов с предпросмотром */}
+							<Dragger
+								multiple
+								beforeUpload={(file) => handleFileAdd(file)}
+								showUploadList={false}
+								accept='image/*, .pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .txt, .zip, .rar'
 							>
-								Загрузить файлы
-							</Button>
-						</Upload>
+								<p className='ant-upload-drag-icon'>
+									<UploadOutlined />
+								</p>
+								<p className='ant-upload-text'>
+									Нажмите или перетащите файлы для загрузки
+								</p>
+								<p className='ant-upload-hint'>
+									Поддерживаются изображения, документы,
+									архивы и другие типы файлов
+								</p>
+							</Dragger>
 
-						{plan.files.length === 0 ?
+							{/* Секция предпросмотра файлов */}
+							{previewFiles.length > 0 && (
+								<PreviewFilesSection>
+									<Divider orientation='left'>
+										Файлы для загрузки (
+										{previewFiles.length})
+									</Divider>
+
+									{previewFiles.map((file) => (
+										<PreviewFileItem key={file.uid}>
+											<Space>
+												<PreviewThumbnail>
+													{getFileIcon(file.type)}
+												</PreviewThumbnail>
+												<div>
+													<Text strong>
+														{file.name}
+													</Text>
+													<br />
+													<Text type='secondary'>
+														{formatFileSize(
+															file.size,
+														)}{' '}
+														• Подготовлен к загрузке
+													</Text>
+												</div>
+											</Space>
+											<PreviewActions>
+												{file.previewUrl && (
+													<Button
+														type='text'
+														icon={<EyeOutlined />}
+														onClick={() =>
+															handlePreviewImage(
+																file.previewUrl!,
+															)
+														}
+													>
+														Просмотр
+													</Button>
+												)}
+												<Button
+													type='text'
+													danger
+													icon={<DeleteFilled />}
+													onClick={() =>
+														handleRemoveFile(
+															file.uid,
+														)
+													}
+												>
+													Удалить
+												</Button>
+											</PreviewActions>
+										</PreviewFileItem>
+									))}
+
+									<UploadActionsSection>
+										<Button
+											onClick={clearPreviewFiles}
+											icon={<CloseCircleOutlined />}
+										>
+											Отменить все
+										</Button>
+										<Button
+											type='primary'
+											onClick={handleUploadFiles}
+											loading={uploadLoading}
+											icon={<PaperClipOutlined />}
+										>
+											Загрузить файлы (
+											{previewFiles.length})
+										</Button>
+									</UploadActionsSection>
+								</PreviewFilesSection>
+							)}
+						</UploadContainer>
+
+						{/* Список уже загруженных файлов */}
+						{plan.files.length === 0 && previewFiles.length === 0 ?
 							<Empty description='Нет файлов' />
 						:	<List
 								dataSource={plan.files}
 								renderItem={(file: PlanFile) => (
 									<FileItem>
 										<Space>
-											<FileOutlined />
+											<PreviewThumbnail>
+												{getFileIcon(file.type)}
+											</PreviewThumbnail>
 											<div>
 												<Text strong>{file.name}</Text>
 												<br />
@@ -472,82 +698,24 @@ const PlanDetail: React.FC = () => {
 							/>
 						}
 					</TabPane>
-
-					{/*<TabPane*/}
-					{/*	tab={`Комментарии (${plan.comments.length})`}*/}
-					{/*	key='comments'*/}
-					{/*>*/}
-					{/*	<Form>*/}
-					{/*		<Form.Item>*/}
-					{/*			<TextArea*/}
-					{/*				rows={4}*/}
-					{/*				value={commentText}*/}
-					{/*				onChange={(e) =>*/}
-					{/*					setCommentText(e.target.value)*/}
-					{/*				}*/}
-					{/*				placeholder='Добавьте комментарий...'*/}
-					{/*			/>*/}
-					{/*		</Form.Item>*/}
-					{/*		<Form.Item>*/}
-					{/*			<Button*/}
-					{/*				htmlType='submit'*/}
-					{/*				// loading={addCommentMutation.isLoading}*/}
-					{/*				type='primary'*/}
-					{/*				onClick={handleSubmitComment}*/}
-					{/*				disabled={!commentText.trim()}*/}
-					{/*			>*/}
-					{/*				Добавить комментарий*/}
-					{/*			</Button>*/}
-					{/*		</Form.Item>*/}
-					{/*	</Form>*/}
-
-					{/*	<CommentList>*/}
-					{/*		{plan.comments.length === 0 ?*/}
-					{/*			<Empty description='Нет комментариев' />*/}
-					{/*		:	<List*/}
-					{/*				dataSource={plan.comments.filter(*/}
-					{/*					(comment) => !comment.parentId,*/}
-					{/*				)}*/}
-					{/*				renderItem={(comment: PlanComment) => (*/}
-					{/*					<Comment*/}
-					{/*						author={comment.author.name}*/}
-					{/*						avatar={*/}
-					{/*							<Avatar*/}
-					{/*								icon={<UserOutlined />}*/}
-					{/*							/>*/}
-					{/*						}*/}
-					{/*						content={comment.text}*/}
-					{/*						datetime={dayjs(*/}
-					{/*							comment.createdAt,*/}
-					{/*						).format('DD.MM.YYYY HH:mm')}*/}
-					{/*					>*/}
-					{/*						{comment.replies.map((reply) => (*/}
-					{/*							<Comment*/}
-					{/*								key={reply.id}*/}
-					{/*								author={reply.author.name}*/}
-					{/*								avatar={*/}
-					{/*									<Avatar*/}
-					{/*										icon={*/}
-					{/*											<UserOutlined />*/}
-					{/*										}*/}
-					{/*									/>*/}
-					{/*								}*/}
-					{/*								content={reply.text}*/}
-					{/*								datetime={dayjs(*/}
-					{/*									reply.createdAt,*/}
-					{/*								).format(*/}
-					{/*									'DD.MM.YYYY HH:mm',*/}
-					{/*								)}*/}
-					{/*							/>*/}
-					{/*						))}*/}
-					{/*					</Comment>*/}
-					{/*				)}*/}
-					{/*			/>*/}
-					{/*		}*/}
-					{/*	</CommentList>*/}
-					{/*</TabPane>*/}
 				</Tabs>
 			</StyledCard>
+
+			{/* Модальное окно предпросмотра изображения */}
+			<Modal
+				visible={previewModalVisible}
+				footer={null}
+				onCancel={() => setPreviewModalVisible(false)}
+				width={800}
+				centered
+			>
+				<Image
+					alt='Предпросмотр изображения'
+					style={{ width: '100%' }}
+					src={previewImage}
+					preview={false}
+				/>
+			</Modal>
 		</Container>
 	);
 };

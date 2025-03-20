@@ -53,3 +53,9 @@ export default tseslint.config({
 })
 ```
 # family_desktop
+
+
+### запуск долкера
+
+1. Сборка - ` docker build -t my-vite-app .`
+2. Запуск контейнера - ` docker run -d -p 80:80 my-vite-app`

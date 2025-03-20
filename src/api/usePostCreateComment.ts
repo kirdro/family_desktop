@@ -6,6 +6,7 @@ import { IParamsCreateComment } from '../types';
 import { postRequest } from '../tools/request';
 import { queryClient } from '../lib/queryClient';
 import { GENERAL, TASKS } from '../constants';
+import toast from 'react-hot-toast';
 
 export const usePostCreateComment = () => {
 	const { getGeneralStore } = useGeneralStore();
@@ -29,7 +30,13 @@ export const usePostCreateComment = () => {
 		onSuccess: (response) => {
 			queryClient.invalidateQueries({ queryKey: [GENERAL, TASKS] });
 			console.log('response', response);
-
+			toast.success('Code verification successful', {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,
@@ -45,6 +52,13 @@ export const usePostCreateComment = () => {
 			});
 		},
 		onError: (error) => {
+			toast.error(error.message, {
+				style: {
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
+				},
+			});
 			updateNotificationStore({
 				notifications: [
 					...getNotificationStore().notifications,

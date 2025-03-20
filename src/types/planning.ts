@@ -78,3 +78,22 @@ export type TPlanFormData = Omit<
 	teamId: number;
 	assigneeIds: string[];
 };
+
+export interface IReqUpdatePlan {
+	title?: string;
+	description?: string;
+	startDate?: string;
+	endDate?: string;
+	status?: PlanStatus;
+	priority?: PlanPriority;
+	progress?: number;
+}
+
+export interface IParamsPlanFile {
+	name: string;
+	size: number;
+	type: string;
+	url: string;
+	planId: string;
+	userId: string;
+}

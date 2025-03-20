@@ -2,10 +2,11 @@
 import React from 'react';
 import { Select, Tag } from 'antd';
 import styles from '../../pages/tasks/TasksStyles.module.css';
+import { Priority } from '../../types';
 
 interface TaskPrioritySelectorProps {
-	value: string;
-	onChange: (value: string) => void;
+	value: Priority;
+	onChange: (value: Priority) => void;
 	disabled?: boolean;
 }
 

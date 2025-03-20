@@ -7,6 +7,7 @@ import { GENERAL, TAGS_TASK } from '../constants';
 import { HOST } from '../../host';
 import { getRequest } from '../tools/request';
 import { useGlobalLoading } from '../hooks/useGlobalLoading';
+import toast from 'react-hot-toast';
 
 export const useGetTeamTags = (email: string) => {
 	const { updateNotificationStore, getNotificationStore } =
@@ -29,6 +30,13 @@ export const useGetTeamTags = (email: string) => {
 				url: getUrl(),
 				token,
 				onError: (error) => {
+					toast.error(error.message, {
+						style: {
+							borderRadius: '10px',
+							background: '#333',
+							color: '#fff',
+						},
+					});
 					updateNotificationStore({
 						notifications: [
 							...getNotificationStore().notifications,
