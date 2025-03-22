@@ -54,6 +54,7 @@ import {
 import { useUpdatePlan } from '../../api/useUpdatePlan';
 import { usePostUploadFile } from '../../api/usePostUploadFile';
 import { useCreatePlanFile } from '../../api/useCreatePlanFile';
+import { useDeletePlan } from '../../api/useDeletePlan';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -197,6 +198,7 @@ const PlanDetail: React.FC = () => {
 
 	const plan = plans.find((p) => p.id === id);
 	const { mutateAsync } = useUpdatePlan(plan ? plan.id : '');
+	const { mutateAsync: deleteMutation } = useDeletePlan();
 
 	const handleStatusChange = async (newStatus: PlanStatus) => {
 		const updates: IReqUpdatePlan = { status: newStatus };
@@ -211,8 +213,11 @@ const PlanDetail: React.FC = () => {
 	const handleDelete = async () => {
 		try {
 			// await deletePlanMutation.mutateAsync(plan.id);
-			message.success('План успешно удален');
-			navigate('/admin/plans');
+			if (plan) {
+				await deleteMutation(plan.id);
+				message.success('План успешно удален');
+				navigate('/admin/plans');
+			}
 		} catch (err) {
 			console.log(err);
 			message.error('Ошибка при удалении плана');
