@@ -18,6 +18,7 @@ import dayjs from 'dayjs';
 import styled from 'styled-components';
 import { PlanPriority, PlanStatus, Plan } from '../../types/planning';
 import { useGeneralStore } from '../../store/useGeneralStore';
+import { useDeletePlan } from '../../api/useDeletePlan';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -83,6 +84,7 @@ const PlansList: React.FC = () => {
 	);
 	const [searchTerm, setSearchTerm] = useState<string>('');
 	const { getGeneralStore } = useGeneralStore();
+	const { mutateAsync: deleteMutation } = useDeletePlan();
 
 	const { plans } = getGeneralStore();
 
@@ -169,6 +171,12 @@ const PlansList: React.FC = () => {
 						onClick={() => navigate(`/admin/plans/${plan.id}`)}
 					>
 						Открыть
+					</Button>
+					<Button
+						danger
+						onClick={async () => await deleteMutation(plan.id)}
+					>
+						Удалить
 					</Button>
 				</Space>
 			),
