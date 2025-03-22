@@ -17,14 +17,12 @@ RUN npm run build
 # Stage 2: Создание финального образа с Nginx
 FROM nginx:alpine
 
-# Копируем сгенерированные файлы сборки в директорию, которую Nginx использует для обслуживания статики
+# Копируем файлы сборки
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Если требуется, можно скопировать свой конфиг для Nginx
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Копируем ваш пользовательский конфиг Nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Открываем порт 80
 EXPOSE 80
 
-# Запускаем Nginx в foreground режиме
 CMD ["nginx", "-g", "daemon off;"]
