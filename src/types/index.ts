@@ -195,6 +195,7 @@ export interface ITask {
 	comments: IComment[];
 	tags: ITag[];
 	team: ITeam;
+	planId?: string;
 }
 
 export interface ISubTask {

@@ -37,3 +37,7 @@ export interface IFilters {
 	assignees: string[];
 	dateRange: [dayjs.Dayjs, dayjs.Dayjs] | null;
 }
+export interface IParamTaskRelateByPlan {
+	planId: string;
+	taskId: string;
+}

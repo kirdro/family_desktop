@@ -19,37 +19,15 @@ import styled from 'styled-components';
 import { PlanPriority, PlanStatus, Plan } from '../../types/planning';
 import { useGeneralStore } from '../../store/useGeneralStore';
 import { useDeletePlan } from '../../api/useDeletePlan';
+import {
+	priorityColors,
+	priorityLabels,
+	statusColors,
+	statusLabels,
+} from '../../components/planning/settings/statuses';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
-
-const statusColors = {
-	[PlanStatus.NEW]: 'blue',
-	[PlanStatus.IN_PROGRESS]: 'green',
-	[PlanStatus.ON_HOLD]: 'orange',
-	[PlanStatus.COMPLETED]: 'purple',
-	[PlanStatus.CANCELLED]: 'red',
-};
-
-const priorityColors = {
-	[PlanPriority.LOW]: 'green',
-	[PlanPriority.MEDIUM]: 'blue',
-	[PlanPriority.HIGH]: 'red',
-};
-
-const statusLabels = {
-	[PlanStatus.NEW]: 'Новый',
-	[PlanStatus.IN_PROGRESS]: 'В работе',
-	[PlanStatus.ON_HOLD]: 'На паузе',
-	[PlanStatus.COMPLETED]: 'Завершен',
-	[PlanStatus.CANCELLED]: 'Отменен',
-};
-
-const priorityLabels = {
-	[PlanPriority.LOW]: 'Низкий',
-	[PlanPriority.MEDIUM]: 'Средний',
-	[PlanPriority.HIGH]: 'Высокий',
-};
 
 const Container = styled.div`
 	padding: 24px;
@@ -110,7 +88,7 @@ const PlansList: React.FC = () => {
 			title: 'Название',
 			dataIndex: 'title',
 			key: 'title',
-			render: (text: string, plan: Plan) => <Text>{text}</Text>,
+			render: (text: string) => <Text>{text}</Text>,
 		},
 		{
 			title: 'Статус',
