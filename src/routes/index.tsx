@@ -17,6 +17,7 @@ import PlansList from '../pages/plannings/PlansList';
 import PlanForm from '../components/planning/PlanForm';
 import PlanDetail from '../pages/plannings/PlanDetail';
 import TaskEdit from '../pages/tasks/TaskEdit';
+import AnimalCare from '../components/animal/AnimalCare';
 // import ProtectedRoute from './ProtectedRoute';
 
 // Страницы авторизации
@@ -184,6 +185,14 @@ const router = createBrowserRouter([
 				element: (
 					<SuspenseWrapper>
 						<PlanForm />
+					</SuspenseWrapper>
+				),
+			},
+			{
+				path: 'animals',
+				element: (
+					<SuspenseWrapper>
+						<AnimalCare />
 					</SuspenseWrapper>
 				),
 			},
