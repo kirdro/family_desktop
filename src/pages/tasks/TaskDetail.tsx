@@ -18,6 +18,7 @@ import {
 	Modal,
 	message,
 	Badge,
+	Select,
 } from 'antd';
 import {
 	EditOutlined,
@@ -32,6 +33,8 @@ import {
 	ExclamationCircleOutlined,
 	HistoryOutlined,
 	PlusOutlined,
+	CalendarOutlined,
+	LinkOutlined,
 } from '@ant-design/icons';
 import { useGeneralStore } from '../../store/useGeneralStore';
 import TaskComments from '../../components/tasks/TaskComments';
@@ -44,20 +47,25 @@ import { Priority, Status } from '../../types';
 import { formatDate } from '../../tools/formatDate';
 import { TaskDescr } from '../../components/tasks/TaskDescr';
 import UserAvatar from '../../components/common/UserAvatar';
+import { useRelateTaskInPlan } from '../../api/useRelateTaskInPlan';
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 const { confirm } = Modal;
+const { Option } = Select;
 
 const TaskDetail: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
 	const { getGeneralStore } = useGeneralStore();
-	const { tasks } = getGeneralStore();
+	const { tasks, plans } = getGeneralStore();
 	const [activeTab, setActiveTab] = useState('details');
+	const [isPlanSelectVisible, setIsPlanSelectVisible] =
+		useState<boolean>(false);
 
 	const task = tasks.find((task) => task.id === id);
 	const { mutateAsync } = usePatchUpdateTask();
+	const { mutateAsync: relateTaskMutation } = useRelateTaskInPlan();
 
 	const handleStatusChange = async (newStatus: Status) => {
 		if (!id || !task) return;
@@ -102,7 +110,30 @@ const TaskDetail: React.FC = () => {
 		}
 	};
 
-	// Обработчик начала/завершения задачи
+	const handlePlanChange = async (newPlanId: string | null) => {
+		if (!id || !task) return;
+
+		try {
+			if (newPlanId) {
+				const _data = {
+					taskId: task.id,
+					planId: newPlanId, // Обновляем planId
+				};
+				await relateTaskMutation(_data);
+			}
+
+			setIsPlanSelectVisible(false);
+			message.success(
+				newPlanId ?
+					'Задача привязана к плану'
+				:	'Задача отвязана от плана',
+			);
+		} catch (error) {
+			console.error('Error updating task plan:', error);
+			message.error('Не удалось обновить связь с планом');
+		}
+	};
+
 	// Обработчик начала/завершения задачи
 	const handleStartOrCompleteTask = async () => {
 		if (!id || !task) return;
@@ -201,7 +232,8 @@ const TaskDetail: React.FC = () => {
 			</div>
 		);
 	}
-
+	const relatedPlan =
+		task.planId ? plans.find((p) => p.id === task.planId) : null;
 	return (
 		<div className={styles.taskDetailPage}>
 			<div className={styles.pageHeader}>
@@ -454,6 +486,149 @@ const TaskDetail: React.FC = () => {
 
 						<Divider />
 
+						{/* Новая секция для выбора плана */}
+						<div className={styles.sidebarSection}>
+							<Title level={5}>Связанный план</Title>
+							<div className={styles.planSection}>
+								{isPlanSelectVisible ?
+									<div className={styles.planSelectWrapper}>
+										<Select
+											style={{ width: '100%' }}
+											placeholder='Выберите план'
+											allowClear
+											showSearch
+											defaultValue={
+												task.planId || undefined
+											}
+											onChange={(value) =>
+												handlePlanChange(value)
+											}
+											optionFilterProp='children'
+											filterOption={(input, option) =>
+												(
+													option?.children as unknown as string
+												)
+													.toLowerCase()
+													.includes(
+														input.toLowerCase(),
+													)
+											}
+										>
+											{plans.map((plan) => (
+												<Option
+													key={plan.id}
+													value={plan.id}
+												>
+													{plan.title}
+												</Option>
+											))}
+										</Select>
+										<div
+											style={{
+												marginTop: 8,
+												display: 'flex',
+												justifyContent: 'space-between',
+											}}
+										>
+											<Button
+												size='small'
+												onClick={() =>
+													setIsPlanSelectVisible(
+														false,
+													)
+												}
+											>
+												Отмена
+											</Button>
+											<Button
+												size='small'
+												type='primary'
+												onClick={() =>
+													handlePlanChange(null)
+												}
+											>
+												Отвязать
+											</Button>
+										</div>
+									</div>
+								:	<>
+										{relatedPlan ?
+											<div
+												className={
+													styles.relatedPlanInfo
+												}
+											>
+												<div
+													style={{
+														display: 'flex',
+														alignItems: 'center',
+														gap: '8px',
+													}}
+												>
+													<CalendarOutlined
+														style={{
+															color: '#1890ff',
+														}}
+													/>
+													<Text strong>
+														{relatedPlan.title}
+													</Text>
+												</div>
+												<div
+													style={{
+														marginTop: 8,
+														display: 'flex',
+														justifyContent:
+															'space-between',
+													}}
+												>
+													<Button
+														size='small'
+														icon={<LinkOutlined />}
+														onClick={() =>
+															navigate(
+																`/admin/plans/${relatedPlan.id}`,
+															)
+														}
+													>
+														Открыть план
+													</Button>
+													<Button
+														size='small'
+														type='primary'
+														onClick={() =>
+															setIsPlanSelectVisible(
+																true,
+															)
+														}
+													>
+														Изменить
+													</Button>
+												</div>
+											</div>
+										:	<div className={styles.noPlanInfo}>
+												<Text type='secondary'>
+													План не выбран
+												</Text>
+												<Button
+													type='dashed'
+													icon={<PlusOutlined />}
+													className={styles.addButton}
+													onClick={() =>
+														setIsPlanSelectVisible(
+															true,
+														)
+													}
+												>
+													Привязать к плану
+												</Button>
+											</div>
+										}
+									</>
+								}
+							</div>
+						</div>
+						<Divider />
 						<div className={styles.sidebarSection}>
 							<Title level={5}>Теги</Title>
 							<div className={styles.tagsList}>
