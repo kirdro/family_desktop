@@ -1,5 +1,5 @@
 // src/components/tasks/TaskComments.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	Input,
 	Button,
@@ -24,6 +24,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import styles from '../../pages/tasks/TasksStyles.module.css';
 import { IComment } from '../../types';
+import { usePostCreateComment } from '../../api';
 
 // Расширяем функциональность dayjs для относительного времени
 dayjs.extend(relativeTime);
@@ -35,18 +36,12 @@ interface TaskCommentsProps {
 	taskId: string;
 	subTaskId?: string;
 	initialComments?: IComment[];
-	onCommentCreate?: (comment: IComment) => void;
-	onCommentUpdate?: (comment: IComment) => void;
-	onCommentDelete?: (commentId: string) => void;
 }
 
 const TaskComments: React.FC<TaskCommentsProps> = ({
 	taskId,
 	subTaskId,
 	initialComments = [],
-	onCommentCreate,
-	onCommentUpdate,
-	onCommentDelete,
 }) => {
 	const [comments, setComments] = useState<IComment[]>(initialComments);
 	const [loading, setLoading] = useState(false);
@@ -57,30 +52,39 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 	);
 	const [editingText, setEditingText] = useState('');
 
-	const { generalStore } = useGeneralStore();
+	const { generalStore, getGeneralStore } = useGeneralStore();
+	const { user } = getGeneralStore();
+	const { mutateAsync: createCommentMutation } = usePostCreateComment();
 
+	useEffect(() => {
+		setComments(initialComments);
+	}, [initialComments]);
 	// Загрузка комментариев при монтировании
 
 	// Обработчик отправки комментария
 	const handleSubmitComment = async () => {
-		if (!commentText.trim()) return;
-
 		try {
 			setSubmitting(true);
+			if (user) {
+				await createCommentMutation(
+					subTaskId ?
+						{
+							subTaskId,
+							text: commentText,
+							email: user.email,
+						}
+					:	{
+							taskId,
+							text: commentText,
+							email: user.email,
+						},
+				);
 
-			// const newComment = await addComment({
-			// 	taskId,
-			// 	subTaskId,
-			// 	text: commentText,
-			// });
+				// setComments((prev) => [...prev, newComment]);
+				setCommentText('');
+			}
 
-			// setComments((prev) => [...prev, newComment]);
-			// setCommentText('');
-			//
-			// // Вызываем callback для обновления родительского компонента
-			// if (onCommentCreate) {
-			// 	onCommentCreate(newComment);
-			// }
+			// Вызываем callback для обновления родительского компонента
 		} catch (error) {
 			console.error('Error adding comment:', error);
 			message.error('Не удалось добавить комментарий');
@@ -184,6 +188,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 			);
 		}
 
+		console.log('><>>>><>><><>', comments);
 		return (
 			<List
 				className={styles.commentsList}
@@ -193,7 +198,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 					<Comment
 						author={
 							<Text strong>
-								{comment.author?.name || 'Пользователь'}
+								{comment.author?.name || comment.author?.email}
 							</Text>
 						}
 						style={{

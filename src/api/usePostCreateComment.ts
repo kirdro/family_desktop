@@ -19,9 +19,9 @@ export const usePostCreateComment = () => {
 
 	const { token } = getGeneralStore();
 
-	const { data, isPending, mutate, status, mutateAsync } = useMutation({
-		mutationFn: async (data: IParamsCreateComment) => {
-			return await postRequest({
+	const result = useMutation({
+		mutationFn: (data: IParamsCreateComment) => {
+			return postRequest({
 				url: getUrl(),
 				data,
 				token,
@@ -75,11 +75,5 @@ export const usePostCreateComment = () => {
 		},
 	});
 
-	return {
-		data,
-		isPending,
-		mutate,
-		status,
-		mutateAsync,
-	};
+	return result;
 };

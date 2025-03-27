@@ -28,6 +28,7 @@ import {
 	ProfileOutlined,
 	QuestionCircleOutlined,
 	LineChartOutlined,
+	YuqueOutlined,
 } from '@ant-design/icons';
 import { useGeneralStore } from '../../store/useGeneralStore';
 import { useNotificationStore } from '../../store/useNotificationStore';
@@ -129,6 +130,11 @@ const AdminLayout: React.FC = () => {
 			key: 'plans',
 			icon: <LineChartOutlined />,
 			label: <Link to='/admin/plans'>Планы</Link>,
+		},
+		{
+			key: 'animals',
+			icon: <YuqueOutlined />,
+			label: <Link to='/admin/animals'>Животные</Link>,
 		},
 		{
 			key: 'settings',
