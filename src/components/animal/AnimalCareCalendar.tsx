@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import {
 	Calendar,
 	Badge,
-	Card,
 	Divider,
 	Typography,
 	List,

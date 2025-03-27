@@ -140,6 +140,14 @@ const PlansList: React.FC = () => {
 			),
 		},
 		{
+			title: 'Задачи',
+			key: 'tasks',
+			render: (_: string, plan: Plan) => {
+				console.log('sdfagasdfasdf', plan, plan.tasks);
+				return <span>{plan.tasks?.length} Задач(а)</span>;
+			},
+		},
+		{
 			title: 'Действия',
 			key: 'action',
 			render: (_: string, plan: Plan) => (

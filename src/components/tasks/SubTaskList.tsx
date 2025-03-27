@@ -1,5 +1,5 @@
 // src/components/tasks/SubTaskList.tsx
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
 	List,
 	Input,
@@ -16,7 +16,6 @@ import {
 	Form,
 	Select,
 	message,
-	Spin,
 	Empty,
 	Tabs,
 	Badge,
@@ -303,550 +302,399 @@ const SubTaskList: React.FC<SubTaskListProps> = ({
 
 	return (
 		<div className={styles.subTasksContainer}>
-			{sortedSubTasks.length === 0 ?
-				<div className={styles.loadingContainer}>
-					<Spin size='small' />
-					<Text type='secondary'>Загрузка подзадач...</Text>
-				</div>
-			:	<>
-					<List
-						className={styles.subTasksList}
-						dataSource={sortedSubTasks}
-						locale={{
-							emptyText: (
-								<Empty
-									description='Нет подзадач'
-									image={Empty.PRESENTED_IMAGE_SIMPLE}
-								/>
-							),
-						}}
-						renderItem={(subTask) => (
-							<>
-								<List.Item
-									className={`${styles.subTaskItem} ${subTask.completed ? styles.completedSubTask : ''}`}
-									actions={[
-										showComments && (
-											<Button
-												type='text'
-												icon={<CommentOutlined />}
-												onClick={() => {
-													handleExpandSubTask(
-														subTask.id,
-													);
-													setActiveTab('comments');
-												}}
-												className={styles.subTaskAction}
-												title='Комментарии'
-											>
-												{subTask.comments?.length >
-													0 && (
-													<Badge
-														count={
-															subTask.comments
-																.length
-														}
-														size='small'
-														offset={[3, -3]}
-													/>
-												)}
-											</Button>
-										),
-										<Dropdown
-											overlay={
-												<Menu
-													items={[
-														{
-															key: 'edit',
-															label: 'Редактировать',
-															icon: (
-																<EditOutlined />
-															),
-															onClick: () => {
-																handleEditSubTask(
-																	subTask,
-																);
-															},
-														},
-														{
-															key: 'delete',
-															label: 'Удалить',
-															icon: (
-																<DeleteOutlined />
-															),
-															danger: true,
-															onClick: () =>
-																handleDeleteSubTask(
-																	subTask.id,
-																),
-														},
-													]}
-												/>
-											}
-											trigger={['click']}
-										>
-											<Button
-												type='text'
-												icon={<MoreOutlined />}
-												className={
-													styles.subTaskActionButton
-												}
-												onClick={(e) =>
-													e.stopPropagation()
-												}
-											/>
-										</Dropdown>,
-									]}
-								>
-									<div className={styles.subTaskContent}>
-										<Checkbox
-											checked={subTask.completed}
-											onChange={(e) => {
-												e.stopPropagation();
-												handleToggleComplete(
-													subTask.id,
-												);
+			<>
+				<List
+					className={styles.subTasksList}
+					dataSource={sortedSubTasks}
+					locale={{
+						emptyText: (
+							<Empty
+								description='Нет подзадач'
+								image={Empty.PRESENTED_IMAGE_SIMPLE}
+							/>
+						),
+					}}
+					renderItem={(subTask) => (
+						<>
+							<List.Item
+								className={`${styles.subTaskItem} ${subTask.completed ? styles.completedSubTask : ''}`}
+								actions={[
+									showComments && (
+										<Button
+											type='text'
+											icon={<CommentOutlined />}
+											onClick={() => {
+												handleExpandSubTask(subTask.id);
+												setActiveTab('comments');
 											}}
+											className={styles.subTaskAction}
+											title='Комментарии'
+										>
+											{subTask.comments?.length > 0 && (
+												<Badge
+													count={
+														subTask.comments.length
+													}
+													size='small'
+													offset={[3, -3]}
+												/>
+											)}
+										</Button>
+									),
+									<Dropdown
+										overlay={
+											<Menu
+												items={[
+													{
+														key: 'edit',
+														label: 'Редактировать',
+														icon: <EditOutlined />,
+														onClick: () => {
+															handleEditSubTask(
+																subTask,
+															);
+														},
+													},
+													{
+														key: 'delete',
+														label: 'Удалить',
+														icon: (
+															<DeleteOutlined />
+														),
+														danger: true,
+														onClick: () =>
+															handleDeleteSubTask(
+																subTask.id,
+															),
+													},
+												]}
+											/>
+										}
+										trigger={['click']}
+									>
+										<Button
+											type='text'
+											icon={<MoreOutlined />}
+											className={
+												styles.subTaskActionButton
+											}
 											onClick={(e) => e.stopPropagation()}
 										/>
-										<div className={styles.subTaskInfo}>
-											<Text
-												strong
-												className={
-													subTask.completed ?
-														styles.completedText
-													:	''
-												}
-											>
-												{subTask.title}
-											</Text>
+									</Dropdown>,
+								]}
+							>
+								<div className={styles.subTaskContent}>
+									<Checkbox
+										checked={subTask.completed}
+										onChange={(e) => {
+											e.stopPropagation();
+											handleToggleComplete(subTask.id);
+										}}
+										onClick={(e) => e.stopPropagation()}
+									/>
+									<div className={styles.subTaskInfo}>
+										<Text
+											strong
+											className={
+												subTask.completed ?
+													styles.completedText
+												:	''
+											}
+										>
+											{subTask.title}
+										</Text>
 
-											<div className={styles.subTaskMeta}>
-												{subTask.tags &&
-													subTask.tags.length > 0 && (
-														<Space
-															size={[0, 4]}
-															wrap
-															className={
-																styles.subTaskTags
-															}
-														>
-															{subTask.tags
-																.slice(0, 2)
-																.map((tag) => (
-																	<Tooltip
-																		title={
-																			tag.name
-																		}
-																		key={
-																			tag.id
-																		}
-																	>
-																		<div
-																			className={
-																				styles.tagDot
-																			}
-																			style={{
-																				backgroundColor:
-																					tag.color,
-																			}}
-																		/>
-																	</Tooltip>
-																))}
-															{subTask.tags
-																.length > 2 && (
-																<Tooltip
-																	title={subTask.tags
-																		.slice(
-																			2,
-																		)
-																		.map(
-																			(
-																				tag,
-																			) =>
-																				tag.name,
-																		)
-																		.join(
-																			', ',
-																		)}
-																>
-																	<Text
-																		type='secondary'
-																		className={
-																			styles.tagMore
-																		}
-																	>
-																		+
-																		{subTask
-																			.tags
-																			.length -
-																			2}
-																	</Text>
-																</Tooltip>
-															)}
-														</Space>
-													)}
-
-												{subTask.assignees &&
-													subTask.assignees.length >
-														0 && (
-														<Avatar.Group
-															maxCount={2}
-															size='small'
-															className={
-																styles.subTaskAssignees
-															}
-														>
-															{subTask.assignees.map(
-																(user) => (
-																	<Tooltip
-																		title={
-																			user.name
-																		}
-																		key={
-																			user.id
-																		}
-																	>
-																		<UserAvatar
-																			size='small'
-																			name={
-																				user.name ||
-																				''
-																			}
-																			email={
-																				user.email
-																			}
-																			avatar={
-																				user.image ||
-																				''
-																			}
-																		/>
-																	</Tooltip>
-																),
-															)}
-														</Avatar.Group>
-													)}
-
-												{(subTask.startDate ||
-													subTask.endDate) && (
-													<Text
-														type='secondary'
+										<div className={styles.subTaskMeta}>
+											{subTask.tags &&
+												subTask.tags.length > 0 && (
+													<Space
+														size={[0, 4]}
+														wrap
 														className={
-															styles.subTaskDates
+															styles.subTaskTags
 														}
 													>
-														{formatDate(
-															subTask.startDate,
-														)}{' '}
-														-{' '}
-														{formatDate(
-															subTask.endDate,
+														{subTask.tags
+															.slice(0, 2)
+															.map((tag) => (
+																<Tooltip
+																	title={
+																		tag.name
+																	}
+																	key={tag.id}
+																>
+																	<div
+																		className={
+																			styles.tagDot
+																		}
+																		style={{
+																			backgroundColor:
+																				tag.color,
+																		}}
+																	/>
+																</Tooltip>
+															))}
+														{subTask.tags.length >
+															2 && (
+															<Tooltip
+																title={subTask.tags
+																	.slice(2)
+																	.map(
+																		(tag) =>
+																			tag.name,
+																	)
+																	.join(', ')}
+															>
+																<Text
+																	type='secondary'
+																	className={
+																		styles.tagMore
+																	}
+																>
+																	+
+																	{subTask
+																		.tags
+																		.length -
+																		2}
+																</Text>
+															</Tooltip>
 														)}
-													</Text>
+													</Space>
 												)}
 
-												<Tag
-													color={getPriorityColor(
-														subTask.priority,
-													)}
-												>
-													{getPriorityText(
-														subTask.priority,
-													)}
-												</Tag>
+											{subTask.assignees &&
+												subTask.assignees.length >
+													0 && (
+													<Avatar.Group
+														maxCount={2}
+														size='small'
+														className={
+															styles.subTaskAssignees
+														}
+													>
+														{subTask.assignees.map(
+															(user) => (
+																<Tooltip
+																	title={
+																		user.name
+																	}
+																	key={
+																		user.id
+																	}
+																>
+																	<UserAvatar
+																		size='small'
+																		name={
+																			user.name ||
+																			''
+																		}
+																		email={
+																			user.email
+																		}
+																		avatar={
+																			user.image ||
+																			''
+																		}
+																	/>
+																</Tooltip>
+															),
+														)}
+													</Avatar.Group>
+												)}
 
-												<Tag
-													color={getStatusColor(
-														subTask.status,
-													)}
-												>
-													{getStatusText(
-														subTask.status,
-													)}
-												</Tag>
-											</div>
-										</div>
-									</div>
-								</List.Item>
-
-								{/* Развернутая информация о подзадаче */}
-								{expandedSubTask === subTask.id && (
-									<div className={styles.expandedSubTask}>
-										<Tabs
-											activeKey={activeTab}
-											onChange={setActiveTab}
-										>
-											<TabPane tab='Детали' key='details'>
-												{subTask.description ?
-													<Paragraph>
-														{subTask.description}
-													</Paragraph>
-												:	<Text type='secondary' italic>
-														Нет описания
-													</Text>
-												}
-
-												<div
+											{(subTask.startDate ||
+												subTask.endDate) && (
+												<Text
+													type='secondary'
 													className={
-														styles.subTaskDetails
+														styles.subTaskDates
 													}
 												>
-													<div>
-														<Text type='secondary'>
-															Статус:
-														</Text>
-														<Tag
-															color={getStatusColor(
-																subTask.status,
-															)}
-														>
-															{getStatusText(
-																subTask.status,
-															)}
-														</Tag>
-													</div>
-													<div>
-														<Text type='secondary'>
-															Приоритет:
-														</Text>
-														<Tag
-															color={getPriorityColor(
-																subTask.priority,
-															)}
-														>
-															{getPriorityText(
-																subTask.priority,
-															)}
-														</Tag>
-													</div>
-													{(subTask.startDate ||
-														subTask.endDate) && (
-														<div>
-															<Text type='secondary'>
-																Срок:
-															</Text>
-															<Text>
-																{formatDate(
-																	subTask.startDate,
-																)}{' '}
-																-{' '}
-																{formatDate(
-																	subTask.endDate,
-																)}
-															</Text>
-														</div>
+													{formatDate(
+														subTask.startDate,
+													)}{' '}
+													-{' '}
+													{formatDate(
+														subTask.endDate,
 													)}
-													{subTask.author && (
-														<div>
-															<Text type='secondary'>
-																Автор:
-															</Text>
-															<div
-																className={
-																	styles.authorInfo
-																}
-															>
-																<UserAvatar
-																	size='small'
-																	name={
-																		subTask
-																			.author
-																			.name ||
-																		''
-																	}
-																	email={
-																		subTask
-																			.author
-																			.email
-																	}
-																	avatar={
-																		subTask
-																			.author
-																			.image ||
-																		''
-																	}
-																/>
-																<Text>
-																	{
-																		subTask
-																			.author
-																			.name
-																	}
-																</Text>
-															</div>
-														</div>
-													)}
-												</div>
-											</TabPane>
-
-											{showComments && (
-												<TabPane
-													tab='Комментарии'
-													key='comments'
-												>
-													<TaskComments
-														taskId={taskId}
-														subTaskId={subTask.id}
-														initialComments={
-															subTask.comments ||
-															[]
-														}
-														onCommentCreate={(
-															newComment,
-														) => {
-															// Обновляем список комментариев в подзадаче
-															const updatedSubTask =
-																{
-																	...subTask,
-																	comments: [
-																		...(subTask.comments ||
-																			[]),
-																		newComment,
-																	],
-																};
-
-															// Обновляем локальное состояние
-															setSubTasks(
-																(prev) =>
-																	prev.map(
-																		(
-																			item,
-																		) =>
-																			(
-																				item.id ===
-																				subTask.id
-																			) ?
-																				updatedSubTask
-																			:	item,
-																	),
-															);
-
-															if (
-																onSubTaskUpdate
-															) {
-																onSubTaskUpdate(
-																	updatedSubTask,
-																);
-															}
-														}}
-														onCommentUpdate={(
-															updatedComment,
-														) => {
-															// Обновляем комментарий в подзадаче
-															const updatedSubTask =
-																{
-																	...subTask,
-																	comments: (
-																		subTask.comments ||
-																		[]
-																	).map(
-																		(c) =>
-																			(
-																				c.id ===
-																				updatedComment.id
-																			) ?
-																				updatedComment
-																			:	c,
-																	),
-																};
-
-															// Обновляем локальное состояние
-															setSubTasks(
-																(prev) =>
-																	prev.map(
-																		(
-																			item,
-																		) =>
-																			(
-																				item.id ===
-																				subTask.id
-																			) ?
-																				updatedSubTask
-																			:	item,
-																	),
-															);
-
-															if (
-																onSubTaskUpdate
-															) {
-																onSubTaskUpdate(
-																	updatedSubTask,
-																);
-															}
-														}}
-														onCommentDelete={(
-															commentId,
-														) => {
-															// Удаляем комментарий из подзадачи
-															const updatedSubTask =
-																{
-																	...subTask,
-																	comments: (
-																		subTask.comments ||
-																		[]
-																	).filter(
-																		(c) =>
-																			c.id !==
-																			commentId,
-																	),
-																};
-
-															// Обновляем локальное состояние
-															setSubTasks(
-																(prev) =>
-																	prev.map(
-																		(
-																			item,
-																		) =>
-																			(
-																				item.id ===
-																				subTask.id
-																			) ?
-																				updatedSubTask
-																			:	item,
-																	),
-															);
-
-															if (
-																onSubTaskUpdate
-															) {
-																onSubTaskUpdate(
-																	updatedSubTask,
-																);
-															}
-														}}
-													/>
-												</TabPane>
+												</Text>
 											)}
-										</Tabs>
-									</div>
-								)}
-							</>
-						)}
-					/>
 
-					<div className={styles.addSubTaskContainer}>
-						<Input
-							placeholder='Добавить новую подзадачу и нажать Enter'
-							value={newSubTaskTitle}
-							onChange={(e) => setNewSubTaskTitle(e.target.value)}
-							onKeyPress={handleKeyPress}
-							disabled={isPending || isPendingSubTask}
-							suffix={
-								<Button
-									type='text'
-									icon={<PlusOutlined />}
-									onClick={handleAddSubTask}
-									disabled={
-										!newSubTaskTitle.trim() ||
-										isPending ||
-										isPendingSubTask
-									}
-								/>
-							}
-						/>
-					</div>
-				</>
-			}
+											<Tag
+												color={getPriorityColor(
+													subTask.priority,
+												)}
+											>
+												{getPriorityText(
+													subTask.priority,
+												)}
+											</Tag>
+
+											<Tag
+												color={getStatusColor(
+													subTask.status,
+												)}
+											>
+												{getStatusText(subTask.status)}
+											</Tag>
+										</div>
+									</div>
+								</div>
+							</List.Item>
+
+							{/* Развернутая информация о подзадаче */}
+							{expandedSubTask === subTask.id && (
+								<div className={styles.expandedSubTask}>
+									<Tabs
+										activeKey={activeTab}
+										onChange={setActiveTab}
+									>
+										<TabPane tab='Детали' key='details'>
+											{subTask.description ?
+												<Paragraph>
+													{subTask.description}
+												</Paragraph>
+											:	<Text type='secondary' italic>
+													Нет описания
+												</Text>
+											}
+
+											<div
+												className={
+													styles.subTaskDetails
+												}
+											>
+												<div>
+													<Text type='secondary'>
+														Статус:
+													</Text>
+													<Tag
+														color={getStatusColor(
+															subTask.status,
+														)}
+													>
+														{getStatusText(
+															subTask.status,
+														)}
+													</Tag>
+												</div>
+												<div>
+													<Text type='secondary'>
+														Приоритет:
+													</Text>
+													<Tag
+														color={getPriorityColor(
+															subTask.priority,
+														)}
+													>
+														{getPriorityText(
+															subTask.priority,
+														)}
+													</Tag>
+												</div>
+												{(subTask.startDate ||
+													subTask.endDate) && (
+													<div>
+														<Text type='secondary'>
+															Срок:
+														</Text>
+														<Text>
+															{formatDate(
+																subTask.startDate,
+															)}{' '}
+															-{' '}
+															{formatDate(
+																subTask.endDate,
+															)}
+														</Text>
+													</div>
+												)}
+												{subTask.author && (
+													<div>
+														<Text type='secondary'>
+															Автор:
+														</Text>
+														<div
+															className={
+																styles.authorInfo
+															}
+														>
+															<UserAvatar
+																size='small'
+																name={
+																	subTask
+																		.author
+																		.name ||
+																	''
+																}
+																email={
+																	subTask
+																		.author
+																		.email
+																}
+																avatar={
+																	subTask
+																		.author
+																		.image ||
+																	''
+																}
+															/>
+															<Text>
+																{
+																	subTask
+																		.author
+																		.name
+																}
+															</Text>
+														</div>
+													</div>
+												)}
+											</div>
+										</TabPane>
+
+										{showComments && (
+											<TabPane
+												tab='Комментарии'
+												key='comments'
+											>
+												<TaskComments
+													taskId={taskId}
+													subTaskId={subTask.id}
+													initialComments={
+														subTask.comments || []
+													}
+												/>
+											</TabPane>
+										)}
+									</Tabs>
+								</div>
+							)}
+						</>
+					)}
+				/>
+
+				<div className={styles.addSubTaskContainer}>
+					<Input
+						placeholder='Добавить новую подзадачу и нажать Enter'
+						value={newSubTaskTitle}
+						onChange={(e) => setNewSubTaskTitle(e.target.value)}
+						onKeyPress={handleKeyPress}
+						disabled={isPending || isPendingSubTask}
+						suffix={
+							<Button
+								type='text'
+								icon={<PlusOutlined />}
+								onClick={handleAddSubTask}
+								disabled={
+									!newSubTaskTitle.trim() ||
+									isPending ||
+									isPendingSubTask
+								}
+							/>
+						}
+					/>
+				</div>
+			</>
 
 			{/* Модальное окно редактирования подзадачи */}
 			<Modal

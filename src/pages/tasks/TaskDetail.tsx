@@ -42,7 +42,7 @@ import TaskTags from '../../components/tasks/TaskTags';
 import TaskStatusDropdown from '../../components/tasks/TaskStatusDropdown';
 import TaskPrioritySelector from '../../components/tasks/TaskPrioritySelector';
 import styles from './TasksStyles.module.css';
-import { usePatchUpdateTask } from '../../api';
+import { usePatchUpdateTask, usePostCreateComment } from '../../api';
 import { Priority, Status } from '../../types';
 import { formatDate } from '../../tools/formatDate';
 import { TaskDescr } from '../../components/tasks/TaskDescr';
@@ -58,7 +58,7 @@ const TaskDetail: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
 	const { getGeneralStore } = useGeneralStore();
-	const { tasks, plans } = getGeneralStore();
+	const { tasks, plans, user } = getGeneralStore();
 	const [activeTab, setActiveTab] = useState('details');
 	const [isPlanSelectVisible, setIsPlanSelectVisible] =
 		useState<boolean>(false);
@@ -344,40 +344,6 @@ const TaskDetail: React.FC = () => {
 									<TaskComments
 										taskId={id as string}
 										initialComments={task.comments || []}
-										onCommentCreate={(newComment) => {
-											// Добавляем новый комментарий в состояние
-											// setTask((prev) => ({
-											// 	...prev,
-											// 	comments: [
-											// 		...prev.comments,
-											// 		newComment,
-											// 	],
-											// }));
-										}}
-										onCommentUpdate={(updatedComment) => {
-											// Обновляем комментарий в состоянии
-											// setTask((prev) => ({
-											// 	...prev,
-											// 	comments: prev.comments.map(
-											// 		(c) =>
-											// 			(
-											// 				c.id ===
-											// 				updatedComment.id
-											// 			) ?
-											// 				updatedComment
-											// 			:	c,
-											// 	),
-											// }));
-										}}
-										onCommentDelete={(commentId) => {
-											// Удаляем комментарий из состояния
-											// setTask((prev) => ({
-											// 	...prev,
-											// 	comments: prev.comments.filter(
-											// 		(c) => c.id !== commentId,
-											// 	),
-											// }));
-										}}
 									/>
 								</TabPane>
 
