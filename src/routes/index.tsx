@@ -27,6 +27,7 @@ const VerifyCodePage = lazy(() => import('../pages/auth/VerifyCode'));
 
 // Страницы админ-панели
 const DashboardPage = lazy(() => import('../pages/Dashboard'));
+const GardeningPage = lazy(() => import('../pages/Gardening'));
 // const UsersListPage = lazy(() => import('../pages/users/UsersList'));
 // const UserDetailsPage = lazy(() => import('../pages/users/UserDetails'));
 // const ProductsListPage = lazy(() => import('../pages/products/ProductsList'));
@@ -193,6 +194,14 @@ const router = createBrowserRouter([
 				element: (
 					<SuspenseWrapper>
 						<AnimalCare />
+					</SuspenseWrapper>
+				),
+			},
+			{
+				path: 'gardening',
+				element: (
+					<SuspenseWrapper>
+						<GardeningPage />
 					</SuspenseWrapper>
 				),
 			},

@@ -35,6 +35,7 @@ import { useNotificationStore } from '../../store/useNotificationStore';
 import headerLogo from '../../assets/react.svg';
 import styles from './AdminLayout.module.css';
 import UserAvatar from '../common/UserAvatar';
+import { Fence } from 'lucide-react';
 
 const { Header, Sider, Content, Footer } = Layout;
 
@@ -135,6 +136,11 @@ const AdminLayout: React.FC = () => {
 			key: 'animals',
 			icon: <YuqueOutlined />,
 			label: <Link to='/admin/animals'>Животные</Link>,
+		},
+		{
+			key: 'gardening',
+			icon: <Fence size={15} />,
+			label: <Link to='/admin/gardening'>Посадки</Link>,
 		},
 		{
 			key: 'settings',
