@@ -2,7 +2,7 @@
 
 import { useStore } from './useStore';
 import {
-	BuildingPlan,
+	BuildingPlan, IPurchase, ISalary,
 	ITag,
 	ITask,
 	ITaskStatistics,
@@ -26,6 +26,8 @@ export const initialState = {
 	taskStats: [] as ITaskStatistics[],
 	buildingPlans: [] as BuildingPlan[],
 	plans: [] as Plan[],
+	salaries: [] as ISalary[],
+	purchases: [] as IPurchase[]
 };
 
 export type StoreType = typeof initialState;

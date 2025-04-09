@@ -7,11 +7,11 @@ import {
 	DatabaseOutlined,
 } from '@ant-design/icons';
 import { useState } from 'react';
-import PlantingPlan from './components/PlantingPlan';
-import WateringSchedule from './components/WateringSchedule';
-import HarvestLog from './components/HarvestLog';
-import PlantCatalog from './components/PlantCatalog';
-import SeasonalTasks from './components/SeasonalTasks';
+import PlantingPlan from '../../components/Gardening/PlantingPlan';
+import WateringSchedule from '../../components/Gardening/WateringSchedule';
+import HarvestLog from '../../components/Gardening/HarvestLog';
+import PlantCatalog from '../../components/Gardening/PlantCatalog';
+import SeasonalTasks from '../../components/Gardening/SeasonalTasks';
 
 const { TabPane } = Tabs;
 

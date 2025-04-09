@@ -35,7 +35,8 @@ import { useNotificationStore } from '../../store/useNotificationStore';
 import headerLogo from '../../assets/react.svg';
 import styles from './AdminLayout.module.css';
 import UserAvatar from '../common/UserAvatar';
-import { Fence } from 'lucide-react';
+import { BadgeRussianRuble, CodeXml, Fence } from 'lucide-react';
+import { SalaryPlanningPage } from '../../pages/salaryPlanning/SalaryPlanning';
 
 const { Header, Sider, Content, Footer } = Layout;
 
@@ -140,7 +141,17 @@ const AdminLayout: React.FC = () => {
 		{
 			key: 'gardening',
 			icon: <Fence size={15} />,
-			label: <Link to='/admin/gardening'>Посадки</Link>,
+			label: <Link to='/admin/gardening'>Сад</Link>,
+		},
+		{
+			key: 'skillsAndLearning',
+			icon: <CodeXml size={15} />,
+			label: <Link to='/admin/skills'>Знания или курсы</Link>,
+		},
+		{
+			key: 'salaryPlanning',
+			icon: <BadgeRussianRuble size={15} />,
+			label: <Link to='/admin/salary-planning'>Планы покупок</Link>,
 		},
 		{
 			key: 'settings',
