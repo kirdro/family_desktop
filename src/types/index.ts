@@ -355,3 +355,38 @@ export interface BuildingPlan {
 	updatedAt: Date;
 	createdBy: string;
 }
+
+export interface IParamsCreateSalary {
+	teamId: number;
+	date: string;
+	count: number;
+}
+
+export interface IParamsCreatePurchase {
+	teamId: number;
+	date: string;
+	price: number;
+	name: string;
+	priority?: Priority;
+
+}
+
+export interface ISalary {
+	id: string;
+	date: string;
+	teamId: number;
+	count: number;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+export interface IPurchase {
+	id: string;
+	date: string;
+	teamId: number;
+	price: number;
+	createdAt: Date;
+	updatedAt: Date;
+	priority: Priority;
+	name: string;
+}

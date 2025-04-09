@@ -12,6 +12,8 @@ export const TAGS_TASK = 'TAGS_TASK';
 export const TASK_STATS = 'TASK_STATS';
 export const SUB_TASKS = 'SUB_TASKS';
 export const PLANS = 'PLANS';
+export const SALARY = 'SALARY';
+export const PURCHASES = 'PURCHASES';
 
 export const TOKEN_STORAGE = 'token';
 export const EMAIL = 'email';

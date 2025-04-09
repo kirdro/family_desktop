@@ -18,15 +18,18 @@ import PlanForm from '../components/planning/PlanForm';
 import PlanDetail from '../pages/plannings/PlanDetail';
 import TaskEdit from '../pages/tasks/TaskEdit';
 import AnimalCare from '../components/animal/AnimalCare';
+import { SalaryPlanningPage } from '../pages/salaryPlanning/SalaryPlanning';
 // import ProtectedRoute from './ProtectedRoute';
 
 // Страницы авторизации
 const SignInPage = lazy(() => import('../pages/auth/SignIn'));
 const SignUpPage = lazy(() => import('../pages/auth/SignUp'));
 const VerifyCodePage = lazy(() => import('../pages/auth/VerifyCode'));
+const SkillsAndLearning = lazy(() => import('../pages/skillsAndLearning/SkillsAndLearning'));
 
 // Страницы админ-панели
 const DashboardPage = lazy(() => import('../pages/Dashboard'));
+const GardeningPage = lazy(() => import('../pages/Gardening'));
 // const UsersListPage = lazy(() => import('../pages/users/UsersList'));
 // const UserDetailsPage = lazy(() => import('../pages/users/UserDetails'));
 // const ProductsListPage = lazy(() => import('../pages/products/ProductsList'));
@@ -193,6 +196,30 @@ const router = createBrowserRouter([
 				element: (
 					<SuspenseWrapper>
 						<AnimalCare />
+					</SuspenseWrapper>
+				),
+			},
+			{
+				path: 'gardening',
+				element: (
+					<SuspenseWrapper>
+						<GardeningPage />
+					</SuspenseWrapper>
+				),
+			},
+			{
+				path: 'skills',
+				element: (
+					<SuspenseWrapper>
+						<SkillsAndLearning />
+					</SuspenseWrapper>
+				),
+			},
+			{
+				path: 'salary-planning',
+				element: (
+					<SuspenseWrapper>
+						<SalaryPlanningPage />
 					</SuspenseWrapper>
 				),
 			},
